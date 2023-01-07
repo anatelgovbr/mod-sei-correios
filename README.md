@@ -52,7 +52,7 @@
 		- Correios > Contratos e Serviços Postais:
 			- Cadastra o Contrato que o órgão possui com os Correios e pelo menos o Tipo de Embalagem "Envelope".
 			- Na tela de Cadastro do Contrato deve informar todos os campos sobre o Contrato junto aos Correios, especialmente o Usuário e Senha do SIGEP-WEB informado pelos Correios ao Órgão para que as integrações funcionem.
-				- [Acesse o Manual dos Correios](https://www2.correios.com.br/sistemas/encomendas/sigepweb/doc/Manual_de_Implementacao_do_Web_Service_SIGEP_WEB.pdf "Acesse o Manual") para utilizar os dados para integração com o ambinete de Homologação do SIGEP WEB, disponíveis no tópico 3.1.
+				- [Acesse o Manual dos Correios](https://www2.correios.com.br/sistemas/encomendas/sigepweb/doc/Manual_de_Implementacao_do_Web_Service_SIGEP_WEB.pdf "Acesse o Manual") para utilizar os dados para integração com o ambiente de Homologação do SIGEP WEB, disponíveis no tópico 3.1.
 				- Se ainda não tiver, deve solicitar ao contato comercial dos Correios que atende o Órgão o Usuário e Senha do SIGEP-WEB de produção para que o módulo funcione em produção.
 			- Deve deixar na lista de Serviços Postais somente os serviços que quer que fiquem disponíveis para uso, sendo o mais tradicional o serviço "CARTA COM A FATURAR SELO E SE", tipo "Carta Registrada", Expedido com AR "Sim", Descrição Amigável "Correspondência Registrada".
 				- Remover os serviços que não for utilizar.
