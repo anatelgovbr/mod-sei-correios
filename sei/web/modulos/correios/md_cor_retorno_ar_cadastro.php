@@ -275,7 +275,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
                     <li class="requisito">O processamento do cada arquivo PDF será realizado com as informações da
                         primeira página desse arquivo.
                     </li>
-                    <li class="requisito">O arquivo PDF dentro do ZIP deverá ter no máximo 1MB.</li>
+                    <li class="requisito">O arquivo PDF dentro do ZIP deverá ter no máximo 3MB.</li>
                     <li class="requisito">O AR deverá ser escaneado em preto e branco e com 300 DPI de resolução.</li>
                 </ol>
             </fieldset>

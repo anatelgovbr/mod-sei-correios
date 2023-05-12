@@ -305,10 +305,10 @@ infraEfeitoTabelas();
 
 function validarAcesso( bolDocumentoRestrito, strUrl ){
 
-    if( bolDocumentoRestrito != 1){
+    /*if( bolDocumentoRestrito != 1){
         alert('Esta Unidade Expedidora não possui acesso ao documento para poder imprimir.');
         return false;
-    }
+    }*/
 
     window.open( strUrl, '_blank' );
 }
@@ -328,12 +328,12 @@ function gerarZip(id){
         return false;
     }
 
-    var isRestrito = getAjaxValidarDocumentoAPI();
+    /*var isRestrito = getAjaxValidarDocumentoAPI();
 
     if(isRestrito === 'false'){
         alert('Esta Unidade Expedidora não possui acesso ao documento para poder imprimir.');
         return false;
-    }
+    }*/
 
     document.getElementById('frmDetalharObjetoLista').target = '_blank';
     document.getElementById('frmDetalharObjetoLista').action = '<?= $strUrlZerarZip ?>';

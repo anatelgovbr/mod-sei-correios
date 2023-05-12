@@ -110,6 +110,7 @@ try {
                     $objMdCorExpedicaoFormatoDTO->retTodos();
                     $objMdCorExpedicaoFormatoDTO->setDblIdProtocolo($dto->getDblIdDocumentoPrincipal());
                     $arrObjMdCorExpedicaoFormatoDTO = $rnProtAnexo->listar($objMdCorExpedicaoFormatoDTO);
+
                     if (count($arrObjMdCorExpedicaoFormatoDTO) == 0) {
                         $documentoBD = new DocumentoBD(SessaoSEI::getObjInfraIBanco());
                         $documentoDTO = new DocumentoDTO();
@@ -173,17 +174,17 @@ try {
                     die;
                 }
 
-                $objEntradaConsultarDocumentoAPI = new EntradaConsultarDocumentoAPI();
-                $objEntradaConsultarDocumentoAPI->setIdDocumento($_POST['hdnIdProcedimento']);
+                $objPesquisaProtocoloDTO = new PesquisaProtocoloDTO();
+                $objPesquisaProtocoloDTO->setStrStaTipo(ProtocoloRN::$TPP_DOCUMENTOS);
+                $objPesquisaProtocoloDTO->setStrStaAcesso(ProtocoloRN::$TAP_AUTORIZADO);
+                $objPesquisaProtocoloDTO->setDblIdProtocolo($_POST['id_doc']);
 
-                $objSeiRN = new SeiRN();
-                $objSaidaConsultarDocumentoAPI = new SaidaConsultarDocumentoAPI();
-                $objSaidaConsultarDocumentoAPI = $objSeiRN->consultarDocumento($objEntradaConsultarDocumentoAPI);
+                $objProtocoloRN = new ProtocoloRN();
+                $arrObjProtocoloDTO = $objProtocoloRN->pesquisarRN0967($objPesquisaProtocoloDTO);
 
-//                $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_procedimento=' . $objSaidaConsultarDocumentoAPI->getIdProcedimento() . '&id_documento=' . $_POST['hdnIdProcedimento']/* .'&id_procedimento_anexado='.$dblIdProcedimentoAnexado */);
-                $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_processo_listar&arvore=1&id_procedimento=1962903&infra_sistema=100000100&infra_unidade_atual=110000837');
+                $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
                 echo "<script>";
-                echo "window.parent.document.location.href = '" . $strLinkMontarArvore . "';";
+                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';";
                 echo "</script>";
             }
 
@@ -394,16 +395,17 @@ try {
                 }
             }
 
-            $objEntradaConsultarDocumentoAPI = new EntradaConsultarDocumentoAPI();
-            $objEntradaConsultarDocumentoAPI->setIdDocumento($_POST['id_doc']);
+            $objPesquisaProtocoloDTO = new PesquisaProtocoloDTO();
+            $objPesquisaProtocoloDTO->setStrStaTipo(ProtocoloRN::$TPP_DOCUMENTOS);
+            $objPesquisaProtocoloDTO->setStrStaAcesso(ProtocoloRN::$TAP_AUTORIZADO);
+            $objPesquisaProtocoloDTO->setDblIdProtocolo($_POST['id_doc']);
 
-            $objSeiRN = new SeiRN();
-            $objSaidaConsultarDocumentoAPI = new SaidaConsultarDocumentoAPI();
-            $objSaidaConsultarDocumentoAPI = $objSeiRN->consultarDocumento($objEntradaConsultarDocumentoAPI);
+            $objProtocoloRN = new ProtocoloRN();
+            $arrObjProtocoloDTO = $objProtocoloRN->pesquisarRN0967($objPesquisaProtocoloDTO);
+            $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
 
-            $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_procedimento=' . $objSaidaConsultarDocumentoAPI->getIdProcedimento() . '&id_documento=' . $_POST['id_doc']/* .'&id_procedimento_anexado='.$dblIdProcedimentoAnexado */);
             echo "<script>";
-            echo "window.parent.document.location.href = '" . $strLinkMontarArvore . "';";
+            echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';";
             echo "</script>";
             break;
 
@@ -569,16 +571,17 @@ try {
                 //$urlConsulta = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&acao_origem=md_cor_expedicao_processo_listar&id_md_cor_expedicao_solicitada=' . $dto->getNumIdMdCorExpedicaoSolicitada());
                 //header('Location:' . $urlConsulta ); die;
 
-                $objEntradaConsultarDocumentoAPI = new EntradaConsultarDocumentoAPI();
-                $objEntradaConsultarDocumentoAPI->setIdDocumento($_POST['id_doc']);
 
-                $objSeiRN = new SeiRN();
-                $objSaidaConsultarDocumentoAPI = new SaidaConsultarDocumentoAPI();
-                $objSaidaConsultarDocumentoAPI = $objSeiRN->consultarDocumento($objEntradaConsultarDocumentoAPI);
+                $objPesquisaProtocoloDTO = new PesquisaProtocoloDTO();
+                $objPesquisaProtocoloDTO->setStrStaTipo(ProtocoloRN::$TPP_DOCUMENTOS);
+                $objPesquisaProtocoloDTO->setStrStaAcesso(ProtocoloRN::$TAP_AUTORIZADO);
+                $objPesquisaProtocoloDTO->setDblIdProtocolo($_POST['id_doc']);
 
-                $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&id_procedimento=' . $objSaidaConsultarDocumentoAPI->getIdProcedimento() . '&id_documento=' . $_POST['id_doc']/* .'&id_procedimento_anexado='.$dblIdProcedimentoAnexado */);
+                $objProtocoloRN = new ProtocoloRN();
+                $arrObjProtocoloDTO = $objProtocoloRN->pesquisarRN0967($objPesquisaProtocoloDTO);
+                $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
                 echo "<script>";
-                echo "window.parent.document.location.href = '" . $strLinkMontarArvore . "';";
+                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';";
                 echo "</script>";
 
                 break;

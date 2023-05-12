@@ -62,7 +62,7 @@ foreach ($arrArquivoProcessado as $chave => $arquivoProcessado) {
     $strResultado .= '</td>';
 
     $strResultado .= '<td align="center">';
-    $documento = '<input ' . $disabled . ' onkeypress="return infraMascara(this, event,\'#######\')" style="width:84px; font-size:1em;" name="nu_sei[' . $chave . ']" onblur="buscarDadosDocumento(this)" id="nu_sei' . $chave . '" ' . $strNaoProcessado . ' class="nu_sei infraText"/>';
+    $documento = '<input ' . $disabled . ' onkeypress="return infraMascara(this, event,\'##########\')" style="width:84px; font-size:1em;" name="nu_sei[' . $chave . ']" onblur="buscarDadosDocumento(this)" id="nu_sei' . $chave . '" ' . $strNaoProcessado . ' class="nu_sei infraText"/>';
     if (isset($arquivoProcessado['nuSei'])) {
         $strUrlDocumento = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&id_documento=' . $arquivoProcessado['idDocumentoPrincipal']);
         $documento = '<a class="protocoloNormal" style="font-size: 1.0em !important; font-size:1em" href="' . $strUrlDocumento . '" target="_blank">' . $arquivoProcessado['nuSei'] . '</a><input id="nu_sei' . $chave . '" name="nu_sei[' . $chave . ']" type="hidden" value="' . $arquivoProcessado['nuSei'] . '" class="nu_sei infraText"/>';

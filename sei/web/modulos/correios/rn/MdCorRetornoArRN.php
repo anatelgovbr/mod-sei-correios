@@ -290,7 +290,7 @@ class MdCorRetornoArRN extends InfraRN
     ini_set('memory_limit','-1');
     ini_set('max_execution_time', 0);
     //Tamanho permitido em MB do arquivo PDF dentro do ZIP após a descompactação
-    $tamanhoPdf = 1;
+    $tamanhoPdf = 3;
     $objInfraException = new InfraException();
     $files = array_diff(scandir($url), array('.', '..'));
 

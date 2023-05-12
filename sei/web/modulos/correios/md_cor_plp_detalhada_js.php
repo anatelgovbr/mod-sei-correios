@@ -27,7 +27,7 @@
             return false;
         }
 
-        var isRestrito = getAjaxValidarDocumentoAPI();
+        /*var isRestrito = getAjaxValidarDocumentoAPI();
 
         if (isRestrito === 'false') {
             alert('Esta Unidade Expedidora não possui acesso ao documento para poder imprimir.');
@@ -37,7 +37,7 @@
         if ('<?= $isImprimirDocumento ?> ' == true) {
             alert('Esta Unidade Expedidora não possui acesso ao documento para poder imprimir.');
             return false;
-        }
+        }*/
 
 
          document.getElementById('frmDetalharPlp').target = '_blank';

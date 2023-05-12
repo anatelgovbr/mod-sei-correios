@@ -13,10 +13,10 @@
 3. Editar o arquivo "/sei/config/ConfiguracaoSEI.php", tomando o cuidado de usar editor que não altere o charset do arquivo, para adicionar a referência à classe de integração do módulo e seu caminho relativo dentro da pasta "/sei/web/modulos" na array 'Modulos' da chave 'SEI':
 
 		'SEI' => array(
-			'URL' => 'http://[Servidor_PHP]/sei',
-			'Producao' => false,
-			'Modulos'=>array('CorreiosIntegracao' => 'correios'),
-			'RepositorioArquivos' => '/var/sei/arquivos'			
+			...
+			'Modulos'=>array(
+				'CorreiosIntegracao' => 'correios',
+				),
 			),
 
 4. Antes de seguir para os próximos passos, é importante conferir se o Módulo foi corretamente declarado no arquivo "/sei/config/ConfiguracaoSEI.php". Acesse o menu **Infra > Módulos** e confira se consta a linha correspondente ao Módulo, pois, realizando os passos anteriores da forma correta, independente da execução do script de banco, o Módulo já deve ser reconhecido na tela aberta pelo menu indicado.
@@ -52,7 +52,7 @@
 		- Correios > Contratos e Serviços Postais:
 			- Cadastra o Contrato que o órgão possui com os Correios e pelo menos o Tipo de Embalagem "Envelope".
 			- Na tela de Cadastro do Contrato deve informar todos os campos sobre o Contrato junto aos Correios, especialmente o Usuário e Senha do SIGEP-WEB informado pelos Correios ao Órgão para que as integrações funcionem.
-				- [Acesse o Manual dos Correios](https://www2.correios.com.br/sistemas/encomendas/sigepweb/doc/Manual_de_Implementacao_do_Web_Service_SIGEP_WEB.pdf "Acesse o Manual") para utilizar os dados para integração com o ambinete de Homologação do SIGEP WEB, disponíveis no tópico 3.1.
+				- [Acesse o Manual dos Correios](https://www2.correios.com.br/sistemas/encomendas/sigepweb/doc/Manual_de_Implementacao_do_Web_Service_SIGEP_WEB.pdf "Acesse o Manual") para utilizar os dados para integração com o ambiente de Homologação do SIGEP WEB, disponíveis no tópico 3.1.
 				- Se ainda não tiver, deve solicitar ao contato comercial dos Correios que atende o Órgão o Usuário e Senha do SIGEP-WEB de produção para que o módulo funcione em produção.
 			- Deve deixar na lista de Serviços Postais somente os serviços que quer que fiquem disponíveis para uso, sendo o mais tradicional o serviço "CARTA COM A FATURAR SELO E SE", tipo "Carta Registrada", Expedido com AR "Sim", Descrição Amigável "Correspondência Registrada".
 				- Remover os serviços que não for utilizar.

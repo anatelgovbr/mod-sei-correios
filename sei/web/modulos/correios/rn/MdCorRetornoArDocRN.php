@@ -427,7 +427,7 @@ class MdCorRetornoArDocRN extends InfraRN {
 
                         $objSeiRN = new SeiRN();
                         if ($dados['hdnArquivoAlteracao'] == '') {
-                            $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);                            
+                            $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);
                             
                             $objDocumentoDTO = new MdCorRetornoArDocDTO();
                             $objDocumentoDTO->setNumIdDocumentoPrincipal($idDocumentoPrincipal);
@@ -528,10 +528,7 @@ class MdCorRetornoArDocRN extends InfraRN {
         $objEntradaConsultaProcApi->setSinRetornarAndamentoConclusao('N');
 
         $objSeiRN = new SeiRN();
-        $saidaConsultarProcedimentoAPI = $objSeiRN->consultarProcedimento($objEntradaConsultaProcApi);
 
-//        $arrUnidadesAbertas = current($saidaConsultarProcedimentoAPI->getUnidadesProcedimentoAberto());
-//        $idUnidade = $arrUnidadesAbertas->getUnidade()->getIdUnidade();
         //criando registro em protocolo
         $objDocumentoDTO = new DocumentoDTO();
         $objDocumentoDTO->setStrNumero($nomeArvore);
