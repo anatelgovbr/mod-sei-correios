@@ -589,7 +589,6 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                         }
                     }
                 }else{
-
                     $arrIdContato = [$contatoDTO->getNumIdContatoAssociado()];
                     $arrObjMdPetVinculoDTO = self::validarPetVinculoUsuarioExterno($arrIdContato);
 
@@ -647,7 +646,6 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
         $objMdPetVinculoDTO = new MdPetVinculoDTO();
         $objMdPetVinculoDTO->retNumIdContato();
         $objMdPetVinculoDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_IN);
-        $objMdPetVinculoDTO->setStrSinAtivoRepresentante('S');
         $objMdPetVinculoDTO->setStrStaEstado(MdPetVincRepresentantRN::$RP_ATIVO);
 
         $objMdPetVinculoRN = new MdPetVinculoRN();

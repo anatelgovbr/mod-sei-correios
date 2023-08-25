@@ -65,6 +65,47 @@ class MdCorContatoINT extends InfraINT
         return $xml;
     }
 
+	public static function _isDadoAlterado( $idContato , $idMdCorExpedSolic ){
+		try {
+			$arrAtributos    = ['Nome','Endereco','Cep','Complemento','Bairro','StaNatureza','NomeCidade','SiglaUf','StaGenero','IdTipoContato','ExpressaoTratamentoCargo','ExpressaoCargo','NomeTipoContato'];
+			$objContato      = self::getInfoContato($idContato);
+			$objMdCorContato = self::getinfoMdCorContato($idContato, $idMdCorExpedSolic);
+
+			$isTeveRegistroAlterado = false;
+			foreach ( $arrAtributos as $atributo ) {
+				if ( $objContato->get($atributo) != $objMdCorContato->get($atributo) ) {
+					$isTeveRegistroAlterado = true;
+					$objMdCorContato->set($atributo,$objContato->get($atributo));
+				}
+			}
+
+			return ['objMdCorContato' => $objMdCorContato , 'isRegAlterado' => $isTeveRegistroAlterado];
+		} catch (Exception $e) {
+			throw new InfraException('Não foi possível comparar dados modificados do Contato no Módulo dos Correios',$e);
+		}
+	}
+
+	private static function getInfoContato( $idContato ){
+		$objContatoDTO = new ContatoDTO();
+		$objContatoRN = new ContatoRN();
+
+		$objContatoDTO->setNumIdContato($idContato);
+		$objContatoDTO->retTodos(true);
+
+		return $objContatoRN->consultarRN0324($objContatoDTO);
+	}
+
+	private static function getinfoMdCorContato( $idContato , $idMdCorExpedSolic ){
+		$objMdCorContatoDTO = new MdCorContatoDTO();
+		$objMdCorContatoRN  = new MdCorContatoRN();
+
+		$objMdCorContatoDTO->setNumIdContato($idContato);
+		$objMdCorContatoDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedSolic);
+		$objMdCorContatoDTO->retTodos(true);
+
+		return $objMdCorContatoRN->consultar($objMdCorContatoDTO);
+	}
+
 }
 
 ?>

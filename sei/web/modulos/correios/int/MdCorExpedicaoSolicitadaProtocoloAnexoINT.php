@@ -65,20 +65,30 @@ class MdCorExpedicaoSolicitadaProtocoloAnexoINT extends InfraINT{
         $arrObjMdCorExtensaoMidiaDTO = $mdCorExtensaoMidiaRN->listar($objMdCorExtensaoMidiaDTO);
 
         $anexoRN = new AnexoRN();
-        $objAnexoDTO = new AnexoDTO();
-        $objAnexoDTO->setDblIdProtocolo($idProtocolo);
-        $objAnexoDTO->retStrNome();
-        $objAnexoDTO = $anexoRN->consultarRN0736($objAnexoDTO);
+        $listaAnexoDTO = new AnexoDTO();
+        $listaAnexoDTO->setDblIdProtocolo($idProtocolo);
+        $listaAnexoDTO->retNumIdAnexo();
+        $listaAnexoDTO = $anexoRN->listarRN0218($listaAnexoDTO);
         $existeExtensao = 'false';
-        if($objAnexoDTO) {
-            $arrDocumento = explode('.', $objAnexoDTO->getStrNome());
-            foreach ($arrObjMdCorExtensaoMidiaDTO as $objMdCorExtensaoMidiaDTO) {
-                if ($objMdCorExtensaoMidiaDTO->getStrNomeExtensao() == end($arrDocumento))
-                    $existeExtensao = 'true';
+
+        foreach($listaAnexoDTO as $anexoDTO) {
+            $anexoRN = new AnexoRN();
+            $objAnexoDTO = new AnexoDTO();
+            $objAnexoDTO->setNumIdAnexo($anexoDTO->getNumIdAnexo());
+            $objAnexoDTO->retStrNome();
+            $objAnexoDTO = $anexoRN->consultarRN0736($objAnexoDTO);
+
+            if($objAnexoDTO) {
+                $arrDocumento = explode('.', $objAnexoDTO->getStrNome());
+                foreach ($arrObjMdCorExtensaoMidiaDTO as $objMdCorExtensaoMidiaDTO) {
+                    if ($objMdCorExtensaoMidiaDTO->getStrNomeExtensao() == end($arrDocumento))
+                        $existeExtensao = 'true';
+
+                }
 
             }
-
         }
+
         $strRetorno = $bolRetornarXML ? '<retorno>' . $existeExtensao . '</retorno>' : $existeExtensao;
         return $strRetorno;
     }
