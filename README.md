@@ -1,14 +1,16 @@
 # Módulo SEI Correios
 
 ## Requisitos
-- SEI 4.0.9 instalado/atualizado (Não é compatível com o SEI 3.1.x).
+- Requisito Mínimo é o SEI 4.0.12 instalado/atualizado - Não é compatível com versões anteriores e em versões mais recentes é necessário conferir antes se possui compatibilidade.
    - Verificar valor da constante de versão no arquivo /sei/web/SEI.php ou, após logado no sistema, parando o mouse sobre a logo do SEI no canto superior esquerdo.
 - Antes de executar os scripts de instalação/atualização, o usuário de acesso aos bancos de dados do SEI e do SIP, constante nos arquivos ConfiguracaoSEI.php e ConfiguracaoSip.php, deverá ter permissão de acesso total ao banco de dados, permitindo, por exemplo, criação e exclusão de tabelas.
 - Os códigos-fonte do Módulo podem ser baixados a partir do link a seguir, devendo sempre utilizar a versão mais recente: [https://github.com/anatelgovbr/mod-sei-correios/releases](https://github.com/anatelgovbr/mod-sei-correios/releases "Clique e acesse")
+- Se já tiver instalado a versão principal com a execução dos scripts de banco do módulo no SEI e no SIP, então basta sobrescrever os códigos e não precisa executar os scripts de banco novamente.
+   - Atualizações apenas de código são identificadas com o incremento apenas do terceiro dígito da versão (p. ex. v4.1.1, v4.1.2) e não envolve execução de scripts de banco.
 
 ## Procedimentos para Instalação
-1. Antes, fazer backup dos bancos de dados do SEI e do SIP.
-2. Carregar no servidor os arquivos do módulo localizados na pasta "/sei/web/modulos/correios" e os scripts de instalação/atualização "/sip/scripts/sip_atualizar_versao_modulo_correios.php" e "/sei/scripts/sei_atualizar_versao_modulo_correios.php".
+1. Fazer backup dos bancos de dados do SEI e do SIP.
+2. Carregar no servidor os arquivos do módulo nas pastas correspondentes nos servidores do SEI e do SIP.
    - **Caso se trate de atualização de versão anterior do Módulo**, antes de copiar os códigos-fontes para a pasta "/sei/web/modulos/correios", é necessário excluir os arquivos anteriores pré existentes na mencionada pasta, para não manter arquivos de códigos que foram renomeados ou descontinuados.
 3. Editar o arquivo "/sei/config/ConfiguracaoSEI.php", tomando o cuidado de usar editor que não altere o charset do arquivo, para adicionar a referência à classe de integração do módulo e seu caminho relativo dentro da pasta "/sei/web/modulos" na array 'Modulos' da chave 'SEI':
 
@@ -35,9 +37,9 @@
 9. Após a execução com sucesso, com um usuário com permissão de Administrador no SEI, seguir os passos dispostos no tópico "Orientações Negociais" mais abaixo.
 10. Para o funcionamento correto do Módulo SEI Correios é necessária a instalação da biblioteca PHP "ImageMagick" e "ImageMagick-devel" em cada nó de aplicação do SEI, conforme comandos abaixo:
 
-		 Execute a linha de comando "yum install -y ImageMagick ImageMagick-devel"
-		 Execute a linha de comando "pecl install imagick"
-		 Modifique o arquvivo "/etc/php.ini", incluindo a linha "extension=imagick.so" no final da seção "Dynamic Extensions"
+		Execute a linha de comando "yum install -y ImageMagick ImageMagick-devel"
+		Execute a linha de comando "pecl install imagick"
+		Modifique o arquvivo "/etc/php.ini", incluindo a linha "extension=imagick.so" no final da seção "Dynamic Extensions"
 
 
 ## Orientações Negociais

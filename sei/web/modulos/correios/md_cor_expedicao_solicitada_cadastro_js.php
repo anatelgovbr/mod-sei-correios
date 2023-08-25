@@ -601,7 +601,7 @@
             //chegando aqui é porque passou em todas as validações , esta tudo OK e pode submeter o cadastro
         }
         var retorno = validarDestinatario();
-        console.log(retorno);
+
         if(retorno) {
             window.onbeforeunload = null;
             document.getElementById('frmSolicitarExpedicao').submit();
@@ -790,7 +790,6 @@
                 } else {
                     document.getElementById('lblNomeAssociado').style.display = 'none';
                 }
-
                 stopTimer++;
                 if (stopTimer == 35) {
                     clearInterval(timerId);
@@ -815,7 +814,7 @@
         document.location = '<?= $strUrlFecharConsulta ?>';
     }
     function identificaFechamentoModalAlterarContato() {
-        $('#divInfraSparklingModalFrame', window.parent.document).on("click", function() {
+        $("div[id^='divInfraSparklingModalClose']", window.parent.document).on('click',function(){
             recarregarContato()
         });
     }

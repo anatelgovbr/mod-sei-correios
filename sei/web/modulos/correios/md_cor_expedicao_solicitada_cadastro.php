@@ -27,6 +27,7 @@ try {
     $chkNecessitaRecebimentoAR = "checked";
     $chkPossuiAnexo = "";
     $id_doc = $_GET['id_doc'];
+	$id_destinatario_aux = null;
 
     switch ($_GET['acao']) {
 
@@ -219,6 +220,9 @@ try {
                     $dto->setDistinct(true);
                     $dto = $rn->consultar($dto);
 
+                    $idMdCorExpedSolic  = $dto->getNumIdMdCorExpedicaoSolicitada();
+                    $idMdCorContatoDest = $dto->getNumIdContatoDestinatario();
+
                     if ($dto->getNumIdUnidade() == SessaoSEI::getInstance()->getNumIdUnidadeAtual()) {
 
                         $chkAviso = $_POST['chkAvisoRecebimento'];
@@ -374,8 +378,11 @@ try {
                         $objSeiRN = new SeiRN();
                         $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);
 
-                        if ($_POST['hdnContatoIdentificador'] != "") {
+	                    $arrObjMdCorContato = MdCorContatoINT::_isDadoAlterado( $idMdCorContatoDest , $idMdCorExpedSolic );
 
+	                    if ( $_POST['hdnContatoIdentificador'] == "" && $arrObjMdCorContato['isRegAlterado'] ) $_POST['hdnContatoIdentificador'] = $idMdCorContatoDest;
+
+                        if ( $_POST['hdnContatoIdentificador'] != "" ) {
                             $contatoRN = new ContatoRN();
                             $objContatoDTO = new ContatoDTO();
                             $objContatoDTO->retTodos(true);
@@ -811,6 +818,7 @@ try {
 
 
             //obtendo informações do destinatario
+            /*
             $objMdCorContatoDTO = new MdCorContatoDTO();
             $objMdCorContatoDTO->retTodos();
 
@@ -820,8 +828,17 @@ try {
             $objMdCorContatoRN = new MdCorContatoRN();
 
             $arrObjMdCorContatoDTO = $objMdCorContatoRN->consultar($objMdCorContatoDTO);
+            */
+
+	        $arrObjMdCorContato = MdCorContatoINT::_isDadoAlterado( $dto->getNumIdContatoDestinatario() , $dto->getNumIdMdCorExpedicaoSolicitada() );
+
+	        $arrObjMdCorContatoDTO = $arrObjMdCorContato['objMdCorContato'];
 
             $id_destinatario = $arrObjMdCorContatoDTO->getNumIdContato();
+
+            //criado para ser usado na modal que atualiza dados do contato ou se houve mudança no contato pelo CORE do SEI
+            $id_destinatario_aux = $arrObjMdCorContato['isRegAlterado'] ? $id_destinatario : null;
+
             $nome_destinatario = $arrObjMdCorContatoDTO->getStrNome();
 
             $cargo_destinatario = $arrObjMdCorContatoDTO->getStrExpressaoCargo();
@@ -1042,7 +1059,7 @@ if ($_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_
                                            name="hdnContatoObject"
                                            value=""/>
                                     <input type="hidden" id="hdnContatoIdentificador" onchange="alert(this.value);"
-                                           name="hdnContatoIdentificador" value=""/>
+                                           name="hdnContatoIdentificador" value="<?= $id_destinatario_aux ?>"/>
                                     <select id="selContato" name="selContato" style="display: none !important"
                                             class="form-control"
                                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
