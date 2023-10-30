@@ -15,7 +15,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.1.0';
+        return '2.2.0';
     }
 
     public function getInstituicao()
@@ -656,6 +656,28 @@ class CorreiosIntegracao extends SeiIntegracao
                     $xml = "<Resultado><Sucesso>N</Sucesso></Resultado>";
                 }
                 break;
+
+		        case 'md_cor_change_serv_postal':
+			          $xml = "<Documento>";
+		        	  if ( !empty( $_POST['idServPostal'] ) ) {
+				          $objDTO = MdCorServicoPostalINT::getInfoServicoPostalPorId( $_POST['idServPostal'] );
+				          if ( $objDTO ) {
+					          if ( $objDTO->getStrSinAnexarMidia() == 'S' ) {
+						          $xml .= "<Retorno>S</Retorno>";
+				            } else {
+						          $xml .= "<Retorno>N</Retorno>";
+					          }
+				          }
+			          }
+			          $xml .= "</Documento>";
+		    	      break;
+
+		        case 'md_cor_valida_arq_ext':
+		        	  $xml = "<Documento>";
+		        	  $xml .= MdCorServicoPostalINT::validaArqExt( $_POST );
+			          $xml .= "</Documento>";
+
+		        	  break;
         }
 
         return $xml;

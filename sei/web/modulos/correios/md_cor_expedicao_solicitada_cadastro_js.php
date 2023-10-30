@@ -5,20 +5,27 @@
     var objTabelaDinamicaFormatos = null;
     var stopTimer = 0;
     var timerId;
+    var servicoPostalPermiteAnexarMidia = "<?= $isPermiteGravarMidia ?>";
 
     function inicializar() {
-        var formObject = $('#frmSolicitarExpedicao, #frmSolicitarExpedicao');
-        formObject.data('original_serialized_form', formObject.serialize());
+        <?php if (isset($_GET['acao_origem']) && $_GET['acao_origem'] == 'md_cor_expedicao_solicitada_cadastrar'): ?>
+            return false;
+        <?php endif; ?>
+
+        var mudouForm = false;
+        $('#frmSolicitarExpedicao').on('change paste', 'input, select, textarea', function(){
+            mudouForm = true;
+        });
         var arrAcoes = new Array('md_cor_geracao_plp_listar', 'md_cor_expedicao_processo_listar');
         <?php
         $arrAcoes = [
             'md_cor_geracao_plp_listar',
-            'md_cor_expedicao_processo_listar'
+            'md_cor_expedicao_processo_listar',
         ];
-        if (!in_array($_GET['acao_origem'], $arrAcoes)) :
+        if (!in_array($_GET['acao_origem'], $arrAcoes) ) :
         ?>
         window.onbeforeunload = function() {
-            if (formObject.data('original_serialized_form') !== formObject.serialize()) {
+            if( mudouForm ){
                 return "As mudanças deste formulário não foram salvas. Saindo desta página, todas as mudanças serão perdidas.";
             }
         };
@@ -168,7 +175,7 @@
         var existeTipoMidiaValido = verificarAnexoMidia(<?php echo $formatoDTO->getDblIdProtocolo(); ?>);
         var checkImpressao = existeTipoMidiaValido == 'false' ? "" : "disabled='disabled'";
         var id = '<?php echo $formatoDTO->getDblIdProtocolo() ?>';
-
+        var configJust = '';
         var formato = '';
 
         formato += '<div class="row">';
@@ -233,7 +240,8 @@
         ?>
 
         //HTML para a coluna justificativa
-        var justificativa = '<textarea name="txtJustificativa[' + id + ']" ' + checkImpressao + ' class="infraTextArea form-control" style="width: 100%;" value="<?php echo $formatoDTO->getStrJustificativa(); ?>" <?php echo $disabled; ?> ' + visualizarListagemPLP + '><?php echo $formatoDTO->getStrJustificativa(); ?></textarea>';
+        configJust = checkImpressao.length > 0 ? 'readonly' : '';
+        var justificativa = '<textarea name="txtJustificativa[' + id + ']" ' + configJust + ' class="infraTextArea form-control" style="width: 100%;" value="<?php echo $formatoDTO->getStrJustificativa(); ?>" <?php echo $disabled; ?> ' + visualizarListagemPLP + '><?php echo $formatoDTO->getStrJustificativa(); ?></textarea>';
 
         arrLinhaInicial = [
             <?php if ($numeroProtocoloFormatado == $formatoDTO->getStrProtocoloFormatado()) { ?>
@@ -367,12 +375,91 @@
             return true;
         };
 
+        objLupaProtocoloAnexo.processarSelecao = function(vlr){
+            let arrIdsProtocolos = [];
+            let arrDescricaoDoc  = [];
+
+            //monta os parametros(Id Protocolo + descricao/nome do documento ) para serem validados
+            vlr.forEach( function( v , i ) {
+                arrIdsProtocolos.push( v.value );
+                arrDescricaoDoc.push( v.getAttribute('title') );
+            });
+            //executa validacao
+            validaExtArquivosExternos(arrIdsProtocolos,arrDescricaoDoc);
+        }
+
         //evento para pegar insercao de options na combo
         AddEventToSelect(document.getElementById('selProtocoloAnexo'), 'I');
         AddEventToSelect(document.getElementById('selContato'), 'M');
 
         marcarChkDocumentoPossuiAnexo();
 
+        if ( document.querySelector('#selServicoPostal').value != 'null' )
+            document.querySelector('#chkDocumentoPossuiAnexo').removeAttribute('disabled');
+    }
+
+    function validaExtArquivosExternos( arrIdsProtocolos , arrDescricaoDoc ){
+        const param = {
+            arrIdsProt: arrIdsProtocolos,
+            arrDescDoc: arrDescricaoDoc,
+            strPermiteGravarMidia: servicoPostalPermiteAnexarMidia
+        };
+
+        $.ajax({
+            url: "<?= $strLinkAjaxValidarExtArqExt ?>",
+            type:'post',
+            data: param,
+            dataType: 'xml',
+            beforeSend: function(){},
+            success: function ( xml ) {
+
+                let isFecharModal = true;
+
+                if ( $( xml ).find('NaoExibir').length > 0 ) {
+                    isFecharModal     = false;
+                    let listNaoExibir = $( xml ).find('NaoExibir').text().split(';');
+                    let msg = "Em razão da extensão do arquivo do Documento Externo selecionado como Protocolo Anexo, não é possível seguir com a Solicitação de "+
+                              "Expedição com o Serviço Postal escolhido, pois não aceita gravação de mídia. <br><br>";
+
+                    listNaoExibir.forEach( ( v , i ) => {
+                        let arrItem = v.split('#');
+                        msg += ' - ' + arrItem[1] + '<br>';
+                    });
+
+                    let iframe = window.top.document.querySelector('iframe[name=modal-frame]').contentWindow;
+                    $( iframe.document ).find('div[id^=divInfraBarraLocalizacao]').append( setContentAlertBS( msg ) );
+                }
+
+                // caso tenha documento(s) que foi criticado pela validacao, exibe msg mas continua na modal para tratamento
+                if ( ! isFecharModal ) return false;
+
+                if ( $( xml ).find('Exibir').length > 0 ) {
+                    let listExibir = $( xml ).find('Exibir').text().split(';');
+                    listExibir.forEach( ( v , i ) => {
+                        let arrItem = v.split('#');
+                        /*
+                            0 => Id Protocolo
+                            1 => Descricao/Nome do Documento
+                        */
+                        objLupaProtocoloAnexo.adicionar( arrItem[0] , arrItem[1] );
+                    });
+                }
+
+                $( window.top.document ).find('div[id^=divInfraSparklingModalClose]').click();
+            },
+            error: function ( err ) {
+                console.error('Erro ao validar documentos externos: ' + err.responseText);
+            }
+        })
+    }
+
+    function setContentAlertBS(msg){
+        return '<div class="alert alert-info alert-dismissible fade show" style="font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:98%; margin:0 auto;" role="alert">'
+                    + msg +
+                    '<button type="button" class="close media h-100" data-dismiss="alert" aria-label="Fechar Mensagem" aria-labelledby="divInfraMsg0">'+
+                        '<span aria-hidden="true" class="align-self-center"><b>X</b></span>'+
+                    '</button>'+
+                '</div>';
     }
 
     function justificativaImprimir(campo, isMidia) {
@@ -404,6 +491,7 @@
 
     function OnNodeInserted(event) {
         var elemento = event.target;
+        if ( elemento.value == '' || elemento.value == undefined ) return false;
         var idCompleto = elemento.value;
         var id = idCompleto.split("#")[0];
         var extensaopermitida = idCompleto.split("#")[1];
@@ -532,10 +620,12 @@
                     return;
 
                 }
+                /*
                 var confirmar = confirm('Deseja realmente alterar esta Solicitação?');
                 if (confirmar == false) {
                     return;
                 }
+                */
                 document.getElementsByClassName('documentoPrincipal').disabled = false;
 
             }
@@ -732,8 +822,10 @@
             camposImpressao[0].checked = true;
         }
         if(isMidia){
-            document.getElementsByName('txtJustificativa[' + indice + ']')[0].setAttribute('disabled','disabled');
-            document.getElementsByName('txtJustificativa[' + indice + ']')[0].value = '';
+            document.getElementsByName('txtJustificativa[' + indice + ']')[0].removeAttribute('disabled');
+            document.getElementsByName('txtJustificativa[' + indice + ']')[0].value = 'Extensão do arquivo disponível apenas para gravação em mídia';
+            document.getElementsByName('txtJustificativa[' + indice + ']')[0].setAttribute('readonly','readonly');
+            document.getElementsByName('txtJustificativa[' + indice + ']')[0].style.backgroundColor='#d9d9d9;';
         }
     }
 
@@ -819,9 +911,40 @@
         });
     }
     function funcaoCallbackAlterarContato(callback) {
-        seiCadastroContato(<?= $id_destinatario ?>, 'selContato', 'frmSolicitarExpedicao', '<?= $strLinkAlterarContato ?>');
+        let dest = <?= $id_destinatario ?? 0 ?>;
+        //dest = (dest == null || dest == '') ? 0 : dest;
+        seiCadastroContato(dest, 'selContato', 'frmSolicitarExpedicao', '<?= $strLinkAlterarContato ?>');
         callback();
     }
+
+    function gerenciarDadosServPostal( el ){
+
+        $.ajax({
+           url: "<?= $strLinkAjaxChangeServicoPostal ?>",
+           data: {
+               idServPostal: el.value
+           },
+           type: 'post',
+           dataType: 'xml',
+           beforeSend: function () {},
+           success: function ( xml ) {
+               let ret = $( xml ).find('Retorno');
+
+               if ( ret.length > 0 ) servicoPostalPermiteAnexarMidia = ret.text();
+
+               if ( el.value != 'null' ) {
+                   $('#chkDocumentoPossuiAnexo').prop({ checked: false , disabled: false });
+               } else {
+                   $('#chkDocumentoPossuiAnexo').prop({ checked: false , disabled: true });
+               }
+               marcarChkDocumentoPossuiAnexo();
+           },
+           error: function ( err ) {
+               console.error('Erro ao validar mudança no Serviço Postal: ' + err.responseText );
+           }
+        });
+    }
+
     $(document).ready(function () {
         $('#ifrVisualizacao').focus(function () {});
     });

@@ -5,10 +5,10 @@ class MdCorAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.1.0';
+    private $versaoAtualDesteModulo = '2.2.0';
     private $nomeDesteModulo = 'MÓDULO DOS CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0');
 
     public function __construct()
     {
@@ -114,6 +114,8 @@ class MdCorAtualizadorSipRN extends InfraRN
                     $this->instalarv200();
                 case '2.0.0':
                     $this->instalarv210();
+	              case '2.1.0':
+		                $this->instalarv220();
                     break;
 
                 default:
@@ -628,7 +630,7 @@ class MdCorAtualizadorSipRN extends InfraRN
         $this->logar('ADICIONANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSip::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome) VALUES(\'1.0.0\',   \'' . $this->nomeParametroModulo . '\' )');
 
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
     }
 
     protected function instalarv200()
@@ -648,7 +650,7 @@ class MdCorAtualizadorSipRN extends InfraRN
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
     }
 
     protected function instalarv210()
@@ -683,8 +685,18 @@ class MdCorAtualizadorSipRN extends InfraRN
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.1.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
     }
+
+		protected function instalarv220()
+		{
+			$this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.2.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+			$this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+			BancoSip::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.2.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+			$this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.2.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SIP');
+		}
 
     private function adicionarRecursoPerfil($numIdSistema, $numIdPerfil, $strNome, $strCaminho = null)
     {

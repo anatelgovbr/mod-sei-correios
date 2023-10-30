@@ -186,6 +186,7 @@ try {
 }
 
 ?>
+    <div id="divTituloModal" class="infraBarraLocalizacao"><?= $strTitulo ?></div>
     <form id="frmDevolverExpedicao" method="post" action="<?= $strAcaoForm ?>">
         <?php PaginaSEI::getInstance()->abrirAreaDados(); ?>
         <?php $idMdCorEexpedicaoSolicitada = isset($_GET['id_md_cor_expedicao_solicitada']) ? $_GET['id_md_cor_expedicao_solicitada'] : ''; ?>

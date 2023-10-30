@@ -5,10 +5,10 @@ class MdCorAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.1.0';
+    private $versaoAtualDesteModulo = '2.2.0';
     private $nomeDesteModulo = 'MÓDULO CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0');
 
     public function __construct()
     {
@@ -114,6 +114,8 @@ class MdCorAtualizadorSeiRN extends InfraRN
                     $this->instalarv200();
                 case '2.0.0':
                     $this->instalarv210();
+	              case '2.1.0':
+	            	    $this->instalarv220();
                     break;
 
                 default:
@@ -1073,7 +1075,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $this->logar('ADICIONANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome) VALUES (\'1.0.0\' , \'' . $this->nomeParametroModulo . '\' ) ');
 
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 1.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
     }
 
 
@@ -1092,7 +1094,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.0.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
     }
 
     private function instalarv210()
@@ -1244,8 +1246,27 @@ ATENÇÃO: As informações contidas neste e-mail, incluindo seus anexos, podem ser 
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
-        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
+        $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.1.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
     }
+
+    protected function instalarv220(){
+	    $objInfraParametro = new InfraParametro(BancoSEI::getInstance());
+	    $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO 2.2.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+	    $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+	    $objInfraMetaBD->setBolValidarIdentificador(true);
+
+	    $this->logar('ADICIONANDO A COLUNA sin_anexar_midia NA TABELA md_cor_servico_postal');
+	    $objInfraMetaBD->adicionarColuna('md_cor_servico_postal', 'sin_anexar_midia', $objInfraMetaBD->tipoTextoFixo(1), 'null');
+	    BancoSEI::getInstance()->executarSql("update md_cor_servico_postal set sin_anexar_midia = 'N'");
+	    $objInfraMetaBD->alterarColuna('md_cor_servico_postal', 'sin_anexar_midia', $objInfraMetaBD->tipoTextoFixo(1), 'not null');
+	    $this->logar('COLUNA sin_anexar_midia criada, valor atualizado para \'N\' e, posteriormente, modificada para NOT NULL');
+
+	    $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+	    BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'2.2.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+
+	    $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 2.2.0 DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
+		}
 
     protected function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas)
     {

@@ -138,6 +138,8 @@ class MdCorContratoRN extends InfraRN
             $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
             foreach ($arr['ar'] as $i => $ar) {
                 $cobrar = isset($arr['cobrar'][$i]) ? $arr['cobrar'][$i] : 'N';
+                $anexarMidia = isset($arr['anexarMidia'][$i]) ? $arr['anexarMidia'][$i] : 'N';
+
                 $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
                 $objMdCorServicoPostalDTO->setNumIdMdCorContrato($objMdCorContratoDTO->getNumIdMdCorContrato());
                 $objMdCorServicoPostalDTO->setStrIdWsCorreios($arr['id'][$i]);
@@ -147,6 +149,7 @@ class MdCorContratoRN extends InfraRN
                 $objMdCorServicoPostalDTO->setStrDescricao($arr['descricao'][$i]);
                 $objMdCorServicoPostalDTO->setStrSinAtivo('S');
                 $objMdCorServicoPostalDTO->setStrSinServicoCobrar($cobrar);
+                $objMdCorServicoPostalDTO->setStrSinAnexarMidia($anexarMidia);
                 $objMdCorContratoDTO->setNumNumeroCnpj(InfraUtil::retirarFormatacao($arr['txtCNPJ']));
                 $objMdCorContratoDTO->setStrUsuario($arr['txtUsuario']);
                 $objMdCorContratoDTO->setStrSenha($arr['txtSenha']);
@@ -244,6 +247,8 @@ class MdCorContratoRN extends InfraRN
             }
             foreach ($arr['id'] as $i => $ar) {
                 $cobrar = isset($arr['cobrar'][$i]) ? $arr['cobrar'][$i] : 'N';
+                $anexarMidia = isset($arr['anexarMidia'][$i]) ? $arr['anexarMidia'][$i] : 'N';
+
                 $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
                 $objMdCorServicoPostalDTO->setNumIdMdCorContrato($arr['hdnIdMdCorContrato']);
                 $objMdCorServicoPostalDTO->setStrIdWsCorreios($arr['id'][$i]);
@@ -251,6 +256,7 @@ class MdCorContratoRN extends InfraRN
                 $objMdCorServicoPostalDTO->setStrNome($arr['nome'][$i]);
                 $objMdCorServicoPostalDTO->setStrDescricao($arr['descricao'][$i]);
                 $objMdCorServicoPostalDTO->setStrSinServicoCobrar($cobrar);
+                $objMdCorServicoPostalDTO->setStrSinAnexarMidia($anexarMidia);
 
                 $arrTipoCorrespondencia = explode('|', $arr['sl_tipo'][$i]);
                 $tipoCorrespondencia = current($arrTipoCorrespondencia);
@@ -292,6 +298,7 @@ class MdCorContratoRN extends InfraRN
                 $arrIdParaAtualizar[$j]->setStrExpedicaoAvisoRecebimento($arrIdServicoPostalPost[$j]->getStrExpedicaoAvisoRecebimento());
                 $arrIdParaAtualizar[$j]->setStrDescricao($arrIdServicoPostalPost[$j]->getStrDescricao());
                 $arrIdParaAtualizar[$j]->setStrSinServicoCobrar($arrIdServicoPostalPost[$j]->getStrSinServicoCobrar());
+                $arrIdParaAtualizar[$j]->setStrSinAnexarMidia($arrIdServicoPostalPost[$j]->getStrSinAnexarMidia());
                 $arrIdParaAtualizar[$j]->setNumIdMdCorTipoCorrespondencia($arrIdServicoPostalPost[$j]->getNumIdMdCorTipoCorrespondencia());
                 $objMdCorServicoPostalRN->alterar($objMdCorServicoPostalDTO);
             }

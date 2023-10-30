@@ -156,6 +156,7 @@ try {
                 $sinAtivo[$i] = $objMdCorServicoPostalDTO->getStrSinAtivo();
 
                 $cobrar = $objMdCorServicoPostalDTO->getStrSinServicoCobrar();
+                $anexarMidia = $objMdCorServicoPostalDTO->getStrSinAnexarMidia();
                 $checked = ' checked="checked"';
                 $readonly = '';
                 if (($_GET['acao'] == 'md_cor_contrato_consultar')) {
@@ -164,6 +165,7 @@ try {
                 $checkedSim = ($ar == 'S') ? $checked : '';
                 $checkedNao = ($ar == 'N' && $objMdCorServicoPostalDTO->getStrSinAr() != 'N') ? $checked : '';
                 $checkedCobrar = ($cobrar == 'S') ? $checked : '';
+                $checkedAnexarMidia = ($anexarMidia == 'S') ? $checked : '';
                 $disabledSinAr = $objMdCorServicoPostalDTO->getStrSinAr() == 'N' ? 'disabled="disabled"' : null;
 
                 $strRd = '<div id="divRdoAr" class="infraDivRadio" align="center" style="width: 100%">';
@@ -192,16 +194,19 @@ try {
                 $strChk .= '    </div>';
                 $strChk .= '</div>';
 
+                $strAnexarMidia = '<div class="infraDivCheckbox" style="text-align: center"> <div class="infraCheckboxDiv"> <input type="checkbox" class="infraCheckboxInput" value="S" name="anexarMidia['.$i.']" id="anexarMidia['.$i.']" '. $checkedAnexarMidia . $readonly .'> <label class="infraCheckboxLabel" for="anexarMidia['.$i.']"></label> </div> </div>';
+
                 $itensTabelaContratoServicos = array(
                     $objMdCorServicoPostalDTO->getStrIdWsCorreios(),
                     $objMdCorServicoPostalDTO->getStrCodigoWsCorreios(),
                     $objMdCorServicoPostalDTO->getStrSinAtivo(),
                     '',
                     $objMdCorServicoPostalDTO->getStrNome(),
-                    '<div style="width:100px;"><select class="infraSelect sl_tipo form-control" name="sl_tipo[' . $i . ']"  onchange="verificaAr(this)">' . json_encode($mdCorTipoCorrespondencia) . '</select></div>',
-                    $strRd,
-                    $strChk,
-                    '<div style="width:130px"><input type="text" class="input-desc form-control" name="descricao[' . $i . ']" value="' . PaginaSEI::tratarHTML($objMdCorServicoPostalDTO->getStrDescricao()) . '" ' . $readonly . '/><input type="hidden" name="id[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrIdWsCorreios() . '"><input class="input-desc" type="hidden" name="codigo[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrCodigoWsCorreios() . '"><input class="input-desc" type="hidden" name="nome[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrNome() . '"><input class="input-desc" type="hidden" value="' . $objMdCorServicoPostalDTO->getNumIdMdCorServicoPostal() . '"></div>',
+                    /*5*/'<div style="width:100px;"><select class="infraSelect sl_tipo form-control" name="sl_tipo[' . $i . ']"  onchange="verificaAr(this)">' . json_encode($mdCorTipoCorrespondencia) . '</select></div>',
+	                /*6*/$strRd,
+	                /*7*/$strChk,
+	                $strAnexarMidia,
+                    '<div style=""><input type="text" class="input-desc form-control" style="width: 100%" name="descricao[' . $i . ']" value="' . PaginaSEI::tratarHTML($objMdCorServicoPostalDTO->getStrDescricao()) . '" ' . $readonly . '/><input type="hidden" name="id[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrIdWsCorreios() . '"><input class="input-desc" type="hidden" name="codigo[' . $i . ']" value="' . trim($objMdCorServicoPostalDTO->getStrCodigoWsCorreios()) . '"><input class="input-desc" type="hidden" name="nome[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrNome() . '"><input class="input-desc" type="hidden" value="' . $objMdCorServicoPostalDTO->getNumIdMdCorServicoPostal() . '"></div>',
                     ''
                 );
 
@@ -209,6 +214,7 @@ try {
                     $itensTabelaContratoServicos[5] = ($objMdCorServicoPostalDTO->getStrExpedicaoAvisoRecebimento() == 'S') ? 'Sim' : 'Não';
                     $itensTabelaContratoServicos[6] = ($cobrar == 'S') ? 'Sim' : 'Não';
                     $itensTabelaContratoServicos[7] = $objMdCorServicoPostalDTO->getStrDescricao();
+	                $itensTabelaContratoServicos[8] = ($anexarMidia == 'S') ? 'Sim' : 'Não';
                 }
 
                 $arrItensTabelaContratoServicos[] = $itensTabelaContratoServicos;
@@ -499,7 +505,8 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                     <th class="infraTh" width="18%" id="tdDescricaoServicoPostal">Serviço Postal</th>
                                     <th class="infraTh" width="12%" align="center" id="tdCheckExpedidoAR">Tipo</th>
                                     <th class="infraTh" width="16%" align="center" id="tdCheckExpedidoAR">Expedido com AR</th>
-                                    <th class="infraTh" width="20%" align="center" id="tdCheckCobrar">Serviço à Cobrar</th>
+                                    <th class="infraTh" width="10%" align="center" id="tdCheckCobrar">Serviço à Cobrar</th>
+                                    <th class="infraTh" width="10%" align="center" id="tdCheckAnexarMidia">Permite Anexar Mídia</th>
                                     <th class="infraTh" width="22%" id="tdTxtDescricao">Descrição Amigável</th>                                    
                                     <th class="infraTh" width="7%" align="center">Ações</th>                                    
                                 </tr>

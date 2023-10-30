@@ -107,6 +107,8 @@ $count = 0;
     $mdCorContatoDTO->retStrCep();
     $mdCorContatoDTO->retStrNomeCidade();
     $mdCorContatoDTO->retStrSiglaUf();
+	$mdCorContatoDTO->retStrExpressaoTratamentoCargo();
+	$mdCorContatoDTO->retStrExpressaoCargo();
     $mdCorContatoDTO->setNumIdContato($objExpSolicDTO->getNumIdContatoDestinatario());
     $mdCorContatoDTO->setNumIdMdCorExpedicaoSolicitada($objExpSolicDTO->getNumIdMdCorExpedicaoSolicitada());
 
@@ -119,6 +121,8 @@ $count = 0;
         $nome .= '<br>' . $arrMdCorContatoDTO->getStrNomeContatoAssociado();
     }
 
+	$tratamento = $arrMdCorContatoDTO->getStrExpressaoTratamentoCargo();
+	$cargo      = $arrMdCorContatoDTO->getStrExpressaoCargo();
     $endereco = ($objExpSolicDTO->getStrSinEnderecoAssociado() != 'S') ? $objExpSolicDTO->getStrEnderecoDestinatario() : $arrMdCorContatoDTO->getStrEndereco();
     $complemento = ($objExpSolicDTO->getStrSinEnderecoAssociado() != 'S') ? $objExpSolicDTO->getStrComplementoDestinatario() : $arrMdCorContatoDTO->getStrComplemento();
     $bairro = ($objExpSolicDTO->getStrSinEnderecoAssociado() != 'S') ? $objExpSolicDTO->getStrBairroDestinatario() : $arrMdCorContatoDTO->getStrBairro();
@@ -199,9 +203,24 @@ $count = 0;
                     <tr>
                         <td class="pd-0">
                             <p><b>DESTINATÁRIO:</b></p>
+	                        <?php if (!empty($tratamento)):?>
+                              <p><?= trim($tratamento) ?></p>
+	                        <?php endif; ?>
+
                             <p><?= trim($nome) ?></p>
-                            <p><?= $endereco ?>, <?= $complemento ?></p>
-                            <p><?= $bairro ?></p>
+
+	                        <?php if( !empty($cargo)): ?>
+                              <p><?= trim($cargo) ?></p>
+	                        <?php endif; ?>
+
+                            <p>
+                              <?php
+                                  $strEndCompleto = trim($endereco);
+                                  $strEndCompleto .= !empty($complemento) ? ', ' . trim($complemento) : '';
+                                  $strEndCompleto .= ', ' . trim($bairro);
+                                  echo $strEndCompleto;
+                              ?>
+                            </p>
                             <p><?= $cep ?> - <?= $cidade . '/' . $uf ?></p>
                             <p style='text-indent: 67px; padding-top: 10px'><b><?= $objExpSolicDTO->getStrCodigoRastreamento() ?></b></p>
                             <p><img src="data:image/png;base64,<?= MdCorExpedicaoSolicitadaINT::montarCodigoBarra($objExpSolicDTO->getStrCodigoRastreamento(), InfraCodigoBarras::$TIPO_CODE128) ?>"/></p>

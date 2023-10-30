@@ -78,7 +78,7 @@ $arrObjMdCorExpedicaoSolicitadaDTO->retTodos();
 
 ?>
 <form id="frmPlpGerada" method="post" action="<?=PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao='. $_GET['acao'] . '&acao_origem=' . $_GET['acao']))?>">
-aaa<div style="float: left">
+<div style="float: left">
     <div style="float: left">
         <div style="float: left">
             <label>Identificador da PLP:</label></br>

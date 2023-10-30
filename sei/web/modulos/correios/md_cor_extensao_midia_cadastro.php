@@ -165,7 +165,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="row linha">
             <div class="col-sm-10 col-md-9 col-lg-7">
                 <label id="lblPrincipal" for="txtPrincipal" accesskey="P" class="infraLabelObrigatorio">
-                    Extensões Permitidas de Arquivos para Gravação em Mídia:
+                    Extensões de Arquivos que somente aceitam Anexar Mídia:
                 </label>
                 <input type="text" id="txtPrincipal" name="txtPrincipal" class="infraText form-control"
                         onkeypress="return infraMascaraTexto(this,event,50);" maxlength="50"

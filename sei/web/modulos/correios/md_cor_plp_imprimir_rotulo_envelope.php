@@ -111,9 +111,8 @@ PaginaSEI::getInstance()->abrirAreaDados();
 $count = 0;
 ?>
 
-<? foreach ($arrObjMdCorExpedicaoSolicitadaDTO
-            as $objExpSolicDTO): ?>
-<?
+<? foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objExpSolicDTO):
+
 $mdCorContatoDTO = new MdCorContatoDTO();
 $mdCorContatoDTO->retNumIdContatoAssociado();
 $mdCorContatoDTO->retStrNomeContatoAssociado();
@@ -123,6 +122,8 @@ $mdCorContatoDTO->retStrBairro();
 $mdCorContatoDTO->retStrCep();
 $mdCorContatoDTO->retStrNomeCidade();
 $mdCorContatoDTO->retStrSiglaUf();
+$mdCorContatoDTO->retStrExpressaoTratamentoCargo();
+$mdCorContatoDTO->retStrExpressaoCargo();
 $mdCorContatoDTO->setNumIdContato($objExpSolicDTO->getNumIdContatoDestinatario());
 $mdCorContatoDTO->setNumIdMdCorExpedicaoSolicitada($objExpSolicDTO->getNumIdMdCorExpedicaoSolicitada());
 
@@ -135,6 +136,8 @@ if (!empty($arrMdCorContatoDTO->getStrNomeContatoAssociado()) && ($objExpSolicDT
     $nome .= '<br>' . $arrMdCorContatoDTO->getStrNomeContatoAssociado();
 }
 
+$tratamento = $arrMdCorContatoDTO->getStrExpressaoTratamentoCargo();
+$cargo      = $arrMdCorContatoDTO->getStrExpressaoCargo();
 $endereco = ($objExpSolicDTO->getStrSinEnderecoAssociado() != 'S') ? $objExpSolicDTO->getStrEnderecoDestinatario() : $arrMdCorContatoDTO->getStrEndereco();
 $complemento = ($objExpSolicDTO->getStrSinEnderecoAssociado() != 'S') ? $objExpSolicDTO->getStrComplementoDestinatario() : $arrMdCorContatoDTO->getStrComplemento();
 $bairro = ($objExpSolicDTO->getStrSinEnderecoAssociado() != 'S') ? $objExpSolicDTO->getStrBairroDestinatario() : $arrMdCorContatoDTO->getStrBairro();
@@ -180,9 +183,7 @@ if ($count == 2) {
 }
 ?>
 <table style="width: 500px;">
-    <?
-    if ($objExpSolicDTO->getStrTipoRotuloImpressaoObjeto() == MdCorObjetoRN::$ROTULO_RESUMIDO):
-    ?>
+    <?php if ($objExpSolicDTO->getStrTipoRotuloImpressaoObjeto() == MdCorObjetoRN::$ROTULO_RESUMIDO): ?>
     <tr>
         <td>
             <div style="margin-top:<?= str_replace(',', '.', $objExpSolicDTO->getDblMargemSuperiorImpressaoObjeto()) ?>cm;display: block;width: 450px;margin-left: <?= str_replace(',', '.', $objExpSolicDTO->getDblMargemEsquerdaImpressaoObjeto()) ?>cm;margin-bottom: 25px;height: 8.4cm;<?= $style ?> ">
@@ -243,10 +244,24 @@ if ($count == 2) {
                              style="height: 1.8cm;width: 4cm;"/>
                     </div>
                     <div style="width: 229px;position: relative;top: -7px;">
+                        <?php if (!empty($tratamento)):?>
+                            <p style="text-align: left" class="font-8"><?= trim($tratamento) ?></p>
+                        <?php endif; ?>
 
                         <p style="text-align: left" class="font-8"><?= trim($nome) ?></p>
-                        <p style="text-align: left" class="font-8"><?= $endereco ?>, <?= $complemento ?></p>
-                        <p style="text-align: left" class="font-8"><?= $bairro ?></p>
+
+                        <?php if( !empty($cargo)): ?>
+                            <p style="text-align: left" class="font-8"><?= trim($cargo) ?></p>
+                        <?php endif; ?>
+
+                        <p style="text-align: left" class="font-8">
+                          <?php
+                              $strEndCompleto = trim($endereco);
+                              $strEndCompleto .= !empty($complemento) ? ', ' . trim($complemento) : '';
+                              $strEndCompleto .= ', ' . trim($bairro);
+                              echo $strEndCompleto;
+                          ?>
+                        </p>
                         <p style="text-align: left" class="font-8"><b><?= $cep ?></b> <?= $cidade . '-' . $uf ?></p>
                     </div>
                 </div>
@@ -264,7 +279,7 @@ if ($count == 2) {
                 </div>
             </div>
 
-            <? else: ?>
+    <? else: ?>
 
                 <div style="display: block;width: 400px;margin-left: <?= str_replace(',', '.', $objExpSolicDTO->getDblMargemEsquerdaImpressaoObjeto()) ?>cm;margin-top:0.5cm;">
                     <div style="max-width: 10.5cm; width: 10.5cm; padding: 0.2cm 0.5cm;border: 1px solid #000;">
@@ -319,11 +334,26 @@ if ($count == 2) {
                             </div>
                         </div>
                         <div style="width: 100%;line-height: 1.2;">
+	                        <?php if (!empty($tratamento)): ?>
+                              <p style="text-align: left" class="font-11"><?= trim($tratamento) ?></p>
+	                        <?php endif; ?>
+
                             <p style="text-align: left" class="font-11"><?= trim($nome) ?></p>
-                            <p style="text-align: left" class="font-11"><?= $endereco ?>
-                                , <?= $objExpSolicDTO->getStrComplementoDestinatario() ?></p>
-                            <p style="text-align: left" class="font-11"><?= $bairro ?></p>
-                            <p style="text-align: left" class="font-11"><b><?= $cep ?></b> <?= $cidade . '-' . $uf ?>
+
+	                        <?php if( !empty($cargo)): ?>
+                              <p style="text-align: left" class="font-11"><?= trim($cargo) ?></p>
+	                        <?php endif; ?>
+
+                            <p style="text-align: left" class="font-11">
+                                <?php
+                                    $strEndCompleto = trim($endereco);
+                                    $strEndCompleto .= !empty($objExpSolicDTO->getStrComplementoDestinatario()) ? ', ' . trim($objExpSolicDTO->getStrComplementoDestinatario()) : '';
+                                    $strEndCompleto .= ', ' . trim($bairro);
+                                    echo $strEndCompleto;
+                                ?>
+                            </p>
+                            <p style="text-align: left" class="font-11">
+                                <b><?= $cep ?></b> <?= $cidade . '-' . $uf ?>
                             </p>
                         </div>
                         <div>
