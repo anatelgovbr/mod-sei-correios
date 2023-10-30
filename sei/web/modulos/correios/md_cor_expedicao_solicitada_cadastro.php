@@ -23,11 +23,15 @@ try {
     $strLinkAjaxTiposMidia = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_tipo_midia_listar&acao_origem=' . $_GET['acao']);
     $strLinkAjaxFormatoExpedicaoApenasMidia = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_formato_expedicao_apenas_midia&acao_origem=' . $_GET['acao']);
     $strLinkValidaoDestinatarioExpedicaoSolicitada = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_validar_destinatario_solicitacao_expedicao');
+    $strLinkAjaxChangeServicoPostal = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_change_serv_postal');
+	$strLinkAjaxValidarExtArqExt = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_valida_arq_ext');
 
     $chkNecessitaRecebimentoAR = "checked";
     $chkPossuiAnexo = "";
+    $chkPossuiAnexoDisable = null;
     $id_doc = $_GET['id_doc'];
 	$id_destinatario_aux = null;
+	$isPermiteGravarMidia = 'N';
 
     switch ($_GET['acao']) {
 
@@ -417,6 +421,7 @@ try {
             break;
 
         case 'md_cor_expedicao_solicitada_cadastrar':
+	        $chkPossuiAnexoDisable = 'disabled';
 
             if (isset($_POST['id_doc'])) {
                 try {
@@ -615,7 +620,12 @@ try {
                 $unidade_sol = '';
                 $id_num_unidade_solic = SessaoSei::getInstance()->getNumIdUnidadeAtual();
                 $id_num_servico_postal = 'null';
+
                 require_once 'md_cor_expedicao_solicitada_cadastro_validar_unid_exp_serv.php';
+
+	            $isPermiteGravarMidia = $id_num_servico_postal != 'null'
+                                    ? ( MdCorServicoPostalINT::getInfoServicoPostalPorId($id_num_servico_postal) )->getStrSinAnexarMidia() ?? 'N'
+	                                : 'N';
 
                 //obtendo informações do contato
                 $objContatoDTO = new ContatoDTO();
@@ -659,15 +669,17 @@ try {
 
                 $nome_destinatario_associado = '';
                 //verifica se tem contato associado e se o contato associado é PJ
-                if ($objContatoDTO->getStrSinEnderecoAssociado() == 'S' && $objContatoDTO->getNumIdContatoAssociado() != $objContatoDTO->getNumIdContato()) {
-                    $objContatoAssociadoDTO = new ContatoDTO();
-                    $objContatoAssociadoDTO->retTodos(true);
-                    $objContatoAssociadoDTO->setNumIdContato($idContatoAssociado);
-                    $objContatoAssociadoDTO = $objContatoRN->consultarRN0324($objContatoAssociadoDTO);
+                if ( !is_null( $idContatoAssociado ) ) {
+	                $objContatoAssociadoDTO = new ContatoDTO();
+	                $objContatoAssociadoDTO->retTodos(true);
+	                $objContatoAssociadoDTO->setNumIdContato($idContatoAssociado);
+	                $objContatoAssociadoDTO = $objContatoRN->consultarRN0324($objContatoAssociadoDTO);
 
-                    if ($objContatoAssociadoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_JURIDICA) {
-                        //$nome_destinatario .= " ( " . $objContatoAssociadoDTO->getStrNome() . " )";
-                        $nome_destinatario_associado = $objContatoDTO->getStrNomeContatoAssociado();
+	                //captura o nome do associado caso a Natureza seja Pessoa Juridica
+	                if ( $objContatoAssociadoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_JURIDICA ) $nome_destinatario_associado = $objContatoAssociadoDTO->getStrNomeContatoAssociado();
+
+	                //captura o endereço do associado caso esteja sinalizado o uso do seu endereço
+	                if ( $objContatoDTO->getStrSinEnderecoAssociado() == 'S' ) {
                         $endereco_destinatario = $objContatoAssociadoDTO->getStrEndereco();
                         $complemento_destinatario = $objContatoAssociadoDTO->getStrComplemento();
                         $bairro_destinatario = $objContatoAssociadoDTO->getStrBairro();
@@ -816,28 +828,12 @@ try {
             $strUrlDocumento = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&id_documento=' . $dto->getDblIdDocumentoPrincipal());
             $descricao_documento_principal = $nomeTipoDocumento . ' ' . $numeroDoc . ' <a class="protocoloNormal" style="font-size: 1.0em !important; font-size:1em" href="' . $strUrlDocumento . '" target="_blank">(' . $numeroProtocoloFormatado . ')</a>';
 
-
             //obtendo informações do destinatario
-            /*
-            $objMdCorContatoDTO = new MdCorContatoDTO();
-            $objMdCorContatoDTO->retTodos();
-
-            $objMdCorContatoDTO->setNumIdContato($dto->getNumIdContatoDestinatario());
-            $objMdCorContatoDTO->setNumIdMdCorExpedicaoSolicitada($dto->getNumIdMdCorExpedicaoSolicitada());
-
-            $objMdCorContatoRN = new MdCorContatoRN();
-
-            $arrObjMdCorContatoDTO = $objMdCorContatoRN->consultar($objMdCorContatoDTO);
-            */
-
 	        $arrObjMdCorContato = MdCorContatoINT::_isDadoAlterado( $dto->getNumIdContatoDestinatario() , $dto->getNumIdMdCorExpedicaoSolicitada() );
 
 	        $arrObjMdCorContatoDTO = $arrObjMdCorContato['objMdCorContato'];
 
             $id_destinatario = $arrObjMdCorContatoDTO->getNumIdContato();
-
-            //criado para ser usado na modal que atualiza dados do contato ou se houve mudança no contato pelo CORE do SEI
-            $id_destinatario_aux = $arrObjMdCorContato['isRegAlterado'] ? $id_destinatario : null;
 
             $nome_destinatario = $arrObjMdCorContatoDTO->getStrNome();
 
@@ -879,6 +875,15 @@ try {
 
                         //Caso seja ALTERACAO da solicitacao de expedicao
                         $strSelectServicoPostal = MdCorMapUnidServicoINT::montarSelectIdMdCorMapUnidServico(null, null, $dto->getNumIdMdCorServicoPostal(), $dto->getNumIdUnidade(), true);
+
+	                    $isPermiteGravarMidia = ( MdCorServicoPostalINT::getInfoServicoPostalPorId( $dto->getNumIdMdCorServicoPostal() ) )->getStrSinAnexarMidia() ?? 'N';
+
+                        // Se teve mudança no registro do contato, exibe aviso para o usuario
+	                    if ( $arrObjMdCorContato['isRegAlterado'] ) {
+		                    $id_destinatario_aux = $id_destinatario;
+		                    $msg  = 'Os dados do Contato indicado abaixo como Destinatário foram alterados entre a solicitação e o retorno nessa tela de Alteração. Para replicar as alterações nesta Solicitação de Expedição acione o botão "Alterar Solicitação". Caso não queira replicar as alterações no Contato acione o botão "Fechar".';
+		                    PaginaSEI::getInstance()->adicionarMensagem( $msg , InfraPagina::$TIPO_MSG_AVISO );
+	                    }
 
                         if ($dto) {
                             if ($dto->getStrSinDevolvido() == "S") {
@@ -961,7 +966,7 @@ if ($_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_
             <div class="col-12 col-sm-12 col-md-6 col-lg-10 col-xl-10">
                 <div class="form-group">
                     <label class="infraLabelObrigatorio">Serviço Postal:</label>
-                    <select class="infraSelect form-control" name="selServicoPostal" id="selServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                    <select class="infraSelect form-control" name="selServicoPostal" id="selServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>" onchange="gerenciarDadosServPostal(this)">
                         <?= $strSelectServicoPostal ?>
                     </select>
                 </div>
@@ -1077,11 +1082,10 @@ if ($_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_
                                     <label class="infraLabelCheck" for="chkDocumentoPossuiAnexo">
                                         <input type="checkbox" class="infraCheckbox form-control"
                                                id="chkDocumentoPossuiAnexo" onchange="marcarChkDocumentoPossuiAnexo()"
-                                            <?php echo $chkPossuiAnexo; ?>
+                                               <?php echo $chkPossuiAnexo; ?>
                                                name="chkDocumentoPossuiAnexo"
-                                               tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">O
-                                        Documento a ser
-                                        expedido possui Anexos
+                                               tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>" <?= $chkPossuiAnexoDisable ?> >
+                                            O Documento a ser expedido possui Anexos
                                     </label>
                                 </div>
                             </div>

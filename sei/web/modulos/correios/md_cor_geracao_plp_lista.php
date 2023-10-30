@@ -159,6 +159,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
                                         $strResultado .= '<th class="infraTh" width="20%">Processo</th>';
                                         $strResultado .= '<th class="infraTh">Destinatário</th>';
                                         $strResultado .= '<th class="infraTh" width="5%">Anexo</th>';
+                                        $strResultado .= '<th class="infraTh" width="5%">Gravação em Mídia</th>';
                                         $strResultado .= '<th class="infraTh" width="10%">Ação</th>';
                                         $strResultado .= '</tr>';
 
@@ -175,6 +176,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
                                             $strPlpTr .= '<td style="text-align: center;">' . $dadosTabela['processo'] . '</td>';
                                             $strPlpTr .= '<td>' . $dadosTabela['destinatario'] . '</td>';
                                             $strPlpTr .= '<td style="text-align: center;">' . $dadosTabela['qtdAnexo'] . '</td>';
+	                                        $strPlpTr .= '<td style="text-align: center;">' . $dadosTabela['formatoMidia'] . '</td>';
                                             $url = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_plp_selecionar_tipo_objeto&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_expedicao_solicitada=' . $dadosTabela['IdMdCorExpedicaoSolicitada']);
                                             $strPlpTr .= '<td style="text-align: center;"><a onclick="abrirModalSelecionarTipoObjeto(\'' . $url . '\')"><img src="modulos/correios/imagens/svg/enviar_envelope.svg?'.Icone::VERSAO.'" title="Selecionar Formato de Expedição do Objeto" alt="Selecionar Formato de Expedição do Objeto" class="infraImgAcoes"/></a>';
                                             $strPlpTr .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_expedicao_solicitada=' . $dadosTabela['IdMdCorExpedicaoSolicitada'])) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/consultar.svg" title="Consultar Solicitação de Expedição" alt="Consultar Solicitação de Expedição" class="infraImg" /></a>';

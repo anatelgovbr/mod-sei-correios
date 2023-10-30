@@ -54,6 +54,10 @@ class MdCorServicoPostalDTO extends InfraDTO {
                                    'sin_servico_cobrar ');
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+                                    'SinAnexarMidia',
+                                    'sin_anexar_midia');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
       'SinAtivo',
       'sin_ativo');
 

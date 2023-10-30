@@ -86,5 +86,47 @@ class MdCorServicoPostalINT extends InfraINT {
         return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorServicoPostalDTO, 'IdMdCorServicoPostal', 'Nome');
     }
 
+
+  public static function getInfoServicoPostalPorId( $id ){
+  	$objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
+	  $objMdCorServicoPostalRN  = new MdCorServicoPostalRN();
+
+	  $objMdCorServicoPostalDTO->setNumIdMdCorServicoPostal( $id );
+	  $objMdCorServicoPostalDTO->retStrSinAnexarMidia();
+	  $objMdCorServicoPostalDTO->retStrSinServicoCobrar();
+	  $objMdCorServicoPostalDTO->retStrNome();
+	  $objMdCorServicoPostalDTO->retStrDescricao();
+
+	  $objMdCorServicoPostalDTO = $objMdCorServicoPostalRN->consultar( $objMdCorServicoPostalDTO );
+
+	  return $objMdCorServicoPostalDTO;
+  }
+
+  public static function validaArqExt($arrParams){
+  	$arrIdsProt            = ( array_key_exists('arrIdsProt',$arrParams) && !empty( $arrParams['arrIdsProt'] ) )  ? $arrParams['arrIdsProt'] : null;
+	  $arrDescDoc            = ( array_key_exists('arrDescDoc',$arrParams ) && !empty( $arrParams['arrDescDoc'] ) ) ? $arrParams['arrDescDoc'] : null;
+	  $strPermiteGravarMidia = ( array_key_exists('strPermiteGravarMidia',$arrParams ) && !empty( $arrParams['strPermiteGravarMidia'] ) ) ? $arrParams['strPermiteGravarMidia'] : null;
+	  $arrExibir             = [];
+	  $arrNaoExibir          = [];
+
+	  foreach ( $arrIdsProt as $k => $prot ) {
+		  $somenteMidia = filter_var( MdCorExpedicaoSolicitadaProtocoloAnexoINT::verificarAnexoSomenteMidia($prot , false) ,FILTER_VALIDATE_BOOLEAN );
+
+		  if ( $strPermiteGravarMidia == 'N' ) {
+		  	if ( $somenteMidia ) {
+				  array_push($arrNaoExibir ,$prot.'#'.$arrDescDoc[$k] );
+			  } else {
+				  array_push($arrExibir ,$prot.'#'.$arrDescDoc[$k] );
+			  }
+		  } else {
+			  array_push($arrExibir ,$prot.'#'.$arrDescDoc[$k] );
+		  }
+	  }
+	  $strListaExibir    = '<Exibir>'.implode(';' ,$arrExibir ).'</Exibir>';
+	  $strListaNaoExibir = !empty($arrNaoExibir) ? '<NaoExibir>'.implode(';' ,$arrNaoExibir ).'</NaoExibir>' : '';
+
+	  return $strListaExibir . $strListaNaoExibir;
+  }
+
 }
 ?>

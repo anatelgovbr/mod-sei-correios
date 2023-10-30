@@ -67,15 +67,41 @@ class MdCorContatoINT extends InfraINT
 
 	public static function _isDadoAlterado( $idContato , $idMdCorExpedSolic ){
 		try {
-			$arrAtributos    = ['Nome','Endereco','Cep','Complemento','Bairro','StaNatureza','NomeCidade','SiglaUf','StaGenero','IdTipoContato','ExpressaoTratamentoCargo','ExpressaoCargo','NomeTipoContato'];
-			$objContato      = self::getInfoContato($idContato);
-			$objMdCorContato = self::getinfoMdCorContato($idContato, $idMdCorExpedSolic);
+			$arrAtributos       = ['Endereco','Cep','Complemento','Bairro','NomeCidade','SiglaUf'];
+			$objContato         = self::getInfoContato($idContato);
+			$nmContatoPrincipal = $objContato->getStrNome();
+			$isContatoAssociado = false;
+
+			if ( $objContato->getStrSinEnderecoAssociado() == 'S' ) {
+				$idContato          = $objContato->getNumIdContatoAssociado();
+				$isContatoAssociado = true;
+
+				//busca novamente dados do contato, mas sera do associado que sera usado nas consultas abaixo
+				$objContato         = self::getInfoContato($idContato);
+			}
+			$objMdCorContato = self::getinfoMdCorContato( $idContato, $idMdCorExpedSolic, $isContatoAssociado );
 
 			$isTeveRegistroAlterado = false;
 			foreach ( $arrAtributos as $atributo ) {
 				if ( $objContato->get($atributo) != $objMdCorContato->get($atributo) ) {
 					$isTeveRegistroAlterado = true;
 					$objMdCorContato->set($atributo,$objContato->get($atributo));
+				}
+			}
+
+			if ( $isContatoAssociado ) {
+				if (
+					$objContato->getStrNome() != $objMdCorContato->getStrNomeContatoAssociado()
+					|| $nmContatoPrincipal != $objMdCorContato->getStrNome()
+				) {
+					$objMdCorContato->setStrNomeContatoAssociado($objContato->getStrNome());
+					$objMdCorContato->setStrNome($nmContatoPrincipal);
+					$isTeveRegistroAlterado = true;
+				}
+			} else {
+				if ( $objContato->getStrNome() != $objMdCorContato->getStrNome() ) {
+					$objMdCorContato->setStrNome($objContato->getStrNome());
+					$isTeveRegistroAlterado = true;
 				}
 			}
 
@@ -95,11 +121,15 @@ class MdCorContatoINT extends InfraINT
 		return $objContatoRN->consultarRN0324($objContatoDTO);
 	}
 
-	private static function getinfoMdCorContato( $idContato , $idMdCorExpedSolic ){
+	private static function getinfoMdCorContato( $idContato , $idMdCorExpedSolic , $isContatoAssociado ){
 		$objMdCorContatoDTO = new MdCorContatoDTO();
 		$objMdCorContatoRN  = new MdCorContatoRN();
 
-		$objMdCorContatoDTO->setNumIdContato($idContato);
+		if ( $isContatoAssociado )
+			$objMdCorContatoDTO->setNumIdContatoAssociado($idContato);
+		else
+			$objMdCorContatoDTO->setNumIdContato($idContato);
+
 		$objMdCorContatoDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedSolic);
 		$objMdCorContatoDTO->retTodos(true);
 

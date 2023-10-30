@@ -156,7 +156,9 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
                     $itemDTO->setStrNomeCidade($arrObjContatoDTO->getStrNomeCidadeContatoAssociado());
                     $itemDTO->setStrSiglaUf($arrObjContatoDTO->getStrSiglaUfContatoAssociado());
                 } else {
-                    $itemDTO->setNumIdContatoAssociado($arrObjContatoDTO->getNumIdContato());
+                    $itemDTO->setNumIdContatoAssociado($arrObjContatoDTO->getNumIdContatoAssociado());
+	                  $itemDTO->setStrNomeContatoAssociado($arrObjContatoDTO->getStrNomeContatoAssociado());
+	                  $itemDTO->setStrStaNaturezaContatoAssociado($arrObjContatoDTO->getStrStaNaturezaContatoAssociado());
                     $itemDTO->setStrEndereco($arrObjContatoDTO->getStrEndereco());
                     $itemDTO->setStrComplemento($arrObjContatoDTO->getStrComplemento());
                     $itemDTO->setStrBairro($arrObjContatoDTO->getStrBairro());
@@ -612,17 +614,18 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             $strDestinatario = "";
 
             $strDestinatario .= mb_strtoupper($objMdCorContatoDTO->getStrNome(), 'ISO-8859-1') . "<br />";
-            if ($objMdCorContatoDTO->getStrSinEnderecoAssociado() == 'S') {
+            $strDestinatario .= !empty($objMdCorContatoDTO->getStrExpressaoCargo()) ? $objMdCorContatoDTO->getStrExpressaoCargo() . "<br />" : '';
+            if ( !empty($objMdCorContatoDTO->getStrNomeContatoAssociado()) && $objMdCorContatoDTO->getNumIdContato() != $objMdCorContatoDTO->getNumIdContatoAssociado() ) {
                 $strDestinatario .= $objMdCorContatoDTO->getStrNomeContatoAssociado() . "<br />";
             }
-            $strDestinatario .= $objMdCorContatoDTO->getStrNomeTipoContato() . "<br />";
-            if ($objMdCorContatoDTO->getStrSinEnderecoAssociado() == 'S') {
-                $strDestinatario .= $objMdCorContatoDTO->getStrNomeCidadeContatoAssociado() . "/";
-                $strDestinatario .= $objMdCorContatoDTO->getStrSiglaUfContatoAssociado() . "<br />";
-            } else {
-                $strDestinatario .= $objMdCorContatoDTO->getStrNomeCidade() . "/";
-                $strDestinatario .= $objMdCorContatoDTO->getStrSiglaUf() . "<br />";
-            }
+            //$strDestinatario .= $objMdCorContatoDTO->getStrNomeTipoContato() . "<br />"; #removido para padronizar os dados do destinatario
+	          // monta a parte do endereco
+	          $strEndereco = $objMdCorContatoDTO->getStrEndereco();
+            $strCompl    = $objMdCorContatoDTO->getStrComplemento() ? ', ' . $objMdCorContatoDTO->getStrComplemento() : '';
+            $strBairro   = $objMdCorContatoDTO->getStrBairro();
+
+	          $strDestinatario .= "$strEndereco $strCompl , $strBairro <br />";
+	          $strDestinatario .= "{$objMdCorContatoDTO->getStrCep()} - {$objMdCorContatoDTO->getStrNomeCidade()}/{$objMdCorContatoDTO->getStrSiglaUf()} <br />";
 
             $id = $objItemDto->getNumIdMdCorExpedicaoSolicitada();
             $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['IdMdCorExpedicaoSolicitada'] = $id;
@@ -639,6 +642,16 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['destinatario'] = $strDestinatario;
             //Retirando o documento principal, para que não seja identificado como anexo
             $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['qtdAnexo'] = $arrAnexo[$id] - 1;
+
+            /* Verifica se existe alguma solicitacao em Midia para cada expedicao */
+	          $objMdCorExpedicaoFormatoDTO = new MdCorExpedicaoFormatoDTO();
+	          $objMdCorExpedicaoFormatoDTO->setNumIdMdCorExpedicaoSolicitada($id);
+	          $objMdCorExpedicaoFormatoDTO->setStrFormaExpedicao('M');
+
+	          $qtd = ( new MdCorExpedicaoFormatoRN() )->contar( $objMdCorExpedicaoFormatoDTO );
+
+	          if ( $qtd > 0 ) $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['formatoMidia'] = 'Sim';
+	          else $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['formatoMidia'] = 'Não';
 
             $contadorFor++;
 

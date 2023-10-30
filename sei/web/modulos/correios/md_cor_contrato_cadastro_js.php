@@ -1,18 +1,14 @@
 <script type="text/javascript">
     var comboTipoCorrepondencia = '<?php echo json_encode($mdCorTipoCorrespondencia);?>'
-    var tabelaDinamicaEditar = <? echo ($_GET['acao'] == 'md_cor_contrato_alterar' || $_GET['acao'] == 'md_cor_contrato_cadastrar') ? 'true' : 'false';  ?>;
+    var tabelaDinamicaEditar = <?= in_array( $_GET['acao'] , ['md_cor_contrato_alterar','md_cor_contrato_cadastrar'] ) ? 'true' : 'false'?>;
 
-    var tabelaDinamicaRemover = <? echo ($_GET['acao'] == 'md_cor_contrato_alterar') ? 'true' : 'false'; ?>;
+    var tabelaDinamicaRemover = <?= in_array( $_GET['acao'] , ['md_cor_contrato_alterar','md_cor_contrato_cadastrar'] ) ? 'true' : 'false' ?>;
 
-    /*
-    Variáveis usadas para montar o array de servições desativados
-     */
+    /* Variáveis usadas para montar o array de servições desativados */
     var arrLinhasDesativadas = Array();
     var arrLinhasReativadas = Array();
     var contadorDesativadas = 0;
     var contadorReativadas = 0;
-    /*
-     */
 
     <? require_once('md_cor_contrato_cadastro_inicializacao.php');?>
 
@@ -60,7 +56,8 @@
             rowRdN = '<div class="infraRadioDiv"><input class="infraRadioInput input-ar" type="radio" value="N" name="ar[' + indice + ']" id="arN[' + indice + ']" checked="checked"><label class="infraRadioLabel" for="arN['+ indice +']"></label></div><label id="lblArN['+ indice +']" for="arN['+ indice +']" class="infraLabelRadio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Não</label>';
             row.check = divIniRadio + rowRdS + rowRdN + '</div>';
             row.cobrar = divIniCheck + '<input class="input-cobrar infraCheckboxInput" type="checkbox" value="S" name="cobrar[' + indice + ']" id="cobrar[' + indice + ']"><label class="infraCheckboxLabel " for="cobrar['+ indice +']"></label></div></div>';
-            row.txt = '<div style="width:130px"><input class="input-desc form-control" type="text" name="descricao[' + indice + ']" value=""><input type="hidden" name="id[' + indice + ']" value="' + $(val).find('Id').text() + '"><input class="input-desc" type="hidden" name="codigo[' + indice + ']" value="' + $(val).find('Codigo').text() + '"><input class="input-desc" type="hidden" name="nome[' + indice + ']" value="' + $(val).find('Descricao').text() + '"></div>';
+            row.anexarMidia = '<div class="infraDivCheckbox" style="text-align: center"> <div class="infraCheckboxDiv"> <input type="checkbox" class="infraCheckboxInput" value="S" name="anexarMidia['+indice+']" id="anexarMidia['+indice+']"> <label class="infraCheckboxLabel" for="anexarMidia['+indice+']"></label> </div> </div>';
+            row.txt = '<div style=""><input type="text" class="input-desc form-control" style="width: 100%" name="descricao[' + indice + ']" value=""><input type="hidden" name="id[' + indice + ']" value="' + $(val).find('Id').text() + '"><input class="input-desc" type="hidden" name="codigo[' + indice + ']" value="' + $(val).find('Codigo').text() + '"><input class="input-desc" type="hidden" name="nome[' + indice + ']" value="' + $(val).find('Descricao').text() + '"></div>';
             row.acoes = 'Ações';
             var bolContratoServicosCustomizado = 'hdnCustomizado';
 
@@ -71,7 +68,7 @@
     function receberContratoServicos(row, ContratoServicosCustomizado) {
         var qtdContratoServicosIndicados = objTabelaContratoServicos.tbl.rows.length;
         objTabelaContratoServicos.exibirMensagens = false;
-        objTabelaContratoServicos.adicionar([row.id, row.codigo, row.ar, row.desc, row.nome, row.tipo, row.check, row.cobrar, row.txt, ''], false);
+        objTabelaContratoServicos.adicionar([row.id, row.codigo, row.ar, row.desc, row.nome, row.tipo, row.check, row.cobrar, row.anexarMidia, row.txt, ''], false);
         infraEfeitoTabelas();
     }
 
@@ -137,10 +134,10 @@
         var tabela = document.getElementById('tbContratoServicos');
         var arrAux = Array();
 
-        for (i = 1; i < tabela.rows.length; i++) {
+        for (let i = 1; i < tabela.rows.length; i++) {
 
             var linha = tabela.rows[i];
-            var coluna = tabela.rows[i].cells[9];
+            var coluna = tabela.rows[i].cells[10];
             var dirImg = '<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>';
 
 
