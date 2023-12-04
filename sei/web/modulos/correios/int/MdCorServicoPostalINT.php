@@ -103,7 +103,7 @@ class MdCorServicoPostalINT extends InfraINT {
   }
 
   public static function validaArqExt($arrParams){
-  	$arrIdsProt            = ( array_key_exists('arrIdsProt',$arrParams) && !empty( $arrParams['arrIdsProt'] ) )  ? $arrParams['arrIdsProt'] : null;
+	  $arrIdsProt            = ( array_key_exists('arrIdsProt',$arrParams) && !empty( $arrParams['arrIdsProt'] ) )  ? $arrParams['arrIdsProt'] : null;
 	  $arrDescDoc            = ( array_key_exists('arrDescDoc',$arrParams ) && !empty( $arrParams['arrDescDoc'] ) ) ? $arrParams['arrDescDoc'] : null;
 	  $strPermiteGravarMidia = ( array_key_exists('strPermiteGravarMidia',$arrParams ) && !empty( $arrParams['strPermiteGravarMidia'] ) ) ? $arrParams['strPermiteGravarMidia'] : null;
 	  $arrExibir             = [];

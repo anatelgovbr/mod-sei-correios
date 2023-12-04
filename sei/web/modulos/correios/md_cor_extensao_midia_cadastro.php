@@ -45,9 +45,10 @@ try {
                     $objMdCorExtensaoMidiaRN = new MdCorExtensaoMidiaRN();
 
                     $arrObjMdCorExtensaoMidiaDTO = $objMdCorExtensaoMidiaRN->listar($objMdCorExtensaoMidiaDTO);
-
+                    $bolMinimoUmRegistro = false;
                     foreach ($arrObjMdCorExtensaoMidiaDTO as $chave => $objMdCorExtensaoMidiaDTO) {
                         if (in_array($objMdCorExtensaoMidiaDTO->getNumIdArquivoExtensao(), $arrValuesExtensoes)) {
+	                        $bolMinimoUmRegistro = true;
                             $chaveArray = array_search($objMdCorExtensaoMidiaDTO->getNumIdArquivoExtensao(), $arrValuesExtensoes);
                             unset($arrObjMdCorExtensaoMidiaDTO[$chave]);
                             unset($arrValuesExtensoes[$chaveArray]);
@@ -56,8 +57,8 @@ try {
                     $objMdCorExtensaoMidiaRN->excluir($arrObjMdCorExtensaoMidiaDTO);
 
                     //$objMdCorExtensaoMidiaRN->excluir($objMdCorExtensaoMidiaRN->listar($objMdCorExtensaoMidiaDTO));
-                    if (!$arrValuesExtensoes) {
-                        $objInfraException->adicionarValidacao('Informe pelo menos uma extensão para documento principal.');
+                    if (!$bolMinimoUmRegistro) {
+	                    $objInfraException->adicionarValidacao('Informe pelo menos uma extensão que somente aceite Anexar Mídia.');
                     }
                     $objInfraException->lancarValidacoes();
                     $objMdCorExtensaoMidiaRN = new MdCorExtensaoMidiaRN();
