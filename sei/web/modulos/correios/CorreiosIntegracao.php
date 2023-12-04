@@ -657,27 +657,27 @@ class CorreiosIntegracao extends SeiIntegracao
                 }
                 break;
 
-		        case 'md_cor_change_serv_postal':
-			          $xml = "<Documento>";
-		        	  if ( !empty( $_POST['idServPostal'] ) ) {
-				          $objDTO = MdCorServicoPostalINT::getInfoServicoPostalPorId( $_POST['idServPostal'] );
-				          if ( $objDTO ) {
-					          if ( $objDTO->getStrSinAnexarMidia() == 'S' ) {
-						          $xml .= "<Retorno>S</Retorno>";
-				            } else {
-						          $xml .= "<Retorno>N</Retorno>";
-					          }
-				          }
-			          }
-			          $xml .= "</Documento>";
-		    	      break;
+	        case 'md_cor_change_serv_postal':
+		        $xml = "<Documento>";
+	            if ( !empty( $_POST['idServPostal'] ) ) {
+			        $objDTO = MdCorServicoPostalINT::getInfoServicoPostalPorId( $_POST['idServPostal'] );
+			        if ( $objDTO ) {
+				        if ( $objDTO->getStrSinAnexarMidia() == 'S' ) {
+				         $xml .= "<Retorno>S</Retorno>";
+			          } else {
+				         $xml .= "<Retorno>N</Retorno>";
+				        }
+			        }
+		        }
+		        $xml .= "</Documento>";
+	            break;
 
-		        case 'md_cor_valida_arq_ext':
-		        	  $xml = "<Documento>";
-		        	  $xml .= MdCorServicoPostalINT::validaArqExt( $_POST );
-			          $xml .= "</Documento>";
+	        case 'md_cor_valida_arq_ext':
+	            $xml = "<Documento>";
+	            $xml .= MdCorServicoPostalINT::validaArqExt( $_POST );
+		        $xml .= "</Documento>";
 
-		        	  break;
+	            break;
         }
 
         return $xml;

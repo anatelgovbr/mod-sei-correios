@@ -303,6 +303,10 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             $contatoDTO->setNumIdContato($id_contato);
             $contatoDTO = $contatoRN->consultarRN0324($contatoDTO);
 
+            if ( is_null($contatoDTO) ) {
+	              throw new InfraException('O Destinatário deste documento está com cadastro de Contato desativado. \n\nAcesse o botão de ação \"Consultar/Alterar Documento\" sobre o documento para trocar o Contato indicado como Destinatário por um contato ativo.');
+            }
+
             self::validarDestinatarioIntimacaoEletronica($contatoDTO, $bolEntrada);
 
             if ($contatoDTO->getStrSinEnderecoAssociado() == 'S') {
@@ -506,6 +510,12 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             if(!$bolEntrada) {
                 return "<item><flag>true</flag><mensagem></mensagem></item>";
             }
+        } catch( Exception $e ){
+        	if ( $bolEntrada ) {
+        		return $e->getMessage();
+	        }
+        	return "<item><flag>false</flag><mensagem>{$e->getMessage()}</mensagem></item>";
+
         } catch (SoapFault $soapFault) {
             if($bolEntrada){
                 return 'Problema ao acessar o Web Service dos Correios. Por Favor, tentar mais tarde.';

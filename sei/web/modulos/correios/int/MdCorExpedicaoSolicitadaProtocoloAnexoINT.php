@@ -81,7 +81,7 @@ class MdCorExpedicaoSolicitadaProtocoloAnexoINT extends InfraINT{
             if($objAnexoDTO) {
                 $arrDocumento = explode('.', $objAnexoDTO->getStrNome());
                 foreach ($arrObjMdCorExtensaoMidiaDTO as $objMdCorExtensaoMidiaDTO) {
-                    if ($objMdCorExtensaoMidiaDTO->getStrNomeExtensao() == end($arrDocumento))
+                    if ( strcasecmp( $objMdCorExtensaoMidiaDTO->getStrNomeExtensao() , end($arrDocumento) ) === 0 )
                         $existeExtensao = 'true';
 
                 }

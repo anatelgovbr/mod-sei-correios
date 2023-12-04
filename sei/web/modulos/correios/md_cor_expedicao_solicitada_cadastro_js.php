@@ -484,10 +484,7 @@
         }
     }
 
-    function OnNodeModified(event) {
-
-
-    }
+    function OnNodeModified(event) {}
 
     function OnNodeInserted(event) {
         var elemento = event.target;
@@ -499,8 +496,7 @@
         var options = document.getElementById('selProtocoloAnexo').options;
         var existeTipoMidiaValido = verificarAnexoMidia(idCompleto);
 
-
-        for (i = 0; i < options.length; i++) {
+        for (let i = 0; i < options.length; i++) {
             options[i].selected = false;
         }
 
@@ -508,6 +504,9 @@
 
         var checkImpressao = existeTipoMidiaValido == 'false' ? "checked='checked' " : "disabled='disabled'";
         var checkMidia = existeTipoMidiaValido == 'true' ? "checked='checked'" : '';
+
+        let disabledMidia = '';
+        if ( servicoPostalPermiteAnexarMidia == 'N' ) disabledMidia = "disabled='disabled'";
 
         formato += '<div class="row">';
         formato += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
@@ -525,7 +524,7 @@
         formato += '        <div id="divRdoGravacao" class="infraDivRadio">';
         formato += '        <div class="infraRadioDiv ">';
         formato += '            <input type="radio" name="rdoFormato_' + id + '" id="rdoFormato_' + id + '"';
-        formato += '               value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA; ?>" '+checkMidia;
+        formato += '               value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA; ?>" '+ checkMidia + disabledMidia;
         formato += '               class="infraRadioInput" onclick="impressaoMostrar(' + existeTipoMidiaValido + ')">';
         formato += '            <label class="infraRadioLabel" for="rdoFormato_' + id + '"></label>';
         formato += '        </div>';
@@ -750,12 +749,15 @@
     }
 
     function removerProtocoloAnexo(valor) {
-        for (var i = 0, iLen = valor.length; i < iLen; i++) {
+        let iLen = valor.length;
+        for (let i = 0 ; i < iLen ; i++) {
+            valor[0].remove();
             objTabelaDinamicaFormatos.removerLinha(objTabelaDinamicaFormatos.procuraLinha(valor[i].value));
         }
     }
 
     function marcarChkDocumentoPossuiAnexo() {
+
         var checkbox = document.getElementById('chkDocumentoPossuiAnexo');
         var div1 = document.getElementById('divProtocoloAnexo');
         var div2 = document.getElementById('divProtocoloAnexo2');
@@ -764,10 +766,17 @@
             div1.style.display = 'block';
             div2.style.display = 'block';
         } else {
+            if ( document.querySelector('#selProtocoloAnexo').length > 0 ) {
+                let arrOpt = document.querySelector('#selProtocoloAnexo').options;
+                Array.from( arrOpt ).forEach( ( v , i ) => {
+                    removerProtocoloAnexo( [v] );
+                    objTabelaDinamicaFormatos.atualizaHdn();
+                });
+                objLupaProtocoloAnexo.atualizar();
+            }
             div1.style.display = 'none';
             div2.style.display = 'none';
         }
-
     }
 
     function impressaoMostrar() {
