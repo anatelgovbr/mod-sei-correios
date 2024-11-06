@@ -7,7 +7,7 @@
         } else {
             document.getElementById('btnFechar').focus();
         }
-        console.log('teste: <?= $strLinkReativar ?>');
+
         infraEfeitoTabelas();
 
         if( $('#divInfraAreaTabela').find('table').length == 0 ){

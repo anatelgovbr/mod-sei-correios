@@ -296,4 +296,71 @@ class MdCorUnidadeExpRN extends InfraRN {
         }
     }
 
+
+	protected function validaCamposEnderecoUnidadePLPControlado($arrUnidades) {
+
+		$unidadeRN = new UnidadeRN();
+
+		$unidadeDTO = new UnidadeDTO();
+		$unidadeDTO->retNumIdOrgao();
+		$unidadeDTO->retNumIdContato();
+		$unidadeDTO->retStrDescricao();
+		$unidadeDTO->setNumIdUnidade($arrUnidades, InfraDTO::$OPER_IN);
+		$arrObjUnidadeDTO = $unidadeRN->listarRN0127($unidadeDTO);
+
+		foreach ($arrObjUnidadeDTO as $objOrgaoDTO) {
+
+			$contatoRN = new ContatoRN();
+
+			$objContatoDTO = new ContatoDTO();
+			$objContatoDTO->setNumIdContato($objOrgaoDTO->getNumIdContato());
+			$objContatoDTO->retStrBairro();
+			$objContatoDTO->retStrEndereco();
+			$objContatoDTO->retNumIdCidade();
+			$objContatoDTO->retNumIdUf();
+			$objContatoDTO->retStrBairro();
+			$objContatoDTO->retStrCep();
+			$arrContatoDTO = $contatoRN->consultarRN0324($objContatoDTO);
+
+			$noOrgao = $objOrgaoDTO->getStrDescricao();
+			$endereco = $arrContatoDTO->getStrEndereco();
+			$noCidade = $arrContatoDTO->getNumIdCidade();
+			$uf = $arrContatoDTO->getNumIdUf();
+			$bairro = $arrContatoDTO->getStrBairro();
+			$cep = $arrContatoDTO->getStrCep();
+
+			if (empty($endereco) or is_null($endereco)) {
+				$erros[$noOrgao][] = 'Endereço';
+			}
+
+			if (empty($bairro)or is_null($endereco)) {
+				$erros[$noOrgao][] = 'Bairro';
+			}
+
+			if (empty($uf) or is_null($endereco)) {
+				$erros[$noOrgao][] = 'Estado';
+			}
+
+			if (empty($noCidade) or is_null($noCidade)) {
+				$erros[$noOrgao][] = 'Cidade';
+			}
+
+			if (empty($cep) or is_null($cep)) {
+				$erros[$noOrgao][] = 'CEP';
+			}
+		}
+
+		if (is_array($erros) && count($erros) > 0) {
+
+			$str_msg_validacao = "Existe(m) Unidade(s) Expedidora(s) com dados cadastrais incompletos. Antes é necessário preencher os dados abaixo:" . '\n';
+			foreach ($erros as $unidade => $erro) {
+				foreach ($erro as $dErro) {
+					$str_msg_validacao .= '(' . $unidade . ') - ' . $dErro . '\n';
+				}
+			}
+
+			throw new InfraException($str_msg_validacao);
+		}
+	}
+
 }

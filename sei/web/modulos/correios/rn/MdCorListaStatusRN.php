@@ -882,26 +882,35 @@ class MdCorListaStatusRN extends InfraRN
         if ($arrTipoStatus) {
             foreach ($arrTipoStatus as $tipoStatus) {
 
+            	/*
                 if (empty($arrTipoStatus[0])) {
                     $tipoStatus = $arrTipoStatus;
                 }
+            	*/
 
-                $status = (int)$tipoStatus['status'];
+	            /*
+                $status = (int) $tipoStatus['status'];
                 $tipo = $tipoStatus['tipo'];
+	            */
+
+	            $status = (int) $tipoStatus['tipo'];
+	            $tipo   = $tipoStatus['codigo'];
 
                 $objMdCorListaStatusDTOAux->setNumStatus($status, InfraDTO::$OPER_IGUAL);
-                $objMdCorListaStatusDTOAux->setStrTipo('' . $tipo . '', InfraDTO::$OPER_IGUAL);
+                $objMdCorListaStatusDTOAux->setStrTipo($tipo, InfraDTO::$OPER_IGUAL);
                 $arrObjMdCorListaStatusDTOll = $objMdCorListaStatusRNAux->listar($objMdCorListaStatusDTOAux);
 
                 if (count($arrObjMdCorListaStatusDTOll) == 0) {
+                	$desc = utf8_decode( $tipoStatus['descricao'] );
+                	$desc .= array_key_exists('detalhe',$tipoStatus) ? ' - '. utf8_decode( $tipoStatus['detalhe'] ) : '';
+
                     $objMdCorListaStatusDTOAuxll->setNumStatus($status);
-                    $objMdCorListaStatusDTOAuxll->setStrTipo('' . $tipoStatus['tipo'] . '');
-                    $objMdCorListaStatusDTOAuxll->setStrDescricao('' . $tipo . '');
-                    $objMdCorListaStatusDTOAuxll->setStrStaRastreioModulo('');
-                    $objMdCorListaStatusDTOAuxll->setStrSinAtivo('N');
+	                $objMdCorListaStatusDTOAuxll->setStrTipo($tipo);
+                    $objMdCorListaStatusDTOAuxll->setStrDescricao($desc);
+                    $objMdCorListaStatusDTOAuxll->setStrStaRastreioModulo('W');
+                    $objMdCorListaStatusDTOAuxll->setStrSinAtivo('S');
                     $this->cadastrarControlado($objMdCorListaStatusDTOAuxll);
                 }
-
             }
         }
     }

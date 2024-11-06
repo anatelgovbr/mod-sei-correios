@@ -37,22 +37,15 @@ try {
             $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarMdCorContrato" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
             $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao']) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
-            //$objMdCorContratoDTO->setNumIdMdCorContrato(null);
             $objMdCorContratoDTO->setStrNumeroContrato($_POST['txtNumeroContrato']);
             $objMdCorContratoDTO->setStrNumeroContratoCorreio($_POST['txtNumeroContratoCorreio']);
             $objMdCorContratoDTO->setStrNumeroCartaoPostagem($_POST['txtNumeroCartaoPostagem']);
-            $objMdCorContratoDTO->setStrUrlWebservice($_POST['txtUrlWebservice']);
             $objMdCorContratoDTO->setDblIdProcedimento($_POST['hdnIdProcedimento']);
             $objMdCorContratoDTO->setStrSinAtivo('S');
-            $objMdCorContratoDTO->setStrCodigoAdministrativo($_POST['txtCodigoAdministrativo']);
             $objMdCorContratoDTO->setNumNumeroCnpj($_POST['txtCNPJ']);
-            $objMdCorContratoDTO->setStrUsuario($_POST['txtUsuario']);
-            $objMdCorContratoDTO->setStrSenha($_POST['txtSenha']);
             $objMdCorContratoDTO->setNumIdMdCorDiretoria($_POST['slCodigoDiretoria']);
-            $objMdCorContratoDTO->setNumAnoContratoCorreio($_POST['txtNumeroAnoContratoCorreio']);
 
             if (isset($_POST['sbmCadastrarMdCorContrato'])) {
-
                 try {
                     $objMdCorContratoRN = new MdCorContratoRN();
                     $objMdCorContratoDTO = $objMdCorContratoRN->cadastrar($_POST);
@@ -94,7 +87,15 @@ try {
             $arrComandos[] = '<button type="button" accesskey="C" name="btnFechar" value="Fechar" onclick="location.href=\'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_GET['id_md_cor_contrato'])) . '\';" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
             $objMdCorContratoDTO->setNumIdMdCorContrato($_GET['id_md_cor_contrato']);
             $objMdCorContratoDTO->setBolExclusaoLogica(false);
-            $objMdCorContratoDTO->retTodos();
+
+            $objMdCorContratoDTO->retStrNumeroContrato();
+            $objMdCorContratoDTO->retStrNumeroContratoCorreio();
+            $objMdCorContratoDTO->retStrNumeroCartaoPostagem();
+            $objMdCorContratoDTO->retDblIdProcedimento();
+            $objMdCorContratoDTO->retStrSinAtivo();
+            $objMdCorContratoDTO->retNumNumeroCnpj();
+            $objMdCorContratoDTO->retNumIdMdCorDiretoria();
+
             $objMdCorContratoRN = new MdCorContratoRN();
             $objMdCorContratoDTO = $objMdCorContratoRN->consultar($objMdCorContratoDTO);
             if ($objMdCorContratoDTO === null) {
@@ -112,7 +113,14 @@ try {
         $idMdCorContrato = $_GET['id_md_cor_contrato'] ? $_GET['id_md_cor_contrato'] : $_POST['hdnIdMdCorContrato'];
 
         if ($idMdCorContrato) {
-            $objMdCorContratoDTO->retTodos();
+            $objMdCorContratoDTO->retNumIdMdCorContrato();
+            $objMdCorContratoDTO->retStrNumeroContrato();
+            $objMdCorContratoDTO->retStrNumeroContratoCorreio();
+            $objMdCorContratoDTO->retStrNumeroCartaoPostagem();
+            $objMdCorContratoDTO->retNumNumeroCnpj();
+            $objMdCorContratoDTO->retNumIdMdCorDiretoria();
+            $objMdCorContratoDTO->retDblIdProcedimento();
+            $objMdCorContratoDTO->retStrSinAtivo();
             $objMdCorContratoDTO->setBolExclusaoLogica(false);
             $objMdCorContratoRN = new MdCorContratoRN();
             $objMdCorContratoDTO = $objMdCorContratoRN->consultar($objMdCorContratoDTO);
@@ -197,24 +205,23 @@ try {
                 $strAnexarMidia = '<div class="infraDivCheckbox" style="text-align: center"> <div class="infraCheckboxDiv"> <input type="checkbox" class="infraCheckboxInput" value="S" name="anexarMidia['.$i.']" id="anexarMidia['.$i.']" '. $checkedAnexarMidia . $readonly .'> <label class="infraCheckboxLabel" for="anexarMidia['.$i.']"></label> </div> </div>';
 
                 $itensTabelaContratoServicos = array(
-                    $objMdCorServicoPostalDTO->getStrIdWsCorreios(),
-                    $objMdCorServicoPostalDTO->getStrCodigoWsCorreios(),
+                    trim($objMdCorServicoPostalDTO->getStrCodigoWsCorreios()),
                     $objMdCorServicoPostalDTO->getStrSinAtivo(),
                     '',
                     $objMdCorServicoPostalDTO->getStrNome(),
-                    /*5*/'<div style="width:100px;"><select class="infraSelect sl_tipo form-control" name="sl_tipo[' . $i . ']"  onchange="verificaAr(this)">' . json_encode($mdCorTipoCorrespondencia) . '</select></div>',
+                    /*5*/'<div style="width:100%;"><select id="slTipo_'. $i .'" class="infraSelect sl_tipo form-control" name="sl_tipo[' . $i . ']" onchange="verificaAr(this)">' . json_encode($mdCorTipoCorrespondencia) . '</select></div>',
 	                /*6*/$strRd,
 	                /*7*/$strChk,
 	                $strAnexarMidia,
-                    '<div style=""><input type="text" class="input-desc form-control" style="width: 100%" name="descricao[' . $i . ']" value="' . PaginaSEI::tratarHTML($objMdCorServicoPostalDTO->getStrDescricao()) . '" ' . $readonly . '/><input type="hidden" name="id[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrIdWsCorreios() . '"><input class="input-desc" type="hidden" name="codigo[' . $i . ']" value="' . trim($objMdCorServicoPostalDTO->getStrCodigoWsCorreios()) . '"><input class="input-desc" type="hidden" name="nome[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrNome() . '"><input class="input-desc" type="hidden" value="' . $objMdCorServicoPostalDTO->getNumIdMdCorServicoPostal() . '"></div>',
+                    '<div><input type="text" id="idDesc_'. $i .'" class="input-desc form-control" style="width: 100%" name="descricao[' . $i . ']" value="' . PaginaSEI::tratarHTML($objMdCorServicoPostalDTO->getStrDescricao()) . '" ' . $readonly . '/> <input type="hidden" name="codigo[' . $i . ']" value="' . trim($objMdCorServicoPostalDTO->getStrCodigoWsCorreios()) . '"> <input type="hidden" name="nome[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrNome() . '"></div>',
                     ''
                 );
 
                 if ($_GET['acao'] == 'md_cor_contrato_consultar') {
                     $itensTabelaContratoServicos[5] = ($objMdCorServicoPostalDTO->getStrExpedicaoAvisoRecebimento() == 'S') ? 'Sim' : 'Não';
                     $itensTabelaContratoServicos[6] = ($cobrar == 'S') ? 'Sim' : 'Não';
-                    $itensTabelaContratoServicos[7] = $objMdCorServicoPostalDTO->getStrDescricao();
-	                $itensTabelaContratoServicos[8] = ($anexarMidia == 'S') ? 'Sim' : 'Não';
+                    $itensTabelaContratoServicos[7] = ($anexarMidia == 'S') ? 'Sim' : 'Não';
+                    $itensTabelaContratoServicos[8] = $objMdCorServicoPostalDTO->getStrDescricao();
                 }
 
                 $arrItensTabelaContratoServicos[] = $itensTabelaContratoServicos;
@@ -338,23 +345,6 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                    onkeypress="return infraMascaraTexto(this,event,10);" maxlength="10"
                                    tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                         </div>
-                        <div class="col-sm-4 col-md-4 col-lg-4 col-xl-4"">
-                            <label id="lblNumeroAnoContratoCorreio" for="txtNumeroAnoContratoCorreio" accesskey="a"
-                                   class="infraLabelObrigatorio"><span class="infraTeclaAtalho">A</span>no:
-                                <img
-                                        align="top"
-                                        id="imgAjuda"
-                                        src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                        onmouseover="return infraTooltipMostrar('Informar o Ano do Contrato do Órgão nos Correios.', 'Ajuda');"
-                                        onmouseout="return infraTooltipOcultar();"
-                                        alt="Ajuda" class="infraImgModulo"/>
-                            </label>
-                            <input onkeypress="return infraMascaraNumero(this, event, '4')" type="text" id="txtNumeroAnoContratoCorreio"
-                                   name="txtNumeroAnoContratoCorreio" class="infraText form-control"
-                                   value="<?php echo PaginaSEI::tratarHTML($objMdCorContratoDTO->getNumAnoContratoCorreio()); ?>"
-                                   onkeypress="return infraMascaraTexto(this,event,10);" maxlength="10"
-                                   tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-                        </div>
                     </div>
                     <div class="row">
                         <div class="<?= $cls_def ?>">
@@ -393,24 +383,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     </div>
                     <div class="row">
                         <div class="<?= $cls_def ?>">
-                            <label id="lblCodigoAdiministrativo" for="txtCodigoAdministrativo"
-                                   class="infraLabelObrigatorio">Código
-                                Administrativo:
-                                <img align="top" id="imgAjuda"
-                                     src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('Código Administrativo dos Correios correspondente ao Contrato do Órgão.', 'Ajuda');"
-                                     onmouseout="return infraTooltipOcultar();"
-                                     alt="Ajuda" class="infraImgModulo"/>
-                            </label>
-                            <input type="text" id="txtCodigoAdministrativo" name="txtCodigoAdministrativo"
-                                   class="infraText form-control"
-                                   value="<?= PaginaSEI::tratarHTML($objMdCorContratoDTO->getStrCodigoAdministrativo()); ?>"
-                                   maxlength="8" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="<?= $cls_def ?>">
-                            <label id="lblCodigoDiretoria" for="slCodigoDiretoria" class="infraLabelObrigatorio">Código da Diretoria:
+                            <label id="lblCodigoDiretoria" for="slCodigoDiretoria" class="infraLabelOpcional">Código da Diretoria:
                                 <img align="top" id="imgAjuda"
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                      onmouseover="return infraTooltipMostrar('Diretoria Regional dos Correios correspondente ao Contrato do Órgão.', 'Ajuda');"
@@ -424,63 +397,14 @@ PaginaSEI::getInstance()->abrirAreaDados();
                         </div>
                     </div>
                     <div class="row">
-                        <div class="<?= $cls_def ?>">
-                            <label id="lblUsuario" for="txtUsuario" class="infraLabelObrigatorio">Usuário do SIGEP WEB:
-                                <img align="top"
-                                     id="imgAjuda"
-                                     src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('Obtenha um Nome de Usuário válido para autenticação no SIGEP WEB com o consultor comercial dos Correios que atende ao Contrato do Órgão.', 'Ajuda');"
-                                     onmouseout="return infraTooltipOcultar();"
-                                     alt="Ajuda" class="infraImgModulo"/>
-                            </label>
-                            <input type="text" id="txtUsuario" name="txtUsuario" class="infraText form-control"
-                                   value="<?= PaginaSEI::tratarHTML($objMdCorContratoDTO->getStrUsuario()); ?>"
-                                   onkeypress="return infraMascaraTexto(this,event,100);" maxlength="10"
-                                   tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="<?= $cls_def ?>">
-                            <label id="lblSenha" for="txtSenha" class="infraLabelObrigatorio">Senha do SIGEP WEB:
-                                <img
-                                        align="top"
-                                        id="imgAjuda"
-                                        src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                        onmouseover="return infraTooltipMostrar('A Senha de acesso ao SIGEP WEB é fornecida junto com o Nome de Usuário para autenticação informado pelo consultor comercial dos Correios que atende ao Contrato do Órgão.', 'Ajuda');"
-                                        onmouseout="return infraTooltipOcultar();"
-                                        alt="Ajuda" class="infraImgModulo"/>
-                            </label>
-                            <input type="password" id="txtSenha" name="txtSenha" class="infraText form-control"
-                                   value="<?= PaginaSEI::tratarHTML($objMdCorContratoDTO->getStrSenha()); ?>"
-                                   onkeypress="return infraMascaraTexto(this,event,100);" maxlength="10"
-                                   tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-11 col-md-11 col-lg-10 col-xl-8">
-                            <label id="lblUrlWebservice" for="txtUrlWebservice" class="infraLabelObrigatorio">Endereço
-                                WSDL do Web
-                                Service do SIGEP WEB:
-                                <img align="top" id="imgAjuda"
-
-                                     src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('Obtenha o Endereço WSDL correto acessando o Manual para Integração via Web Services do SIGEP WEB dos Correios.', 'Ajuda');"
-                                     onmouseout="return infraTooltipOcultar();"
-                                     alt="Ajuda" class="infraImgModulo"/>
-                            </label>
-                            <div class="input-group mb-3">
-                                <input type="text" id="txtUrlWebservice" name="txtUrlWebservice"
-                                       class="infraText form-control"
-                                       value="<?= PaginaSEI::tratarHTML($objMdCorContratoDTO->getStrUrlWebservice()); ?>"
-                                       onkeypress="return infraMascaraTexto(this,event,2081);" maxlength="2081"
-                                       tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-                                <?php if ($_GET['acao'] == 'md_cor_contrato_cadastrar' || $_GET['acao'] == 'md_cor_contrato_alterar') { ?>
-                                    <button id="validar-url" onclick="buscarServicosPostais()" class="infraButton"
-                                            type="button">Validar
-                                    </button>
-                                <?php } ?>
+                        <?php if ($_GET['acao'] == 'md_cor_contrato_cadastrar' || $_GET['acao'] == 'md_cor_contrato_alterar') { ?>
+                            <div class="col-sm-11 col-md-11 col-lg-10 col-xl-8 mt-2 mb-2">
+                                <button id="validar-url" onclick="buscarServicosPostais()" class="infraButton btn-outline-info"
+                                        type="button">Buscar Serviços Postais
+                                </button>
                             </div>
-                        </div>
+                        <?php } ?>
+
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -490,15 +414,13 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                     value=""/>
                             <input type="hidden" name="hdnListaContratoServicosIndicados" id="hdnListaContratoServicosIndicados"
                                     value=""/>
-                            <input type="hidden" name="hdnListaContratoServicosDesativados[]"
-                                    id="hdnListaContratoServicosDesativados" value=""/>
+                            <input type="hidden" name="hdnListaContratoServicosDesativados[]" id="hdnListaContratoServicosDesativados"
+                                   value=""/>
                             <input type="hidden" name="hdnListaContratoServicosReativadas[]" id="hdnListaContratoServicosReativadas"
                                     value=""/>
-                            <table id="tbContratoServicos" class="infraTable table w-100" align="left"
-                                    summary="Lista de Serviços Postais">
+                            <table id="tbContratoServicos" class="infraTable table w-100" align="left" summary="Lista de Serviços Postais">
                                 <thead>
                                 <tr>
-                                    <th class="infraTh" style="display: none;">Id Servico</th>
                                     <th class="infraTh" style="display: none;">Codigo Servico</th>
                                     <th class="infraTh" style="display: none;">AR Hidden</th>
                                     <th class="infraTh" style="display: none;">Descricao Hidden</th>
@@ -526,5 +448,6 @@ PaginaSEI::getInstance()->abrirAreaDados();
 PaginaSEI::getInstance()->fecharAreaDados();
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
+include_once('md_cor_funcoes_js.php');
 include_once('md_cor_contrato_cadastro_js.php');
 ?>

@@ -50,16 +50,16 @@
         infraImprimirTabela();
     }
 
-    function gerarPLP() {
+    function gerarPrePostagem() {
         var contador = 0;
         $(".infraCheckboxInput:checked").each(
             function () {
                 contador++;
             }
         );
-        console.log(contador);
+
         if (contador == 0) {
-            alert('Deverá ser selecionado pelo menos 1(uma) solicitação de expedição para geração da PLP')
+            alert('Deverá ser selecionado pelo menos 1(uma) solicitação de expedição para geração da Pré-Postagem')
             return false;
         } else {
             infraExibirAviso(false);

@@ -58,10 +58,26 @@ class MdCorServicoPostalINT extends InfraINT {
     return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorServicoPostalDTO, 'IdMdCorServicoPostal', 'Descricao');
   }
 
-  public static function retornarServicosPostais($strNumeroContratoCorreio, $strNumeroCartaoPostagem, $strUrlWebservice, $usuario, $senha) {
-      $xml = MdCorClientWsRN::buscarServicosPostais($strNumeroContratoCorreio,$strNumeroCartaoPostagem, $strUrlWebservice, $usuario, $senha);
-      return $xml;
-  }
+	public static function retornarServicosPostais($strNumeroContratoCorreio, $strCnpj) {
+		$objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+
+		$objMdCorIntegServPostal = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$SERV_POSTAL);
+		if ( empty( $objMdCorIntegServPostal ) || is_array($objMdCorIntegServPostal) && isset($objMdCorIntegServPostal['suc']) && $objMdCorIntegServPostal['suc'] === false )
+		    return self::retornarXmlServicosPostais(['suc' => false , 'msg' => 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_SERV_POSTAL .' não existe ou está inativo.']);
+
+		$arrParametro = [
+			'endpoint' => $objMdCorIntegServPostal->getStrUrlOperacao(),
+			'token'    => $objMdCorIntegServPostal->getStrToken(),
+			'expiraEm' => $objMdCorIntegServPostal->getDthDataExpiraToken(),
+		];
+
+		$ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegServPostal);
+		if ( is_array( $ret ) && array_key_exists('suc',$ret) && $ret['suc'] === false )  return self::retornarXmlServicosPostais($ret);
+
+		$objMdCorApiServPostal = new MdCorApiRestRN($arrParametro);
+		$xml = self::retornarXmlServicosPostais( $objMdCorApiServPostal->buscarServicosPostais($strNumeroContratoCorreio, $strCnpj) );
+        return $xml;
+    }
 
     public static function montarSelectIdDescricaoMdCorServicoPostalSolicitacaoExpedicao($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $numIdMdCorContrato='', $campoordenacao='IdMdCorServicoPostal'){
         $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
@@ -109,23 +125,44 @@ class MdCorServicoPostalINT extends InfraINT {
 	  $arrExibir             = [];
 	  $arrNaoExibir          = [];
 
-	  foreach ( $arrIdsProt as $k => $prot ) {
-		  $somenteMidia = filter_var( MdCorExpedicaoSolicitadaProtocoloAnexoINT::verificarAnexoSomenteMidia($prot , false) ,FILTER_VALIDATE_BOOLEAN );
+	  if ( $arrIdsProt ) {
+          foreach ($arrIdsProt as $k => $prot) {
+              $somenteMidia = filter_var(MdCorExpedicaoSolicitadaProtocoloAnexoINT::verificarAnexoSomenteMidia($prot, false), FILTER_VALIDATE_BOOLEAN);
 
-		  if ( $strPermiteGravarMidia == 'N' ) {
-		  	if ( $somenteMidia ) {
-				  array_push($arrNaoExibir ,$prot.'#'.$arrDescDoc[$k] );
-			  } else {
-				  array_push($arrExibir ,$prot.'#'.$arrDescDoc[$k] );
-			  }
-		  } else {
-			  array_push($arrExibir ,$prot.'#'.$arrDescDoc[$k] );
-		  }
-	  }
-	  $strListaExibir    = '<Exibir>'.implode(';' ,$arrExibir ).'</Exibir>';
+              if ($strPermiteGravarMidia == 'N') {
+                  if ($somenteMidia) {
+                      array_push($arrNaoExibir, $prot . '#' . $arrDescDoc[$k]);
+                  } else {
+                      array_push($arrExibir, $prot . '#' . $arrDescDoc[$k]);
+                  }
+              } else {
+                  array_push($arrExibir, $prot . '#' . $arrDescDoc[$k]);
+              }
+          }
+      }
+	  $strListaExibir    = !empty($arrExibir)    ? '<Exibir>'.implode(';' ,$arrExibir ).'</Exibir>' : '';
 	  $strListaNaoExibir = !empty($arrNaoExibir) ? '<NaoExibir>'.implode(';' ,$arrNaoExibir ).'</NaoExibir>' : '';
 
 	  return $strListaExibir . $strListaNaoExibir;
+  }
+
+  public static function retornarXmlServicosPostais($dados){
+      // se ocorreu algum erro, gera uma exception
+	  $msg = 'Erro na busca dos Serviços Postais:';
+
+	  if ( array_key_exists('suc',$dados) && $dados['suc'] === false ) {
+          $msg .= "<br/>" . $dados['msg'];
+          return "<Erros><Msg><![CDATA[$msg]]></Msg></Erros>";
+	  }
+
+	  // continua fluxo
+	  $xml = "<ServicoPostalLista>";
+	  foreach($dados['itens'] as $servico)
+	  {
+		  $xml .= "<ServicoPostal><Descricao>{$servico['descricao']}</Descricao><Id>{$servico['codigo']}</Id><Codigo>{$servico['codigo']}</Codigo></ServicoPostal>";
+	  }
+	  $xml .= "</ServicoPostalLista>";
+	  return $xml;
   }
 
 }

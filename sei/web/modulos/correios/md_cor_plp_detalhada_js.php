@@ -27,20 +27,7 @@
             return false;
         }
 
-        /*var isRestrito = getAjaxValidarDocumentoAPI();
-
-        if (isRestrito === 'false') {
-            alert('Esta Unidade Expedidora não possui acesso ao documento para poder imprimir.');
-            return false;
-        }
-
-        if ('<?= $isImprimirDocumento ?> ' == true) {
-            alert('Esta Unidade Expedidora não possui acesso ao documento para poder imprimir.');
-            return false;
-        }*/
-
-
-         document.getElementById('frmDetalharPlp').target = '_blank';
+        document.getElementById('frmDetalharPlp').target = '_blank';
         document.getElementById('frmDetalharPlp').action = '<?php echo SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_plp_pdf_arquivo_lote&acao_origem=' . $_GET['acao'] . '&id_md_cor_plp=' . $_GET['id_md_cor_plp']); ?>'
         document.getElementById('frmDetalharPlp').submit();
         var arrIdSocitacao = new Array();
@@ -51,9 +38,9 @@
     }
 
     function substituiIconeExpedirPlp(idPlp) {
-        console.log($('.'+idPlp+' a.botaoExpedirObjeto').html());
         $('.'+idPlp+' a.botaoExpedirObjeto').html('<img src="modulos/correios/imagens/svg/expedir_objeto.svg?<?= Icone::VERSAO ?>" title="Expedir Objeto" alt="Expedir Objeto" class="infraImgAcoes acessado" />');
     }
+
     function getAjaxValidarDocumentoAPI() {
 
         var arrIdSocitacao = new Array();
@@ -85,11 +72,6 @@
     function imprimirVoucher() {
 
         infraSelecaoMultipla('Infra');
-
-        /*if(document.getElementById('hdnInfraItensSelecionados').value == ''){
-            alert('Selecione ao menos uma PLP para o voucher');
-            return false;
-        }*/
 
         var frm = document.getElementById('frmDetalharPlp');
 
@@ -164,8 +146,7 @@
 
     }
 
-    function imprimirRotuloEnvelope(id) {
-
+    function imprimirRotuloEnvelopeModal(id){
         if (typeof id !== 'undefined') {
             document.getElementById('hdnInfraItensSelecionados').value = id;
         }
@@ -175,6 +156,11 @@
             return false;
         }
 
+        let link = "<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_selecionar_layout_envelope') ?>";
+        infraAbrirJanelaModal(link,600,300,false);
+    }
+
+    function imprimirRotuloEnvelope() {
         var frm = document.getElementById('frmDetalharPlp');
 
         var targetAnterior = frm.target;
@@ -190,7 +176,7 @@
     }
 
 
-    function ConcluirPLP() {
+    function ConcluirPrePostagem() {
         var numRegistro = document.getElementById('hdnInfraNroItens').value;
         var acessado = document.getElementsByClassName('acessado');
         var qtdAcessado = 0;
@@ -200,7 +186,7 @@
         }
 
         if (qtdAcessado < numRegistro) {
-            alert('Somente é possível concluir a expedição da PLP depois que realizar a expedição de cada Objeto abaixo');
+            alert('Somente é possível concluir a expedição da Pré-Postagem depois que realizar a expedição de cada Objeto abaixo');
             return false;
         }
         infraExibirAviso(false);

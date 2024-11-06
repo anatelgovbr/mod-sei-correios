@@ -30,8 +30,8 @@ try {
     $arrComandos[] = '<button type="button" accesskey="P" id="btnPesquisar" onclick="pesquisar()" class="infraButton">
                                     <span class="infraTeclaAtalho">P</span>esquisar
                               </button>';
-    $arrComandos[] = '<button type="button" accesskey="N" id="btnGerarPlp" onclick="gerarPLP()" class="infraButton">
-                                    <span class="infraTeclaAtalho">G</span>erar PLP
+    $arrComandos[] = '<button type="button" accesskey="N" id="btnGerarPlp" onclick="gerarPrePostagem()" class="infraButton">
+                                    <span class="infraTeclaAtalho">G</span>erar Postagem
                               </button>';
     $arrComandos[] = '<button type="button" accesskey="I" id="btnImprimir" onclick="imprimir()" class="infraButton">
                                     <span class="infraTeclaAtalho">I</span>mprimir
@@ -55,6 +55,9 @@ try {
 
                 $objMdCorPlpRN = new MdCorPlpRN();
                 $arrRetorno = $objMdCorPlpRN->gerarPlpWebService($arrIdMdCorExpedicaoSolicitada);
+
+                if ( is_array($arrRetorno) && isset($arrRetorno['suc']) && $arrRetorno['suc'] === false )
+                    throw new InfraException($arrRetorno['msg']);
 
                 $idPlpGerada = $objMdCorPlpRN->alterarDadosPlpSolicitacao($arrRetorno);
                 header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_plp_listar') . "#ID-" . $idPlpGerada);

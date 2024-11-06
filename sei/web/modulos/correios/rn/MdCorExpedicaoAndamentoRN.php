@@ -388,43 +388,47 @@ class MdCorExpedicaoAndamentoRN extends InfraRN
 
     protected function salvarAndamentoConectado($idProcedimento = null)
     {
-        $objMdCorParametroRastreioRN = new MdCorParametroRastreioRN();
-        $objMdCorParametroRastreioDTO = new MdCorParametroRastreioDTO();
-        $objMdCorParametroRastreioDTO->retStrUsuario();
-        $objMdCorParametroRastreioDTO->retStrSenha();
-        $objMdCorParametroRastreioDTO->retStrEnderecoWsdl();
+	    $arrFalha = [];
+	    $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 
-        $objMdCorParametroRastreioDTO = $objMdCorParametroRastreioRN->consultar($objMdCorParametroRastreioDTO);
+	    $objMdCorIntegRastreio = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$RASTREAR);
 
-        if (is_null($objMdCorParametroRastreioDTO)) {
+        if ( empty( $objMdCorIntegRastreio ) || ( is_array($objMdCorIntegRastreio) && isset($objMdCorIntegRastreio['suc']) && $objMdCorIntegRastreio['suc'] === false ) ) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao(' Parametros de rastreio não cadastrados.');
+            $objInfraException->adicionarValidacao(' Parâmetros de Rastreio e/ou Token não cadastrados.');
             $objInfraException->lancarValidacoes();
         }
 
         $arrParametro = [
             'resultado' => 'T',
-            'endpoint' => $objMdCorParametroRastreioDTO->getStrEnderecoWsdl(),
-            'usuario' => $objMdCorParametroRastreioDTO->getStrUsuario(),
-            'senha' => $objMdCorParametroRastreioDTO->getStrSenha(),
+            'endpoint'  => $objMdCorIntegRastreio->getStrUrlOperacao(),
+	        'token'     => $objMdCorIntegRastreio->getStrToken(),
+	        'expiraEm'  => $objMdCorIntegRastreio->getDthDataExpiraToken(),
         ];
 
-        $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
-        $objMdCorWsRastreio = new MdCorWsRastreioRN($arrParametro);
+        // Verifica a data que expira o token para usar nas API
+	    // se retornar um array, teve falha
+	    $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegRastreio);
+	    if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
+	    	$arrFalha[] = ['erro' => $ret['msg'] , 'numero' => '000000'];
+	    	return $arrFalha;
+	    }
 
-        if ($_GET['acao'] == 'md_cor_expedicao_unidade_listar') {
+        $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
+        $objMdCorWsRastreio            = new MdCorApiRestRN($arrParametro);
+
+	    if ( $_GET['acao'] == 'md_cor_expedicao_unidade_listar' ) {
             $objMdCorExpedicaoSolicitadaRN->setIsConsultarExpedicaoAndamento(true);
         }
 
         $arrObjMdCorExpedicaoSolicitadaDTO = $objMdCorExpedicaoSolicitadaRN->listarExpedicaoSolicitadaExpedida($idProcedimento);
-        $arrFalha = array();
 
         if (!is_null($arrObjMdCorExpedicaoSolicitadaDTO)) {
             $mdCorListaStatusRN = new MdCorListaStatusRN();
 
             foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) {
                 $idMdCorExpedicaoSolicitada = $objMdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada();
-                $codigoRastreamento = trim($objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento());
+                $codigoRastreamento         = trim($objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento());
 
                 $objMdCorExpedicaoAndamentoDTO = $this->buscarUltimoAndamento($idMdCorExpedicaoSolicitada);
 
@@ -433,21 +437,20 @@ class MdCorExpedicaoAndamentoRN extends InfraRN
                     $dadosRastreio = $objMdCorWsRastreio->rastrearObjeto($codigoRastreamento);
 
                     //Se não deu erro no rastreio
-                    if (!isset($dadosRastreio['objeto']['erro'])) {
+                    if ( !isset( $dadosRastreio['erro'] ) ) {
                         $this->_criarObjetoAndamento($idMdCorExpedicaoSolicitada, $dadosRastreio);
                     } else {
-                        $arrFalha[] = $dadosRastreio['objeto'];
+                        $arrFalha[] = ['erro' => $dadosRastreio['msg'] , 'numero' => $codigoRastreamento ];
                     }
                 } else {
-
                     $staRastreioModulo = $mdCorListaStatusRN->getStaRastreioModuloAndamento($objMdCorExpedicaoAndamentoDTO);
 
-                    if ($staRastreioModulo == 'P' || $staRastreioModulo == 'T') {
+                    if ( $staRastreioModulo == 'P' || $staRastreioModulo == 'T' ) {
                         $dadosRastreio = $objMdCorWsRastreio->rastrearObjeto($codigoRastreamento);
 
                         //Se não deu erro no rastreio
-                        if (!isset($dadosRastreio['objeto']['erro'])) {
-                            $arrEvento = $dadosRastreio['objeto']['evento'];
+                        if ( !isset( $dadosRastreio['erro'] ) ) {
+                            $arrEvento = $dadosRastreio['objetos'][0]['eventos'];
 
                             $objMdCorListaStatusRN = new MdCorListaStatusRN();
                             $objMdCorListaStatusRN->_retornaTipoStatusNaoSalvos($arrEvento);
@@ -458,13 +461,14 @@ class MdCorExpedicaoAndamentoRN extends InfraRN
 
                                 //Salva todos os andamentos que ainda não estão no banco
                                 if (!empty($arrEventoNaoSalvo)) {
-                                    $dadosRastreio['objeto']['evento'] = $arrEventoNaoSalvo;
+	                                $arrEventoNaoSalvo = array_reverse($arrEventoNaoSalvo);
+                                    $dadosRastreio['objetos'][0]['eventos'] = $arrEventoNaoSalvo;
                                     $this->_criarObjetoAndamento($idMdCorExpedicaoSolicitada, $dadosRastreio);
                                 }
                             }
 
                         } else {
-                            $arrFalha[] = $dadosRastreio['objeto'];
+                            $arrFalha[] =  ['erro' => $dadosRastreio['msg'] , 'numero' => $codigoRastreamento];
                         }
                     }
                 }
@@ -472,100 +476,110 @@ class MdCorExpedicaoAndamentoRN extends InfraRN
         }
 
         return $arrFalha;
-
     }
 
     private function _retornaEventoNaoSalvo($arrEvento, $dtUltimoAndamento)
     {
-
         $arrEventoNaoSalvo = array();
-        $arrData = explode(' ', $dtUltimoAndamento);
-        $data = implode('-', array_reverse(explode('/', $arrData[0])));;
-        $hora = $arrData[1];
+        $arrData           = explode(' ', $dtUltimoAndamento);
+        $data              = implode('-', array_reverse(explode('/', $arrData[0])));
+        $hora              = $arrData[1];
         $dataHoraAndamento = strtotime($data . ' ' . $hora);
 
-        if (isset($arrEvento['data'])) {
-            $dataHoraWs = $this->_converterDataHoraWs($arrEvento);
-            if ($dataHoraAndamento < $dataHoraWs) {
-                $arrEventoNaoSalvo[] = $arrEvento;
-            }
-
-        } else {
-            foreach ($arrEvento as $evento) {
-                $dataHoraWs = $this->_converterDataHoraWs($evento);
-                if ($dataHoraAndamento < $dataHoraWs) {
-                    $arrEventoNaoSalvo[] = $evento;
-                }
-
-            }
-        }
+		if( !empty($arrEvento)) {
+			foreach ($arrEvento as $evento) {
+				$dataHoraWs = $this->_converterDataHoraWs($evento);
+				if ($dataHoraAndamento < $dataHoraWs) {
+					$arrEventoNaoSalvo[] = $evento;
+				}
+			}
+		}
 
         return $arrEventoNaoSalvo;
-
     }
 
     private function _converterDataHoraWs($evento)
     {
-        $data = implode('-', array_reverse(explode('/', $evento['data'])));
-        $hora = $evento['hora'] . ':00';
-        return strtotime($data . ' ' . $hora);
+    	$arrDtHr = explode('T', $evento['dtHrCriado']);
+	    $hrs = MdCorObjetoINT::trataHoraAndamento($arrDtHr[1]);
+        return strtotime($arrDtHr[0] .' '. $hrs);
     }
 
     private function _criarObjetoAndamento($idMdCorExpedicaoSolicitada, $dadosRastreio)
     {
+        if ( isset( $dadosRastreio['objetos'][0]['mensagem'] ) ) {
+            $this->trataRegistrosNaoEncontrados( $idMdCorExpedicaoSolicitada , $dadosRastreio );
+        } else {
+            $siglaObjeto     = $dadosRastreio['objetos'][0]['tipoPostal']['sigla'];
+            $nomeObjeto      = MdCorObjetoINT::UTF8_Decode( $dadosRastreio['objetos'][0]['tipoPostal']['descricao'] );
+            $categoriaObjeto = MdCorObjetoINT::UTF8_Decode( $dadosRastreio['objetos'][0]['tipoPostal']['categoria'] );
+            $versao          = trim($dadosRastreio['versao']);
+            $dtUltimaAtualizacao = date('d/m/Y H:i:s');
 
-        $siglaObjeto = trim($dadosRastreio['objeto']['sigla']);
-        $nomeObjeto = trim($dadosRastreio['objeto']['nome']);
-        $categoriaObjeto = trim($dadosRastreio['objeto']['categoria']);
-        $versao = trim($dadosRastreio['versao']);
+            if ( !empty($dadosRastreio['objetos'][0]['eventos']) ){
+                foreach ( $dadosRastreio['objetos'][0]['eventos'] as $evento ) {
+                    $arrDtHr  = explode('T', $evento['dtHrCriado']);
+                    $tipo     = $evento['codigo'];
+                    $data     = implode('/' , array_reverse( explode('-' , $arrDtHr[0]) ) );
+                    $hora     = MdCorObjetoINT::trataHoraAndamento($arrDtHr[1]);
+                    $dataHora = $data . ' ' . $hora;
 
+                    $descricao = MdCorObjetoINT::UTF8_Decode( trim(@$evento['descricao']) );
+                    $detalhe   = MdCorObjetoINT::UTF8_Decode( trim(@$evento['detalhe']) );
+                    $status    = trim(@$evento['tipo']);
+                    $local     = MdCorObjetoINT::UTF8_Decode(trim(@$evento['unidade']['tipo']));
+                    $codigoCep = trim(@$evento['unidade']['endereco']['cep'] ?? '00000000');
+                    $cidade    = MdCorObjetoINT::UTF8_Decode( trim(@$evento['unidade']['endereco']['cidade']) );
+                    $uf        = trim(@$evento['unidade']['endereco']['uf']);
 
-        //Ajuste para quando vir somente um evento
-        if (isset($dadosRastreio['objeto']['evento']['tipo'])) {
-            $arrEventos = $dadosRastreio['objeto']['evento'];
-            unset($dadosRastreio['objeto']['evento']);
-            $dadosRastreio['objeto']['evento'][] = $arrEventos;
-        }
-
-        $dtUltimaAtualizacao = date('d/m/Y H:i:s');
-        if (!empty($dadosRastreio['objeto']['evento']) && is_array($dadosRastreio['objeto']['evento'])){
-            foreach ($dadosRastreio['objeto']['evento'] as $evento) {
-
-                $tipo = $evento['tipo'];
-                $data = $evento['data'];
-                $hora = $evento['hora'] . ':00';
-                $dataHora = $data . ' ' . $hora;
-
-                $descricao = trim(@$evento['descricao']);
-                $detalhe = trim(@$evento['detalhe']);
-                $status = trim(@$evento['status']);
-                $local = trim(@$evento['local']);
-                $codigoCep = trim(@$evento['codigo']);
-                $cidade = trim(@$evento['cidade']);
-                $uf = trim(@$evento['uf']);
-
-
-                $objMdCorExpedicaoAndamentoDTO = new MdCorExpedicaoAndamentoDTO();
-                $objMdCorExpedicaoAndamentoDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedicaoSolicitada);
-                $objMdCorExpedicaoAndamentoDTO->setDthDataHora($dataHora);
-
-                $objMdCorExpedicaoAndamentoDTO->setDthDataUltimaAtualizacao($dtUltimaAtualizacao);
-
-                $objMdCorExpedicaoAndamentoDTO->setStrDescricao($descricao);
-                $objMdCorExpedicaoAndamentoDTO->setStrDetalhe($detalhe);
-                $objMdCorExpedicaoAndamentoDTO->setNumStatus($status);
-                $objMdCorExpedicaoAndamentoDTO->setStrLocal($local);
-                $objMdCorExpedicaoAndamentoDTO->setStrCodigoCep($codigoCep);
-                $objMdCorExpedicaoAndamentoDTO->setStrCidade($cidade);
-                $objMdCorExpedicaoAndamentoDTO->setStrUf($uf);
-                $objMdCorExpedicaoAndamentoDTO->setStrVersaoSroXml($versao);
-                $objMdCorExpedicaoAndamentoDTO->setStrSiglaObjeto($siglaObjeto);
-                $objMdCorExpedicaoAndamentoDTO->setStrNomeObjeto($nomeObjeto);
-                $objMdCorExpedicaoAndamentoDTO->setStrCategoriaObjeto($categoriaObjeto);
-                $objMdCorExpedicaoAndamentoDTO->setStrTipo($tipo);
-                $this->cadastrar($objMdCorExpedicaoAndamentoDTO);
+                    $objMdCorExpedicaoAndamentoDTO = new MdCorExpedicaoAndamentoDTO();
+                    $objMdCorExpedicaoAndamentoDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedicaoSolicitada);
+                    $objMdCorExpedicaoAndamentoDTO->setDthDataHora($dataHora);
+                    $objMdCorExpedicaoAndamentoDTO->setDthDataUltimaAtualizacao($dtUltimaAtualizacao);
+                    $objMdCorExpedicaoAndamentoDTO->setStrDescricao($descricao);
+                    $objMdCorExpedicaoAndamentoDTO->setStrDetalhe($detalhe);
+                    $objMdCorExpedicaoAndamentoDTO->setNumStatus($status);
+                    $objMdCorExpedicaoAndamentoDTO->setStrLocal($local);
+                    $objMdCorExpedicaoAndamentoDTO->setStrCodigoCep($codigoCep);
+                    $objMdCorExpedicaoAndamentoDTO->setStrCidade($cidade);
+                    $objMdCorExpedicaoAndamentoDTO->setStrUf($uf);
+                    $objMdCorExpedicaoAndamentoDTO->setStrVersaoSroXml($versao);
+                    $objMdCorExpedicaoAndamentoDTO->setStrSiglaObjeto($siglaObjeto);
+                    $objMdCorExpedicaoAndamentoDTO->setStrNomeObjeto($nomeObjeto);
+                    $objMdCorExpedicaoAndamentoDTO->setStrCategoriaObjeto($categoriaObjeto);
+                    $objMdCorExpedicaoAndamentoDTO->setStrTipo($tipo);
+                    $this->cadastrar($objMdCorExpedicaoAndamentoDTO);
+                }
             }
         }
+    }
+
+    private function trataRegistrosNaoEncontrados($idMdCorExpedicaoSolicitada,$dadosRastreio){
+        $siglaObjeto         = 'NE'; // Nao Encontrado
+        $nomeObjeto          = $categoriaObjeto = 'Não Encontrado';
+        $versao              = trim($dadosRastreio['versao']);
+        $dtUltimaAtualizacao = $dataHora = date('d/m/Y H:i:s');
+        $descricao           = $detalhe = MdCorObjetoINT::UTF8_Decode( $dadosRastreio['objetos'][0]['mensagem'] );
+        $status              = 29;
+
+        $objMdCorExpedicaoAndamentoDTO = new MdCorExpedicaoAndamentoDTO();
+
+        $objMdCorExpedicaoAndamentoDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedicaoSolicitada);
+        $objMdCorExpedicaoAndamentoDTO->setDthDataHora($dataHora);
+        $objMdCorExpedicaoAndamentoDTO->setDthDataUltimaAtualizacao($dtUltimaAtualizacao);
+        $objMdCorExpedicaoAndamentoDTO->setStrDescricao($descricao);
+        $objMdCorExpedicaoAndamentoDTO->setStrDetalhe($detalhe);
+        $objMdCorExpedicaoAndamentoDTO->setNumStatus($status);
+        $objMdCorExpedicaoAndamentoDTO->setStrLocal('Anatel-Correios');
+        $objMdCorExpedicaoAndamentoDTO->setStrCodigoCep(00000000);
+        $objMdCorExpedicaoAndamentoDTO->setStrCidade('Brasília');
+        $objMdCorExpedicaoAndamentoDTO->setStrUf('DF');
+        $objMdCorExpedicaoAndamentoDTO->setStrVersaoSroXml($versao);
+        $objMdCorExpedicaoAndamentoDTO->setStrSiglaObjeto($siglaObjeto);
+        $objMdCorExpedicaoAndamentoDTO->setStrNomeObjeto($nomeObjeto);
+        $objMdCorExpedicaoAndamentoDTO->setStrCategoriaObjeto($categoriaObjeto);
+        $objMdCorExpedicaoAndamentoDTO->setStrTipo('BDE');
+        $this->cadastrar($objMdCorExpedicaoAndamentoDTO);
     }
 
     private function _getAndamentosSolicitacao($idSol)

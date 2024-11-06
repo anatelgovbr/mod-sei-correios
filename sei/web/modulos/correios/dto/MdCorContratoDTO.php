@@ -40,6 +40,20 @@ class MdCorContratoDTO extends InfraDTO
             'NumeroCnpj',
             'numero_cnpj');
 
+        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DBL,
+            'IdProcedimento',
+            'id_procedimento');
+
+        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
+            'SinAtivo',
+            'sin_ativo');
+
+        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM,
+            'IdMdCorDiretoria',
+            'id_md_cor_diretoria');
+
+
+        /* Atributos a partir da versão 2.3 em desuso. Será mantido devido ao uso do Script de instalação */
         $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM,
             'AnoContratoCorreio',
             'numero_ano_contrato');
@@ -47,10 +61,6 @@ class MdCorContratoDTO extends InfraDTO
         $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
             'UrlWebservice',
             'url_webservice');
-
-        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DBL,
-            'IdProcedimento',
-            'id_procedimento');
 
         $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
             'Usuario',
@@ -64,13 +74,9 @@ class MdCorContratoDTO extends InfraDTO
             'CodigoAdministrativo',
             'codigo_administrativo');
 
-        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
-            'SinAtivo',
-            'sin_ativo');
-
-        $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM,
-            'IdMdCorDiretoria',
-            'id_md_cor_diretoria');
+        /* Atributos a partir da versão 2.3 em desuso.
+         *   FIM
+         */
 
         $this->configurarPK('IdMdCorContrato', InfraDTO::$TIPO_PK_NATIVA);
 

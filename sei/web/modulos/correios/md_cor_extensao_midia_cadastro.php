@@ -45,7 +45,8 @@ try {
                     $objMdCorExtensaoMidiaRN = new MdCorExtensaoMidiaRN();
 
                     $arrObjMdCorExtensaoMidiaDTO = $objMdCorExtensaoMidiaRN->listar($objMdCorExtensaoMidiaDTO);
-                    $bolMinimoUmRegistro = false;
+                    $bolMinimoUmRegistro = $arrValuesExtensoes ? true : false;
+
                     foreach ($arrObjMdCorExtensaoMidiaDTO as $chave => $objMdCorExtensaoMidiaDTO) {
                         if (in_array($objMdCorExtensaoMidiaDTO->getNumIdArquivoExtensao(), $arrValuesExtensoes)) {
 	                        $bolMinimoUmRegistro = true;
@@ -205,6 +206,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         
     </form>
 <?
+include_once('md_cor_funcoes_js.php');
 require_once("md_cor_extensao_midia_cadastro_js.php");
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();

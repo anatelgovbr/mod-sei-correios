@@ -34,10 +34,6 @@ class MdCorServicoPostalDTO extends InfraDTO {
                                    'nome');
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
-                                   'IdWsCorreios',
-                                   'id_ws_correios');
-
-    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
                                    'CodigoWsCorreios',
                                    'codigo_ws_correios');
 
@@ -51,7 +47,7 @@ class MdCorServicoPostalDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
                                    'SinServicoCobrar',
-                                   'sin_servico_cobrar ');
+                                   'sin_servico_cobrar');
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR,
                                     'SinAnexarMidia',

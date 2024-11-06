@@ -18,8 +18,13 @@
     public static $STA_GERADA = 'G';
     public static $STA_PENDENTE = 'P';
     public static $STA_ENTREGUES = 'E';
+    public static $STA_CANCELADA = 'C';
+
     public static $STA_RETORNO_AR_PENDENTE = 'R';
     public static $STA_FINALIZADA = 'F';
+
+    public static $STR_SING_PRE_POSTAGEM = 'Pré-Postagem';
+    public static $STR_PLURAL_PRE_POSTAGEM = 'Pré-Postagens';
 
     public function __construct() {
       parent::__construct();
@@ -238,6 +243,7 @@
           $objMdCorExpedicaoSolicitadaDTO->retStrNomeServicoPostal();
           $objMdCorExpedicaoSolicitadaDTO->retStrDescricaoServicoPostal();
           $objMdCorExpedicaoSolicitadaDTO->retStrFormaExpedicao();
+          $objMdCorExpedicaoSolicitadaDTO->retStrCodigoRastreamento();
           $objMdCorExpedicaoSolicitadaDTO->setDblIdUnidadeExpedidora($idUnidadeAtual);
 
           $objMdCorExpedicaoSolicitadaDTO->setNumIdMdCorPlp($item->getNumIdMdPlp());
@@ -401,22 +407,19 @@
      */
     protected function gerarPlpWebServiceControlado($arrIdMdCorExpedicaoSolicitada) {
       try {
+
         //Valida Permissao
         SessaoSEI::getInstance()->validarPermissao('md_cor_plp_webservice_acessar');
+        $strUrlAPIUsada = '';
 
         $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
 
         $objMdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorServicoPostal();
         $objMdCorExpedicaoSolicitadaDTO->retDblIdMdCorContrato();
-        $objMdCorExpedicaoSolicitadaDTO->retStrUrlWebService();
-        $objMdCorExpedicaoSolicitadaDTO->retStrUsuario();
         $objMdCorExpedicaoSolicitadaDTO->retStrCartaoPostagem();
-        $objMdCorExpedicaoSolicitadaDTO->retStrSenha();
         $objMdCorExpedicaoSolicitadaDTO->retNumNumeroCnpj();
         $objMdCorExpedicaoSolicitadaDTO->retStrNumeroContratoCorreio();
-        $objMdCorExpedicaoSolicitadaDTO->retStrNumeroCodigoAdministrativo();
-        $objMdCorExpedicaoSolicitadaDTO->retNumIdWsCorreios();
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorContato();
         $objMdCorExpedicaoSolicitadaDTO->retDblIdUnidadeExpedidora();
         $objMdCorExpedicaoSolicitadaDTO->retDblIdContatoOrgao();
@@ -424,8 +427,11 @@
         $objMdCorExpedicaoSolicitadaDTO->retStrExpedicaoAvisoRecebimentoServico();
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
         $objMdCorExpedicaoSolicitadaDTO->retStrBairroContratoOrgao();
-        $objMdCorExpedicaoSolicitadaDTO->retStrCodigoDiretoria();
-        $objMdCorExpedicaoSolicitadaDTO->setDistinct(true);
+
+        $objMdCorExpedicaoSolicitadaDTO->retStrNomeSerie();
+        $objMdCorExpedicaoSolicitadaDTO->retStrNumeroDocumento();
+        $objMdCorExpedicaoSolicitadaDTO->retStrProtocoloFormatado();
+        $objMdCorExpedicaoSolicitadaDTO->retStrProtocoloFormatadoDocumento();
 
         //Dados Destinatario
         $objMdCorExpedicaoSolicitadaDTO->retStrNomeDestinatario();
@@ -437,166 +443,158 @@
         $objMdCorExpedicaoSolicitadaDTO->retStrSiglaUfDestinatario();
 
         $objMdCorExpedicaoSolicitadaDTO->setNumIdMdCorExpedicaoSolicitada($arrIdMdCorExpedicaoSolicitada, InfraDTO::$OPER_IN);
+        $objMdCorExpedicaoSolicitadaDTO->setDistinct(true);
 
         $arrObjDTO = $objMdCorExpedicaoSolicitadaRN->listar($objMdCorExpedicaoSolicitadaDTO);
 
-
-        $arrQtdEtiquetas = [];
-        $arrServico = [];
         $arrIdUnidade = [];
-        foreach ($arrObjDTO as $objDto) {
-          $arrQtdEtiquetas[$objDto->getNumIdWsCorreios()] += 1;
-          $arrServico[$objDto->getNumIdWsCorreios()][] = $objDto->getNumIdMdCorExpedicaoSolicitada();
-          $wsdl = $objDto->getStrUrlWebService();
-          $cnpj = str_pad($objDto->getNumNumeroCnpj(),  14, '0',STR_PAD_LEFT);
-          $usuario = $objDto->getStrUsuario();
-          $senha = $objDto->getStrSenha();
-          $cartaoPostagem = $objDto->getStrCartaoPostagem();
-          $nuContratoCorreio = $objDto->getStrNumeroContratoCorreio();
-          $nuCodigoAdministrativo = $objDto->getStrNumeroCodigoAdministrativo();
-          $nuNumeroDiretoria = $objDto->getStrCodigoDiretoria();
-          $idContatoOrgao = $objDto->getDblIdContatoOrgao();
+        foreach ( $arrObjDTO as $objDto ) {
 
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['coServicoPostagem'] = $objDto->getStrCodigoWsCorreioServico();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['stExpedicaoAvisoRecebimentoServico'] = $objDto->getStrExpedicaoAvisoRecebimentoServico();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['noDestinatario'] = $objDto->getStrNomeDestinatario();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsEnderecoDestinatario'] = $objDto->getStrEnderecoDestinatario();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsBairroDestinatario'] = $objDto->getStrBairroDestinatario();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['nuCepDestinatario'] = $objDto->getStrCepDestinatario();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsComplementoDestinatario'] = $objDto->getStrComplementoDestinatario();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['noCidadeDestinatario'] = $objDto->getStrNomeCidadeDestinatario();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['sgUfDestinatario'] = $objDto->getStrSiglaUfDestinatario();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idMdCorExpedicaoSolicitada'] = $objDto->getNumIdMdCorExpedicaoSolicitada();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idMdCorContato'] = $objDto->getNumIdMdCorContato();
-          $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idUnidadeExpedidora'] = $arrIdUnidade[] = $objDto->getDblIdUnidadeExpedidora();
+              $objContDTO = new MdCorContatoDTO();
+              $objContDTO->retStrCep();
+              $objContDTO->setNumIdMdCorContato( $objDto->getNumIdMdCorContato() );
 
+              $objContatoRN = new MdCorContatoRN();
+              $objContDTO = $objContatoRN->consultar( $objContDTO );
+
+              if( $objContDTO->getStrCep() != $objDto->getStrCepDestinatario() ) {
+                  LogSEI::getInstance()->gravar("A solicitação de expedição de id ".$objDto->getNumIdMdCorExpedicaoSolicitada()." não foi inserida na PLP. O CEP enviado para a PLP está diferente do CEP cadastrado na tabela md_cor_contato. O CEP inserido na PLP é ".$objDto->getStrCepDestinatario(). " o CEP correto é o ".$objContDTO->getStrCep());
+                  continue;
+              }
+
+              $idContatoOrgao = $objDto->getDblIdContatoOrgao();
+
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['coServicoPostagem']                  = trim($objDto->getStrCodigoWsCorreioServico());
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['stExpedicaoAvisoRecebimentoServico'] = $objDto->getStrExpedicaoAvisoRecebimentoServico();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['noDestinatario']                     = $objDto->getStrNomeDestinatario();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsEnderecoDestinatario']             = $objDto->getStrEnderecoDestinatario();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsBairroDestinatario']               = $objDto->getStrBairroDestinatario();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['nuCepDestinatario']                  = $objDto->getStrCepDestinatario();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsComplementoDestinatario']          = $objDto->getStrComplementoDestinatario();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['noCidadeDestinatario']               = $objDto->getStrNomeCidadeDestinatario();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['sgUfDestinatario']                   = $objDto->getStrSiglaUfDestinatario();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idMdCorExpedicaoSolicitada']         = $objDto->getNumIdMdCorExpedicaoSolicitada();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idMdCorContato']                     = $objDto->getNumIdMdCorContato();
+
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['NomeSerie']                          = $objDto->getStrNomeSerie();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['NumeroDocumento']                    = $objDto->getStrNumeroDocumento();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['ProtocoloFormatadoDocumento']        = $objDto->getStrProtocoloFormatadoDocumento();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['ProtocoloFormatado']                 = $objDto->getStrProtocoloFormatado();
+
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['codigoObjeto']                       = null;
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idPrePostagem']                      = null;
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idUnidadeExpedidora'] = $arrIdUnidade[] = $objDto->getDblIdUnidadeExpedidora();
+
+              $objMdCorExpedicaoFormatoDTO = new MdCorExpedicaoFormatoDTO();
+              $objMdCorExpedicaoFormatoDTO->retStrProtocoloFormatado();
+              $objMdCorExpedicaoFormatoDTO->retStrNomeSerie();
+              $objMdCorExpedicaoFormatoDTO->retStrNumeroDocumento();
+              $objMdCorExpedicaoFormatoDTO->setNumIdMdCorExpedicaoSolicitada($objDto->getNumIdMdCorExpedicaoSolicitada());
+              $objMdCorExpedicaoFormatoDTO->setStrProtocoloFormatado($objDto->getStrProtocoloFormatadoDocumento(), INFRADTO::$OPER_DIFERENTE);
+
+              $arrObjMdCorExpedicaoFormatoDTO = ( new MdCorExpedicaoFormatoRN() )->listar($objMdCorExpedicaoFormatoDTO);
+
+              if ( !empty($arrObjMdCorExpedicaoFormatoDTO) ) {
+                  $arrAnexos = [];
+                  $numLimiteCaracteres = 30;
+                  foreach ( $arrObjMdCorExpedicaoFormatoDTO as $item ) {
+                      $codNumformat = trim( $item->getStrProtocoloFormatado() );
+                      $numLimiteCaracteres -= ( strlen( $codNumformat ) + 1 );
+                      if ( $numLimiteCaracteres > 0 ) {
+                          $arrAnexos[] = $codNumformat;
+                      } else {
+                          break;
+                      }
+                  }
+                  $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = implode( ',' , $arrAnexos );
+              } else {
+                  $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = null;
+              }
         }
 
         $objMDCorUnidadeExpRN = new MdCorUnidadeExpRN();
-        $objMDCorUnidadeExpRN->validaCamposEnderecoUnidade($arrIdUnidade);
+        $objMDCorUnidadeExpRN->validaCamposEnderecoUnidadePLP($arrIdUnidade);
 
-        $cliente = MdCorClientWsRN::gerarCliente($wsdl);
-        $arrCodigoRastreio = [];
-        $arrCodigoRastreioTratado = [];
-        
+        // Array parametro criado para montar a base de informacoes a ser passado para os Correios
+        $arrParametros = [
+          'idContatoOrgao'      => $idContatoOrgao,
+          'arrDadosSolicitacao' => $arrDados
+        ];
 
-        foreach ($arrQtdEtiquetas as $idServico => $qtdEtiqueta) {
-            
-          $codigoRastreio = $cliente->solicitaEtiquetas(
-            ['tipoDestinatario' => 'C'
-              , 'identificador' => $cnpj
-              , 'idServico' => $idServico
-              , 'qtdEtiquetas' => $qtdEtiqueta
-              , 'usuario' => $usuario
-              , 'senha' => $senha
-            ]
-          )->return;
-        
-          $arrDadosRastreioWebService = explode(',', $codigoRastreio);
+        // ['idSolicExp' => idMdCorSolicitacaoExpedicao , 'arrJson' => estrutura do Json para a API ]
+        $arrParamJson = $this->montarDadosJsonPostagem($arrParametros);
 
-          $codRangeInicial = substr(current($arrDadosRastreioWebService), 2, 8);
-          $codRangeFinal = substr(end($arrDadosRastreioWebService), 2, 8);
-          $sgCodigoRastreio = substr(current($arrDadosRastreioWebService), 0, 2);
-          $sgPais = substr(current($arrDadosRastreioWebService), 10);
+        // retorna dados da integração GERAR PRE POSTAGEM
+        $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 
-          for ($inicio = $codRangeInicial; $inicio <= $codRangeFinal; $inicio++) {
-            $arrCodigoRastreio[$idServico][] = $sgCodigoRastreio . str_pad($inicio, 8, '0', STR_PAD_LEFT) . $sgPais;
-          }
+        $objMdCorIntegSolicPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$GERAR_PRE_POSTAGEM);
 
-          $arrDv[$idServico] = $cliente->geraDigitoVerificadorEtiquetas(
-            ['etiquetas' => $arrCodigoRastreio[$idServico]
-              , 'usuario' => $usuario
-              , 'senha' => $senha
-            ]
-          )->return;
+        if ( is_null( $objMdCorIntegSolicPPN ) ) throw new InfraException('Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM .' não existe ou está inativo.');
 
+        $arrParametroRest = [
+            'endpoint' => $objMdCorIntegSolicPPN->getStrUrlOperacao(),
+            'token'    => $objMdCorIntegSolicPPN->getStrToken(),
+            'expiraEm' => $objMdCorIntegSolicPPN->getDthDataExpiraToken(),
+        ];
 
-          $contador = 0;
-          $cCodigoRastreiamento = 0;
-          foreach ($arrDv as $idServico => $dadosDv) {
-            $dadosDv = is_array($dadosDv) ? $dadosDv : [$dadosDv];
-            foreach ($dadosDv as $chave => $dv) {
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['codigoRastreio'] = substr($arrCodigoRastreio[$idServico][$chave], 0, 10)
-                . $dv
-                . substr($arrCodigoRastreio[$idServico][$chave], 11);
+        $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegSolicPPN);
 
-              $arrCodigoRastreioFinal[$arrServico[$idServico][$chave]] = $arrCodigoRastreioTratado[$cCodigoRastreiamento]['codigoRastreio'];
-
-              $arrEtiquetaSemDigito[] =  substr($arrCodigoRastreio[$idServico][$chave], 0, 10)
-                . substr($arrCodigoRastreio[$idServico][$chave], 11);
-              $IdMdCorExpedicaoSolicitada = $arrIdMdCorExpedicaoSolicitada[$contador];
-
-                $objContDTO = new MdCorContatoDTO();
-                $objContDTO->retStrCep();
-                $objContDTO->setNumIdMdCorContato($arrDados[$IdMdCorExpedicaoSolicitada]['idMdCorContato']);
-
-                $objContatoRN = new MdCorContatoRN();
-                $objContDTO = $objContatoRN->consultar($objContDTO);
-
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['IdMdCorExpedicaoSolicitada'] = $IdMdCorExpedicaoSolicitada;
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['coServicoPostagem'] = trim($arrDados[$IdMdCorExpedicaoSolicitada]['coServicoPostagem']);
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['stExpedicaoAvisoRecebimentoServico'] = trim($arrDados[$IdMdCorExpedicaoSolicitada]['stExpedicaoAvisoRecebimentoServico']);
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['noDestinatario'] = $arrDados[$IdMdCorExpedicaoSolicitada]['noDestinatario'];
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['dsEnderecoDestinatario'] = $arrDados[$IdMdCorExpedicaoSolicitada]['dsEnderecoDestinatario'];
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['dsBairroDestinatario'] = $arrDados[$IdMdCorExpedicaoSolicitada]['dsBairroDestinatario'];
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['nuCepDestinatario'] = $arrDados[$IdMdCorExpedicaoSolicitada]['nuCepDestinatario'];
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['dsComplementoDestinatario'] = $arrDados[$IdMdCorExpedicaoSolicitada]['dsComplementoDestinatario'];
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['noCidadeDestinatario'] = $arrDados[$IdMdCorExpedicaoSolicitada]['noCidadeDestinatario'];
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['sgUfDestinatario'] = $arrDados[$IdMdCorExpedicaoSolicitada]['sgUfDestinatario'];
-              $arrCodigoRastreioTratado[$cCodigoRastreiamento]['idUnidadeExpedidora'] = $arrDados[$IdMdCorExpedicaoSolicitada]['idUnidadeExpedidora'];
-              if($objContDTO->getStrCep() != $arrCodigoRastreioTratado[$cCodigoRastreiamento]['nuCepDestinatario']) {
-                  unset($arrCodigoRastreioFinal[$arrServico[$idServico][$chave]]);
-                  LogSEI::getInstance()->gravar("A solicitação de expedição de id ".$IdMdCorExpedicaoSolicitada." não foi inserida na PLP. O CEP enviado para a PLP está diferente do CEP cadastrado na tabela md_cor_contato. O CEP inserido na PLP é ".$arrCodigoRastreioTratado[$cCodigoRastreiamento]['nuCepDestinatario']. " o CEP correto é o ".$objContDTO->getStrCep());
-
-              }
-              $cCodigoRastreiamento++;
-              $contador++;
-            }
-          }
+        if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
+            $strUrlAPIUsada = $ret['url'] ?? $arrParametroRest['endpoint'];
+            throw new InfraException("Falha na Integração: " . MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM . "." . "\n" . $ret['msg'] );
         }
 
+        // instancia class ApiRest com os dados necessarios para uso da API que gera Pre Postagem
+        $objMdCorApiPPN = new MdCorApiRestRN( $arrParametroRest );
 
-        $arrParametros = [
-          'nuCartaoPostagem' => $cartaoPostagem,
-          'nuContrato' => $nuContratoCorreio,
-          'nuDiretoria' => $nuNumeroDiretoria,
-          'coAdministrativo' => $nuCodigoAdministrativo,
-          'nuCnpjRemetente' => $cnpj,
-          'idContatoOrgao' => $idContatoOrgao,
-          'arrCodigoRastreioTratado' => $arrCodigoRastreioTratado,
-        ];
+        $arrCodigoRastreio = [];
 
-        $xml = $this->_recuperarXmlPlp($arrParametros);
+        foreach ( $arrParamJson as $arrItens ) {
 
-        $arrEtiquetaSemDigito = array_values(array_unique($arrEtiquetaSemDigito));
+            $rs = $objMdCorApiPPN->gerarPPN( $arrItens['arrJson'] );
 
-        $arrParametroPlp = ['xml' => $xml
-          , 'idPlpCliente' => '1'
-          , 'cartaoPostagem' => $cartaoPostagem
-          , 'listaEtiquetas' => $arrEtiquetaSemDigito
-          , 'usuario' => $usuario
-          , 'senha' => $senha
-        ];
-        $idPlp = $cliente->fechaPlpVariosServicos($arrParametroPlp)->return;
+            if ( is_array( $rs ) and $rs['suc'] === false ) {
+                $strUrlAPIUsada = $objMdCorApiPPN->getEndPoint();
+                throw new InfraException("A solicitação de expedição de id {$arrItens['idSolicExp']} não foi inserida na PLP.\n\n {$rs['msg']}");
+            }
+
+            $arrCodigoRastreio[$arrItens['idSolicExp']] = [
+              'codigoObjeto'  => $rs['codigoObjeto'],
+              'idPrePostagem' => $rs['id']
+            ];
+        }
 
         $arrRetorno = [
-          'idPlp' => $idPlp,
-          'arrRastreio' => $arrCodigoRastreioFinal
+          'arrRastreio' => $arrCodigoRastreio
         ];
 
         return $arrRetorno;
 
-      } catch (SoapFault $soapFault) {
-        throw new InfraException('Erro ao gerar PLP - WebService.', $soapFault);
-      }
+      } catch ( InfraException $e ) {
+          $operacao = '';
+          $msgDefault = "Não foi possível Gerar PLP devido à incompatibilidade das informações da Solicitação de Expedição com a nova Integração com os Correios. 
+          É necessário Devolver a Solicitação de Expedição e requerer à Unidade Solicitante que revise o Serviço Postal e demais informações da Solicitação.";
 
+          if ( ! empty( $strUrlAPIUsada) ) $operacao = "Operação: $strUrlAPIUsada \n\n";
+
+          $msgFinal = "$msgDefault \n\n" . $operacao . "Retorno: " . $e->getMessage();
+
+          $e->lancarValidacao( $msgFinal );
+
+          LogSEI::getInstance()->gravar( $msgFinal );
+      }
     }
 
     protected function alterarDadosPlpSolicitacaoControlado($arrParametro) {
       try {
+        $idPlp = $this->geradorCodigoPLP();
+        $idPlp += 1;
+
         $mdCorPlpDto = new MdCorPlpDTO();
+
         SessaoSEI::getInstance()->validarAuditarPermissao('md_cor_plp_cadastrar', __METHOD__, $mdCorPlpDto);
-        $mdCorPlpDto->setDblCodigoPlp($arrParametro['idPlp']);
+
+        $mdCorPlpDto->setDblCodigoPlp($idPlp);
         $mdCorPlpDto->setStrStaPlp(self::$STA_GERADA);
 
         $mdCorPlpDto->setNumIdUnidadeGeradora(SessaoSEI::getInstance()->getNumIdUnidadeAtual());
@@ -604,7 +602,8 @@
 
         $ret = $this->cadastrar($mdCorPlpDto);
 
-        foreach ($arrParametro['arrRastreio'] as $idMdCorExpedicaoSolicitada => $dadosRastreio) {
+        foreach ($arrParametro['arrRastreio'] as $k => $dadosRastreio) {
+          $idMdCorExpedicaoSolicitada = $k;
           $mdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
           $mdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
           $mdCorExpedicaoSolicitadaDTO->retTodos();
@@ -612,7 +611,8 @@
           $mdCorExpedicaoSolicitadaDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedicaoSolicitada);
           $mdCorExpedicaoSolicitadaDTO = $mdCorExpedicaoSolicitadaRN->consultar($mdCorExpedicaoSolicitadaDTO);
 
-          $mdCorExpedicaoSolicitadaDTO->setStrCodigoRastreamento($dadosRastreio);
+          $mdCorExpedicaoSolicitadaDTO->setStrCodigoRastreamento($dadosRastreio['codigoObjeto']);
+	      $mdCorExpedicaoSolicitadaDTO->setStrIdPrePostagem($dadosRastreio['idPrePostagem']);
           $mdCorExpedicaoSolicitadaDTO->setNumIdMdCorPlp($ret->getNumIdMdPlp());
 
           if (empty($mdCorExpedicaoSolicitadaDTO->getNumIdMdCorObjeto())) {
@@ -634,280 +634,6 @@
       } catch (Exception $e) {
         throw new InfraException('Gerar PLP.', $e);
       }
-    }
-
-    /**
-     * Metodo que gera o XML para geração do PLP seguindo o manual Correios - Revisão: 13/06/2017
-     * @param $arrParametros
-     * @return string
-     */
-    private function _recuperarXmlPlp($arrParametros) {
-      $dom = new DOMDocument("1.0", "ISO-8859-1");
-      $dom->preserveWhiteSpace = false;
-      $dom->formatOutput = true;
-
-      //Tag principal
-      $tagInicial = $dom->createElement("correioslog");
-
-      //Tipo de Arquivo e Versao
-      $tipoArquivo = $dom->createElement("tipo_arquivo", 'Postagem');
-      $versao = $dom->createElement("versao_arquivo", '2.3');
-      $tagInicial->appendChild($tipoArquivo);
-      $tagInicial->appendChild($versao);
-//
-//
-//    //tag da PLP
-      $plp = $dom->createElement("plp");
-      $idPlp = $dom->createElement("id_plp");
-      $vlGlobal = $dom->createElement("valor_global");
-      $mcuUnidadePostagem = $dom->createElement("mcu_unidade_postagem");
-      $nomeUnidadePostagem = $dom->createElement("nome_unidade_postagem");
-      $nuCartaoPostagem = $dom->createElement("cartao_postagem", $arrParametros['nuCartaoPostagem']);
-
-      $plp->appendChild($idPlp);
-      $plp->appendChild($vlGlobal);
-      $plp->appendChild($mcuUnidadePostagem);
-      $plp->appendChild($nomeUnidadePostagem);
-      $plp->appendChild($nuCartaoPostagem);
-      $tagInicial->appendChild($plp);
-
-      //Tag Remetente
-      $remetente = $dom->createElement("remetente");
-      $nuContrato = $dom->createElement("numero_contrato", $arrParametros['nuContrato']);
-      $remetente->appendChild($nuContrato);
-      $nuDiretoria = $dom->createElement("numero_diretoria", '10');
-      $remetente->appendChild($nuDiretoria);
-      $coAdministrativo = $dom->createElement("codigo_administrativo", $arrParametros['coAdministrativo']);
-      $remetente->appendChild($coAdministrativo);
-
-      $objContatoDTO = new ContatoDTO();
-      $objContatoDTO->retNumIdContato();
-      $objContatoDTO->retStrNome();
-      $objContatoDTO->retStrEndereco();
-      $objContatoDTO->retStrComplemento();
-      $objContatoDTO->retStrBairro();
-      $objContatoDTO->retStrCep();
-      $objContatoDTO->retStrNomeCidade();
-      $objContatoDTO->retStrSiglaUf();
-      $objContatoDTO->retDblCnpj();
-      $objContatoDTO->retStrSigla();
-      $objContatoDTO->retStrEmail();
-      $objContatoDTO->retStrTelefoneComercial();
-      $objContatoDTO->retStrSinEnderecoAssociado();
-      $objContatoDTO->retStrEnderecoContatoAssociado();
-      $objContatoDTO->retStrComplementoContatoAssociado();
-      $objContatoDTO->retStrBairroContatoAssociado();
-      $objContatoDTO->retStrCepContatoAssociado();
-      $objContatoDTO->retStrNomeCidadeContatoAssociado();
-      $objContatoDTO->retStrSiglaUfContatoAssociado();
-      $objContatoDTO->setNumIdContato($arrParametros['idContatoOrgao']);
-
-
-      $objContatoRN = new ContatoRN();
-      $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
-
-      $noRemetente = $dom->createElement('nome_remetente') ;
-      $noRemetente->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($objContatoDTO->getStrNome()))));
-      $remetente->appendChild($noRemetente);
-
-      $arrContato = $this->retornarArrEnderecoComplento($objContatoDTO->getStrEndereco(), $objContatoDTO->getStrComplemento());
-
-
-
-      $cpfCnpjRemetente = $dom->createElement("cpf_cnpj_remetente", InfraUtil::retirarFormatacao(InfraUtil::formatarCnpj($objContatoDTO->getDblCnpj())));
-      $remetente->appendChild($cpfCnpjRemetente);
-
-      $remetenteEndereco    = $arrContato['endereco'];
-      $remetenteComplemento = $arrContato['complemento'];
-
-      $logradouroRemetente = $dom->createElement('logradouro_remetente') ;
-      $logradouroRemetente->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($remetenteEndereco))));
-      $remetente->appendChild($logradouroRemetente);
-
-      $nuRemetente = $dom->createElement('numero_remetente') ;
-      $nuRemetente->appendChild($dom->createCDATASection('N/A'));
-      $remetente->appendChild($nuRemetente);
-
-      $compRemetente = $dom->createElement('complemento_remetente') ;
-      $compRemetente->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($remetenteComplemento))));
-      $remetente->appendChild($compRemetente);
-
-      $bairroRemetente = $dom->createElement('bairro_remetente') ;
-      $bairroRemetente->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($objContatoDTO->getStrBairro()))));
-      $remetente->appendChild($bairroRemetente);
-
-      $cepRemetente = $dom->createElement("cep_remetente", InfraUtil::retirarFormatacao($objContatoDTO->getStrCep()));
-      $remetente->appendChild($cepRemetente);
-
-      $cidadeRemetente = $dom->createElement('cidade_remetente') ;
-
-      $cidade_Remetente = substr(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($objContatoDTO->getStrNomeCidade())), 0, 30);
-      $cidadeRemetente->appendChild($dom->createCDATASection($cidade_Remetente));
-      $remetente->appendChild($cidadeRemetente);
-
-      $ufRemetente = $dom->createElement("uf_remetente", $objContatoDTO->getStrSiglaUf());
-      $remetente->appendChild($ufRemetente);
-
-      $telefoneRemetente = $dom->createElement('telefone_remetente') ;
-      $telefoneRemetente->appendChild($dom->createCDATASection(InfraUtil::retirarFormatacao($objContatoDTO->getStrTelefoneComercial())));
-      $remetente->appendChild($telefoneRemetente);
-
-      $faxRemetente = $dom->createElement("fax_remetente");
-      $remetente->appendChild($faxRemetente);
-
-      $emailRemetente = $dom->createElement('email_remetente') ;
-      $emailRemetente->appendChild($dom->createCDATASection($objContatoDTO->getStrEmail()));
-      $remetente->appendChild($emailRemetente);
-
-      $tagInicial->appendChild($remetente);
-
-      //forma pagamento
-      $emailRemetente = $dom->createElement("forma_pagamento");
-      $tagInicial->appendChild($emailRemetente);
-
-      //Objeto Postal
-
-      foreach ($arrParametros['arrCodigoRastreioTratado'] as $codigoRastreio) {
-        $objetoPostal = $dom->createElement("objeto_postal");
-
-        $nuEtiqueta = $dom->createElement("numero_etiqueta", $codigoRastreio['codigoRastreio']);
-        $objetoPostal->appendChild($nuEtiqueta);
-        $coObjCliente = $dom->createElement("codigo_objeto_cliente");
-        $objetoPostal->appendChild($coObjCliente);
-        $coServicoPostagem = $dom->createElement("codigo_servico_postagem", $codigoRastreio['coServicoPostagem']);
-        $objetoPostal->appendChild($coServicoPostagem);
-        $cubagem = $dom->createElement("cubagem", '0,00');
-        $objetoPostal->appendChild($cubagem);
-        $peso = $dom->createElement("peso", 10);
-        $objetoPostal->appendChild($peso);
-        $rt1 = $dom->createElement("rt1");
-        $objetoPostal->appendChild($rt1);
-        $rt2 = $dom->createElement("rt2");
-        $objetoPostal->appendChild($rt2);
-        $tagInicial->appendChild($objetoPostal);
-
-        //Destinatario
-        $destinatario = $dom->createElement("destinatario");
-
-        $noDestinatario = $dom->createElement('nome_destinatario') ;
-        $noDestinatario->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($codigoRastreio['noDestinatario']))));
-        $destinatario->appendChild($noDestinatario);
-
-        $telDestinatario = $dom->createElement("telefone_destinatario");
-        $destinatario->appendChild($telDestinatario);
-        $celDestinatario = $dom->createElement("celular_destinatario");
-        $destinatario->appendChild($celDestinatario);
-        $emailDestinatario = $dom->createElement("email_destinatario");
-        $destinatario->appendChild($emailDestinatario);
-
-        $destinatarioEndereco    = ($objContatoDTO->getStrSinEnderecoAssociado() == 'S') ? $objContatoDTO->getStrEnderecoContatoAssociado(): $codigoRastreio['dsEnderecoDestinatario'];
-        $destinatarioComplemento = ($objContatoDTO->getStrSinEnderecoAssociado() == 'S') ? $objContatoDTO->getStrComplementoContatoAssociado(): $codigoRastreio['dsComplementoDestinatario'];
-
-        $arrContato = $this->retornarArrEnderecoComplento( $destinatarioEndereco , $destinatarioComplemento);
-
-        $destinatarioEndereco    = $arrContato['endereco'];
-        $destinatarioComplemento = $arrContato['complemento'];
-
-        $logradouroDestinatario = $dom->createElement('logradouro_destinatario') ;
-        $logradouroDestinatario->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos( $destinatarioEndereco ))));
-        $destinatario->appendChild($logradouroDestinatario);
-
-        $compDestinatario = $dom->createElement('complemento_destinatario') ;
-        $compDestinatario->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos( $destinatarioComplemento ))));
-        $destinatario->appendChild($compDestinatario);
-
-        $nuEnderecoDestinatario = $dom->createElement("numero_end_destinatario", 'N/A');
-        $destinatario->appendChild($nuEnderecoDestinatario);
-        $objetoPostal->appendChild($destinatario);
-        // Tag Nacional
-        $nacional = $dom->createElement("nacional");
-
-        $bairroDestinatario = $dom->createElement('bairro_destinatario') ;
-        $bairroDestinatario->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($objContatoDTO->getStrSinEnderecoAssociado() == 'S' ? $objContatoDTO->getStrBairroContatoAssociado() : $codigoRastreio['dsBairroDestinatario']))));
-        $nacional->appendChild($bairroDestinatario);
-
-        $cidadeDestinatario = $dom->createElement('cidade_destinatario') ;
-        $cidadeDestinatario->appendChild($dom->createCDATASection(preg_replace('/[^A-Za-z0-9\-]/', ' ', InfraString::excluirAcentos($objContatoDTO->getStrSinEnderecoAssociado() == 'S' ? $objContatoDTO->getStrNomeCidadeContatoAssociado() : $codigoRastreio['noCidadeDestinatario']))));
-        $nacional->appendChild($cidadeDestinatario);
-
-        $ufDestinatario = $dom->createElement("uf_destinatario", $objContatoDTO->getStrSinEnderecoAssociado() == 'S' ? $objContatoDTO->getStrSiglaUf() : $codigoRastreio['sgUfDestinatario']);
-        $nacional->appendChild($ufDestinatario);
-
-        $cepDestinatario = $dom->createElement('cep_destinatario') ;
-        $cepDestinatario->appendChild($dom->createCDATASection(InfraUtil::retirarFormatacao($objContatoDTO->getStrSinEnderecoAssociado() == 'S' ? $objContatoDTO->getStrCepContatoAssociado() : $codigoRastreio['nuCepDestinatario'])));
-        $nacional->appendChild($cepDestinatario);
-
-        $codigoUsuarioPostal = $dom->createElement("codigo_usuario_postal");
-        $nacional->appendChild($codigoUsuarioPostal);
-        $centroCustoCliente = $dom->createElement("centro_custo_cliente");
-        $nacional->appendChild($centroCustoCliente);
-        $numeroNotaFiscal = $dom->createElement("numero_nota_fiscal");
-        $nacional->appendChild($numeroNotaFiscal);
-        $serieNotaFiscal = $dom->createElement("serie_nota_fiscal");
-        $nacional->appendChild($serieNotaFiscal);
-        $valorNotaFiscal = $dom->createElement("valor_nota_fiscal");
-        $nacional->appendChild($valorNotaFiscal);
-        $naturezaNotaFiscal = $dom->createElement("natureza_nota_fiscal");
-        $nacional->appendChild($naturezaNotaFiscal);
-        $descricaoObjeto = $dom->createElement("descricao_objeto");
-        $nacional->appendChild($descricaoObjeto);
-        $valorACobrar = $dom->createElement("valor_a_cobrar");
-        $nacional->appendChild($valorACobrar);
-        $objetoPostal->appendChild($nacional);
-
-        //tag servico adicional
-        $servicoAdicional = $dom->createElement("servico_adicional");
-        $nacional = $dom->createElement("codigo_servico_adicional", "025");
-        $servicoAdicional->appendChild($nacional);
-
-        if( $codigoRastreio['stExpedicaoAvisoRecebimentoServico'] == 'S' ){
-            $nacional = $dom->createElement("codigo_servico_adicional", "001");
-            $servicoAdicional->appendChild($nacional);
-        }
-
-        $valorDeclarado = $dom->createElement("valor_declarado");
-        $servicoAdicional->appendChild($valorDeclarado);
-        $objetoPostal->appendChild($servicoAdicional);
-
-
-        //tag dimensao_objeto
-        /**
-         * @todo verificar com os correios pois o documento está desacordo com o XSD de validacao
-         */
-        $dimensaoObjeto = $dom->createElement("dimensao_objeto");
-        $tipoObjeto = $dom->createElement("tipo_objeto", '001');
-        $dimensaoObjeto->appendChild($tipoObjeto);
-        $dimensaoAltura = $dom->createElement("dimensao_altura", '0');
-        $dimensaoObjeto->appendChild($dimensaoAltura);
-        $dimencaoLargura = $dom->createElement("dimensao_largura", '0');
-        $dimensaoObjeto->appendChild($dimencaoLargura);
-        $dimencaoComprimento = $dom->createElement("dimensao_comprimento", '0');
-        $dimensaoObjeto->appendChild($dimencaoComprimento);
-        $dimencaoDiametro = $dom->createElement("dimensao_diametro", '0');
-        $dimensaoObjeto->appendChild($dimencaoDiametro);
-        $objetoPostal->appendChild($dimensaoObjeto);
-
-
-        //tags finais
-        $dataPostagemSara = $dom->createElement("data_postagem_sara");
-        $objetoPostal->appendChild($dataPostagemSara);
-        $statusProcessamento = $dom->createElement("status_processamento", '0');
-        $objetoPostal->appendChild($statusProcessamento);
-        $numeroComprovantePostagem = $dom->createElement("numero_comprovante_postagem");
-        $objetoPostal->appendChild($numeroComprovantePostagem);
-        $vlCobrado = $dom->createElement("valor_cobrado");
-        $objetoPostal->appendChild($vlCobrado);
-      }
-
-
-      $dom->appendChild($tagInicial);
-
-
-#cabeçalho da página
-//    header("Content-Type: text/xml");
-# imprime o xml na tela
-//    print $dom->saveXML();die;
-      return $dom->saveXML();
     }
 
     private function retornarArrEnderecoComplento( $endereco, $complemento ){
@@ -1023,5 +749,228 @@
       return $objAtributoAndamentoAPI;
     }
 
+    private function montarDadosJsonPostagem( $arrParametros ){
+      $objContatoDTO = new ContatoDTO();
+      $objContatoDTO->retNumIdContato();
+      $objContatoDTO->retStrNome();
+      $objContatoDTO->retStrEndereco();
+      $objContatoDTO->retStrComplemento();
+      $objContatoDTO->retStrBairro();
+      $objContatoDTO->retStrCep();
+      $objContatoDTO->retStrNomeCidade();
+      $objContatoDTO->retStrSiglaUf();
+      $objContatoDTO->retDblCnpj();
+      $objContatoDTO->retStrSigla();
+      $objContatoDTO->retStrEmail();
+      $objContatoDTO->retStrTelefoneComercial();
+      $objContatoDTO->retStrSinEnderecoAssociado();
+      $objContatoDTO->retStrEnderecoContatoAssociado();
+      $objContatoDTO->retStrComplementoContatoAssociado();
+      $objContatoDTO->retStrBairroContatoAssociado();
+      $objContatoDTO->retStrCepContatoAssociado();
+      $objContatoDTO->retStrNomeCidadeContatoAssociado();
+      $objContatoDTO->retStrSiglaUfContatoAssociado();
+      $objContatoDTO->setNumIdContato($arrParametros['idContatoOrgao']);
+
+      $objContatoRN = new ContatoRN();
+      $objContatoDTO = $objContatoRN->consultarRN0324( $objContatoDTO );
+      return $this->montaEstruturaJsonPostagem( $objContatoDTO, $arrParametros );
+    }
+
+    private function montaEstruturaJsonPostagem( $objContatoDTO,$arrParametros ){
+
+    	$arrRetorno = [];
+
+	    $arrContato = $this->retornarArrEnderecoComplento($objContatoDTO->getStrEndereco(), $objContatoDTO->getStrComplemento());
+
+	    $arrRemetente = [
+		    "nome"        => substr(InfraString::excluirAcentos($objContatoDTO->getStrNome()),0,50),
+		    "dddTelefone" => "",
+		    "telefone"    => "",
+		    "dddCelular"  => "",
+		    "celular"     => "",
+		    "email"       => "",
+		    "cpfCnpj"     => InfraUtil::retirarFormatacao(InfraUtil::formatarCnpj($objContatoDTO->getDblCnpj())),
+		    "obs"         => "",
+		    "endereco"    => [
+			    "cep"         => InfraUtil::retirarFormatacao($objContatoDTO->getStrCep()),
+			    "logradouro"  => InfraString::excluirAcentos( str_replace( ['º','ª','&'] , ['','a','e'] , $arrContato['endereco'] ) ),
+			    "numero"      => "N/A",
+			    "complemento" => InfraString::excluirAcentos( str_replace( ['º','ª','&'] , ['','a','e'] , $arrContato['complemento'] ) ),
+			    "bairro"      => substr(InfraString::excluirAcentos($objContatoDTO->getStrBairro()), 0, 30),
+			    "cidade"      => substr(InfraString::excluirAcentos($objContatoDTO->getStrNomeCidade()), 0, 30),
+			    "uf"          => $objContatoDTO->getStrSiglaUf()
+		    ]
+	    ];
+
+	    foreach ( $arrParametros['arrDadosSolicitacao'] as $idSolic => $arrItens ) {
+            // configura dados de destinatario
+            if ( $objContatoDTO->getStrSinEnderecoAssociado() == 'S' ) {
+                $destinatarioEndereco    = $objContatoDTO->getStrEnderecoContatoAssociado();
+                $destinatarioComplemento = $objContatoDTO->getStrComplementoContatoAssociado() ?? "";
+                $destinatarioCEP         = $objContatoDTO->getStrCepContatoAssociado();
+                $destinatarioBairro      = $objContatoDTO->getStrBairroContatoAssociado();
+                $destinatarioCidade      = $objContatoDTO->getStrNomeCidadeContatoAssociado();
+                $destinatarioUF          = $objContatoDTO->getStrSiglaUfContatoAssociado();
+            } else {
+                $destinatarioEndereco    = $arrItens['dsEnderecoDestinatario'];
+                $destinatarioComplemento = $arrItens['dsComplementoDestinatario'] ?? "";
+                $destinatarioCEP         = $arrItens['nuCepDestinatario'];
+                $destinatarioBairro      = $arrItens['dsBairroDestinatario'];
+                $destinatarioCidade      = $arrItens['noCidadeDestinatario'];
+                $destinatarioUF          = $arrItens['sgUfDestinatario'];
+            }
+
+            $arrEnderecoDest = $this->retornarArrEnderecoComplento( $destinatarioEndereco , $destinatarioComplemento );
+
+	    	$arrDest = [
+			    "nome"        => substr(InfraString::excluirAcentos($arrItens['noDestinatario']),0,50),
+			    "dddTelefone" => "",
+			    "telefone"    => "",
+			    "dddCelular"  => "",
+			    "celular"     => "",
+			    "email"       => "",
+			    "cpfCnpj"     => "",
+			    "obs"         => "",
+			    "endereco"    => [
+				    "cep"         => InfraUtil::retirarFormatacao($destinatarioCEP),
+				    "logradouro"  => InfraString::excluirAcentos( str_replace( ['º','ª','&'],['','a','e'],$arrEnderecoDest['endereco'] ) ),
+				    "numero"      => "N/A",
+				    "complemento" => InfraString::excluirAcentos( str_replace( ['º','ª','&'],['','a','e'],$arrEnderecoDest['complemento'] ) ),
+				    "bairro"      => substr(InfraString::excluirAcentos($destinatarioBairro), 0, 30),
+				    "cidade"      => substr(InfraString::excluirAcentos($destinatarioCidade), 0, 30),
+				    "uf"          => $destinatarioUF,
+			    ]
+		    ];
+
+            // configura servico adicional
+            $arrServAdd = [
+                ['codigoServicoAdicional' => '025', 'valorDeclarado' => '0'],
+            ];
+
+            if ( $arrItens['stExpedicaoAvisoRecebimentoServico'] == 'S' ) array_push( $arrServAdd , ['codigoServicoAdicional' => '001', 'valorDeclarado' => '0'] );
+
+            // declaracao de conteudo
+            // $arrDecConteudo = [['conteudo'   => 'Nº Processo: 56.000011/2021-58','quantidade' => 1,'valor' => 0.1]],
+
+		    $arrJson = [
+                "idCorreios"              => "",
+                "remetente"               => $arrRemetente,
+                "destinatario"            => $arrDest,
+                "codigoServico"           => $arrItens['coServicoPostagem'],
+                "listaServicoAdicional"   => $arrServAdd,
+                #"itensDeclaracaoConteudo" => $arrDecConteudo,
+                "pesoInformado"                => "10",
+                "codigoFormatoObjetoInformado" => "1",
+                "alturaInformada"              => "0",
+                "larguraInformada"             => "0",
+                "comprimentoInformado"         => "0",
+                "diametroInformado"            => "0",
+                "cienteObjetoNaoProibido"      => "1",
+                "solicitarColeta"              => "N",
+                "observacao"                   => $arrItens['infoAnexos'],
+                "modalidadePagamento"          => "2"
+	        ];
+
+            //CARTA RG AR CONV: Correspondência Registrada com AR
+		    if ( $arrItens['coServicoPostagem'] == 80810 ) $arrJson['dataPrevistaPostagem'] = InfraData::getStrDataAtual();
+
+		    $arrRetorno[] = ['idSolicExp' => $idSolic , 'arrJson' => $arrJson];
+	    }
+
+	    return $arrRetorno;
+    }
+
+	protected function geradorCodigoPLPConectado(){
+    	$objMdCorPlpDTO = new MdCorPlpDTO();
+        $objMdCorPlpDTO->setOrd('CodigoPlp',InfraDTO::$TIPO_ORDENACAO_DESC);
+        $objMdCorPlpDTO->setNumMaxRegistrosRetorno(1);
+        $objMdCorPlpDTO->retDblCodigoPlp();
+        $objCodigoPLP = ( new MdCorPlpRN() )->consultar( $objMdCorPlpDTO );
+		return $objCodigoPLP ? $objCodigoPLP->getDblCodigoPlp() + 1 : 0;
+	}
+
+	protected function cancelarPlpConectado($arrDados){
+
+        // retorna dados da integração GERAR PRE POSTAGEM
+        $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+
+        $objMdCorIntegCancelarPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CANCELAR_PRE_POSTAGEM);
+
+        if ( empty($objMdCorIntegCancelarPPN) || ( is_array( $objMdCorIntegCancelarPPN ) && isset($objMdCorIntegCancelarPPN['suc'] ) && $objMdCorIntegCancelarPPN['suc'] === false ) )
+            return ['suc' => false , 'msg' => 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' não existe ou está inativo.'];
+
+        $arrParametroRest = [
+            'endpoint' => $objMdCorIntegCancelarPPN->getStrUrlOperacao(),
+            'token'    => $objMdCorIntegCancelarPPN->getStrToken(),
+            'expiraEm' => $objMdCorIntegCancelarPPN->getDthDataExpiraToken(),
+        ];
+
+        $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegCancelarPPN);
+
+        if ( is_array( $ret ) ) return ['suc' => false , 'msg' => $ret['msg']];
+
+        // instancia class ApiRest com os dados necessarios para uso da API que gera Pre Postagem
+        $objMdCorApiCancelarPPN = new MdCorApiRestRN( $arrParametroRest );
+
+        $arrCodRastreamento = $this->getListaCodigoRastreamento($arrDados['idPlp']);
+
+        $rs = $objMdCorApiCancelarPPN->cancelarPPN($arrCodRastreamento);
+
+        if ( is_array($rs) ){
+            $msgErroCompl = "Operação: {$objMdCorApiCancelarPPN->getEndPoint()}.#Retorno: {$rs['msg']}";
+            return ['suc' => false , 'msg' => $msgErroCompl];
+        }
+
+        $rs = $this->atualizarSolicitacoesAposCancelamentoPlp(['idPlp' => $_POST['idPlp']]);
+
+        if ( is_array($rs) ) {
+            return ['suc' => false , 'msg' => $rs['msg']];
+        }
+
+        return true;
+    }
+
+    private function getListaCodigoRastreamento($idPlp){
+        $objMdCorExpSolicitacaoDTO = new MdCorExpedicaoSolicitadaDTO();
+        $objMdCorExpSolicitacaoDTO->setNumIdMdCorPlp($idPlp);
+        $objMdCorExpSolicitacaoDTO->retStrCodigoRastreamento();
+
+        $arrObjExpSolicDTO = ( new MdCorExpedicaoSolicitadaRN() )->listar($objMdCorExpSolicitacaoDTO);
+        return InfraArray::converterArrInfraDTO($arrObjExpSolicDTO,'CodigoRastreamento');
+    }
+
+    protected function atualizarSolicitacoesAposCancelamentoPlpConectado($arrDados){
+        try {
+            // atualizar a PLP para Cancelada
+            $objMdCorPlpDTO = new MdCorPlpDTO();
+            $objMdCorPlpDTO->setNumIdMdPlp($arrDados['idPlp']);
+            $objMdCorPlpDTO->setStrStaPlp(self::$STA_CANCELADA);
+            $rs = ( new MdCorPlpRN() )->alterar( $objMdCorPlpDTO );
+
+            // atualizar as solicitacoes de expedicao
+            $objMdCorExpSolicitacaoDTO = new MdCorExpedicaoSolicitadaDTO();
+            $objMdCorExpSolicitacaoDTO->setNumIdMdCorPlp($arrDados['idPlp']);
+            $objMdCorExpSolicitacaoDTO->retNumIdMdCorExpedicaoSolicitada();
+            $objMdCorExpSolicitacaoDTO->retNumIdMdCorPlp();
+            $objMdCorExpSolicitacaoDTO->retStrCodigoRastreamento();
+            $objMdCorExpSolicitacaoDTO->retStrIdPrePostagem();
+
+            $objMdCorExpSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
+
+            $arrObjMdCorExpSolicitacaoDTO = $objMdCorExpSolicitadaRN->listar($objMdCorExpSolicitacaoDTO);
+
+            foreach ( $arrObjMdCorExpSolicitacaoDTO as $objExpSolicDTO ) {
+                $objExpSolicDTO->setNumIdMdCorPlp(null);
+                $objExpSolicDTO->setStrCodigoRastreamento(null);
+                $objExpSolicDTO->setStrIdPrePostagem(null);
+
+                $objMdCorExpSolicitadaRN->alterar( $objExpSolicDTO );
+            }
+
+        } catch(InfraException $e ) {
+            return ['suc' => false , 'msg' => $e->getMessage()];
+        }
+    }
   }
 

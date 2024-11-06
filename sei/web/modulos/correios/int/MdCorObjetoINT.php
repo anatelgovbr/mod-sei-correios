@@ -31,4 +31,18 @@ class MdCorObjetoINT extends InfraINT {
 
     return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorObjetoDTO, 'IdMdCorObjeto', 'IdMdCorTipoObjeto');
   }
+
+  public static function UTF8_Decode($str){
+  	if ( !empty($str) ) {
+		return utf8_decode($str);
+    }
+  }
+
+  public static function trataHoraAndamento( $hr ){
+	if ( !empty($hr) ) {
+		$arrHr = explode(':' , $hr);
+		$arrHr[2] = '00';
+		return implode(':' , $arrHr);
+	}
+  }
 }

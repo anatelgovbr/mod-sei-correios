@@ -31,15 +31,14 @@
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_DTH, 'DataExpedicao', 'data_expedicao');
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdUsuarioSolicitante', 'id_usuario_solicitante');
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinRecebido', 'sin_recebido');
-
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinObjetoAcessado', 'sin_objeto_acessado');
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdMdCorPlp', 'id_md_cor_plp');
-
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdUsuarioExpAutorizador', 'id_usuario_exp_autorizador');
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'CodigoRastreamento', 'codigo_rastreamento');
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'StatusCobranca', 'status_cobranca');
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinDevolvido', 'sin_devolvido');
       $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'JustificativaDevolucao', 'justificativa_devolucao');
+	  $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'IdPrePostagem', 'id_pre_postagem');
 
       //Fk's Atributo Tabela
       $this->configurarPK('IdMdCorExpedicaoSolicitada', InfraDTO::$TIPO_PK_NATIVA);
@@ -83,15 +82,12 @@
 
       //Atributos Relacionados
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdMdCorContrato', 'mdsp.id_md_cor_contrato', 'md_cor_servico_postal mdsp');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'UrlWebService', 'contr.url_webservice', 'md_cor_contrato contr');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'UrlWebService', 'contr.url_webservice', 'md_cor_contrato contr');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdSerie', 'doc.id_serie', 'documento doc');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaUnidade', 'und.sigla', 'unidade und');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'DescricaoUnidade', 'und.descricao', 'unidade und');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeSerie', 's.nome', 'serie s');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeServicoPostal', 'mdsp.nome', 'md_cor_servico_postal mdsp');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'DescricaoServicoPostal', 'mdsp.descricao', 'md_cor_servico_postal mdsp');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdWsCorreios', 'mdsp.id_ws_correios', 'md_cor_servico_postal mdsp');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CodigoWsCorreioServico', 'mdsp.codigo_ws_correios', 'md_cor_servico_postal mdsp');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'ExpedicaoAvisoRecebimentoServico', 'mdsp.expedicao_aviso_recebimento', 'md_cor_servico_postal mdsp');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdMdCorTipoCorrespondenc', 'mdsp.id_md_cor_tipo_correspondenc', 'md_cor_servico_postal mdsp');
@@ -113,22 +109,14 @@
 
       //Get Dados - Contrato Correio
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdMdCorContrato', 'mdsp.id_md_cor_contrato', 'md_cor_servico_postal mdsp');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'UrlWebService', 'contr.url_webservice', 'md_cor_contrato contr');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'NumeroCnpj', 'contr.numero_cnpj', 'md_cor_contrato contr');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NumeroContratoCorreio', 'contr.numero_contrato_correio', 'md_cor_contrato contr');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NumeroCodigoAdministrativo', 'contr.codigo_administrativo', 'md_cor_contrato contr');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CartaoPostagem', 'contr.numero_cartao_postagem', 'md_cor_contrato contr');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Usuario', 'contr.usuario', 'md_cor_contrato contr');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'Senha', 'contr.senha', 'md_cor_contrato contr');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'IdMdCorDiretoria', 'contr.id_md_cor_diretoria', 'md_cor_contrato contr');
-
-      $this->configurarFK('IdMdCorDiretoria', 'md_cor_diretoria dir', 'dir.id_md_cor_diretoria');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CodigoDiretoria', 'dir.codigo_diretoria', 'md_cor_diretoria dir');
 
       //Get Dados - PLP
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'CodigoPlp', 'plp.codigo_plp', 'md_cor_plp plp');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'StaPlp', 'plp.sta_plp', 'md_cor_plp plp');
-        $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdUnidadeGeradora', 'plp.id_unidade_geradora', 'md_cor_plp plp');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdUnidadeGeradora', 'plp.id_unidade_geradora', 'md_cor_plp plp');
 
       // Get Dados Protocolo - Processo
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProtocolo', 'doc.id_procedimento', 'documento doc');
@@ -144,7 +132,6 @@
       //Get usuario - contato solicitante
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdContatoSolicitante', 'usu.id_contato', 'usuario usu');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'EmailSolicitante', 'contsoli.email', 'contato contsoli');
-      //$this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'TelefoneFixoSolicitante', 'contsoli.telefone_fixo', 'contato contsoli');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'TelefoneCelularSolicitante', 'contsoli.telefone_celular', 'contato contsoli');
 
       //Get usuario - contato contrato Orgão
@@ -158,7 +145,6 @@
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeCidadeContratoOrgao', 'cidorg.nome', 'cidade cidorg');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'SiglaUfContratoOrgao', 'uforg.sigla', 'uf uforg');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'IdContatoOrgao', 'contorg.id_contato', 'contato contorg');
-
 
       // Get Objeto envio
       $this->configurarFK('IdMdCorObjeto', 'md_cor_objeto obj', 'obj.id_md_cor_objeto', INFRADTO::$TIPO_FK_OPCIONAL);
@@ -177,7 +163,6 @@
       $this->adicionarAtributo(InfraDTO::$PREFIXO_STR, 'Anexos');
       $this->adicionarAtributo(InfraDTO::$PREFIXO_STR, 'DocSerieFormatados');
       $this->adicionarAtributo(InfraDTO::$PREFIXO_STR, 'UltimoAndamento');
-
       $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'ProtocolosAnexos');
       $this->adicionarAtributo(InfraDTO::$PREFIXO_ARR, 'MdCorExpedicaoFormatoDTO');
       $this->adicionarAtributo(InfraDTO::$PREFIXO_NUM, 'QuantidadeAnexo');

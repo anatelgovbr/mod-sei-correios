@@ -51,7 +51,8 @@ $objParticipanteDTO = $objParticipanteRN->consultarRN1008($objParticipanteDTOCon
 
 if (($objParticipanteDTO == null || !is_object($objParticipanteDTO))) {
     $str_msg_validacao_destinatario_doc = 'Não consta a indicação de Destinatário no cadastro deste documento. Antes é necessário indicar o Destinatário';
-    exibirAlerta($str_msg_validacao_destinatario_doc);
+    //exibirAlerta($str_msg_validacao_destinatario_doc);
+    throw new InfraException($str_msg_validacao_destinatario_doc);
 }
 
 //checando se há mais de um destinatario
@@ -69,15 +70,12 @@ $arrObjParticipanteDTO = $objParticipanteRN->listarRN0189($objParticipanteDTOCon
 
 if ($arrObjParticipanteDTO != null && is_array($arrObjParticipanteDTO) && count($arrObjParticipanteDTO) > 1) {
     $str_msg_validacao_destinatario = 'Não é permitida a indicação de mais de um Destinatário para o Documento a ser Expedido pelos Correios. Antes é necessário revisar a indicação do Destinatário';
-    exibirAlerta($str_msg_validacao_destinatario);
+    //exibirAlerta($str_msg_validacao_destinatario);
+    throw new InfraException($str_msg_validacao_destinatario);
 }
-$mensagemErro = MdCorExpedicaoSolicitadaINT::validaContatoPreeenchido($objParticipanteDTO->getNumIdContato(), true, "'");
-if($mensagemErro != '') {
-    exibirAlerta($mensagemErro);
-}
+$mensagemErro = MdCorExpedicaoSolicitadaINT::validaContatoPreeenchido($objParticipanteDTO->getNumIdContato(), true);
 
-function exibirAlerta($msgErro)
-{
-    echo "<script> alert('" . $msgErro . "'); window.history.back(); </script>";
-    die;
+if($mensagemErro != '') {
+    //exibirAlerta($mensagemErro);
+    throw new InfraException( str_replace('\n', '<br>', $mensagemErro ) );
 }
