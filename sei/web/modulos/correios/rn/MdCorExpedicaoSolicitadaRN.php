@@ -679,6 +679,8 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
         $objDTO->retDthDataExpedicao();
         $objDTO->retStrCodigoRastreamento();
         $objDTO->retStrDescricaoServicoPostal();
+
+        $objDTO->setOrd('IdMdCorExpedicaoSolicitada',InfraDTO::$TIPO_ORDENACAO_DESC);
     }
 
     private function _formatarArrListaAtributos(&$arrObjDTO, $arrStatus, $arrAnexo)
@@ -770,6 +772,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
     {
         //Busca todas as expedições solicitadas que ja foram expedidas
         $objMdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
+
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
         $objMdCorExpedicaoSolicitadaDTO->retStrCodigoRastreamento();
         $objMdCorExpedicaoSolicitadaDTO->retDthDataExpedicao();

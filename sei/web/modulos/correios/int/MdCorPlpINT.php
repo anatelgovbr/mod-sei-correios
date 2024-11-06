@@ -99,5 +99,30 @@ class MdCorPlpINT extends InfraINT {
         </Response>
       ";
     }
-    
+
+    /*
+     * Função criada a partir da documentação disponibilizada pelos Correios
+     * https://www.correios.com.br/atendimento/developers/arquivos/layout-para-postagem-eletronica-para-ambito-nacional-sara
+     * */
+		public static function geraDigitoVerificador($num){
+			$total    = 0;
+			$arrPesos = [8,6,4,2,3,5,9,7];
+			$digito   = null;
+			$arrLista = str_split($num);
+
+			foreach ( $arrLista as $k => $v ) {
+				// num * peso
+				$total += (int) $v * $arrPesos[$k];
+			}
+
+			$resto = $total % 11;
+
+			if ( $resto > 1 ) {
+				$digito = 11 - $resto;
+			} else {
+				$digito = $resto == 1 ? 0 : 5;
+			}
+			return $digito;
+		}
+
 }

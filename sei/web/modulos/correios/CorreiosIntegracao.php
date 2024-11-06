@@ -15,7 +15,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.2.0';
+        return '2.3.0';
     }
 
     public function getInstituicao()
@@ -279,10 +279,11 @@ class CorreiosIntegracao extends SeiIntegracao
             case 'md_cor_historico_visualizar' :
                 require_once dirname(__FILE__) . '/md_cor_historico_visualiza.php';
                 return true;
-
+            /*
             case 'md_cor_parametrizacao_rastreio_listar' :
                 require_once dirname(__FILE__) . '/md_cor_parametrizacao_rastreio_lista.php';
                 return true;
+            */
 
             //Parametrização de Status
             case 'md_cor_parametrizacao_status_cadastrar' :
@@ -296,6 +297,7 @@ class CorreiosIntegracao extends SeiIntegracao
             case 'md_cor_parametrizacao_status_listar' :
                 require_once dirname(__FILE__) . '/md_cor_parametrizacao_status_lista.php';
                 return true;
+
 
             //Destinatários não habilitados parra expedição
             case 'md_cor_rel_contato_justificativa_cadastrar' :
@@ -321,6 +323,22 @@ class CorreiosIntegracao extends SeiIntegracao
                 require_once dirname(__FILE__) . '/md_cor_justificativa_cadastro.php';
                 return true;
 
+	        case 'md_cor_adm_integracao_cadastrar':
+	        case 'md_cor_adm_integracao_alterar':
+	        case 'md_cor_adm_integracao_consultar':
+		        require_once dirname(__FILE__) . '/md_cor_adm_integracao_cadastro.php';
+		        return true;
+
+	        case 'md_cor_adm_integracao_listar':
+	        case 'md_cor_adm_integracao_excluir':
+	        case 'md_cor_adm_integracao_desativar':
+	        case 'md_cor_adm_integracao_reativar':
+		        require_once dirname(__FILE__) . '/md_cor_adm_integracao_lista.php';
+		        return true;
+
+            case 'md_cor_selecionar_layout_envelope':
+                require_once dirname(__FILE__) . '/md_cor_selecionar_layout_envelope.php';
+                return true;
         }
 
         return false;
@@ -547,7 +565,8 @@ class CorreiosIntegracao extends SeiIntegracao
                 break;
 
             case 'md_cor_servicos_postais_buscar':
-                $xml = MdCorServicoPostalINT::retornarServicosPostais($_POST['txtNumeroContratoCorreio'], $_POST['txtNumeroCartaoPostagem'], $_POST['txtUrlWebservice'], $_POST['txtUsuario'], $_POST['txtSenha']);
+	            $_POST['txtCNPJ'] = InfraUtil::retirarFormatacao($_POST['txtCNPJ']);
+	            $xml = MdCorServicoPostalINT::retornarServicosPostais($_POST['txtNumeroContratoCorreio'], $_POST['txtCNPJ']);
                 break;
 
             case 'md_cor_numero_processo_validar':
@@ -678,6 +697,20 @@ class CorreiosIntegracao extends SeiIntegracao
 		        $xml .= "</Documento>";
 
 	            break;
+
+            case 'md_cor_plp_cancelar_plp':
+                $xml = '<Documento>';
+                $arr = ['idPlp' => $_POST['idPlp']];
+                $rs  = ( new MdCorPlpRN() )->cancelarPlp( $arr );
+                if (is_array($rs)) {
+                    $xml .= '<Sucesso>N</Sucesso>';
+                    $xml .= '<Msg>'.$rs['msg'].'</Msg>';
+                } else {
+                    $xml .= '<Sucesso>S</Sucesso>';
+                }
+
+                $xml .= '</Documento>';
+                break;
         }
 
         return $xml;
@@ -1261,8 +1294,9 @@ class CorreiosIntegracao extends SeiIntegracao
         $MdCorRetornoArDocDTO = new MdCorRetornoArDocDTO();
         $MdCorRetornoArDocDTO->setNumIdDocumentoAr($idDocumento);
         $MdCorRetornoArDocDTO->retNumIdDocumentoPrincipal();
-        $MdCorRetornoArDocDTO = $MdCorRetornoArDocRN->consultar($MdCorRetornoArDocDTO);
+	      $MdCorRetornoArDocDTO = $MdCorRetornoArDocRN->contar($MdCorRetornoArDocDTO);
+        #$MdCorRetornoArDocDTO = $MdCorRetornoArDocRN->consultar($MdCorRetornoArDocDTO);
 
-        return $MdCorRetornoArDocDTO;
+        return $MdCorRetornoArDocDTO > 0 ? true : null;
     }
 }

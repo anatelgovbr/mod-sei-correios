@@ -5,10 +5,10 @@ class MdCorAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.2.0';
+    private $versaoAtualDesteModulo = '2.3.0';
     private $nomeDesteModulo = 'MÓDULO DOS CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0');
 
     public function __construct()
     {
@@ -66,15 +66,6 @@ class MdCorAtualizadorSipRN extends InfraRN
         die;
     }
 
-    protected function normalizaVersao($versao)
-    {
-        $ultimoPonto = strrpos($versao, '.');
-        if ($ultimoPonto !== false) {
-            $versao = substr($versao, 0, $ultimoPonto) . substr($versao, $ultimoPonto + 1);
-        }
-        return $versao;
-    }
-
     protected function atualizarVersaoConectado()
     {
         
@@ -90,7 +81,7 @@ class MdCorAtualizadorSipRN extends InfraRN
 
             //testando versao do framework
             $numVersaoInfraRequerida = '2.0.18';
-            if ($this->normalizaVersao(VERSAO_INFRA) < $this->normalizaVersao($numVersaoInfraRequerida)) {
+            if (version_compare(VERSAO_INFRA, $numVersaoInfraRequerida) < 0) {
                 $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
 
@@ -116,6 +107,8 @@ class MdCorAtualizadorSipRN extends InfraRN
                     $this->instalarv210();
 				case '2.1.0':
 					$this->instalarv220();
+	            case '2.2.0':
+		            $this->instalarv230();
                     break;
 
                 default:
@@ -689,6 +682,128 @@ class MdCorAtualizadorSipRN extends InfraRN
 		$this->atualizarNumeroVersao($nmVersao);
 	}
 
+	protected function instalarv230(){
+		$nmVersao = '2.3.0';
+		$this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+		$objSistemaRN  = new SistemaRN();
+		$objPerfilRN   = new PerfilRN();
+		$objMenuRN     = new MenuRN();
+		$objItemMenuRN = new ItemMenuRN();
+
+		// retorna ID do Sistema Principal
+		$objSistemaDTO = new SistemaDTO();
+		$objSistemaDTO->retNumIdSistema();
+		$objSistemaDTO->setStrSigla('SEI');
+
+		$objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+		if ($objSistemaDTO == null) {
+			throw new InfraException('Sistema SEI não encontrado.');
+		}
+
+		$numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+		// Perfil Administrador e Basico
+		$objPerfilDTO = new PerfilDTO();
+		$objPerfilDTO->retNumIdPerfil();
+		$objPerfilDTO->retStrNome();
+		$objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+		// caso seja necessario adicionar ou remover o perfil, editar o array abaixo
+		$objPerfilDTO->setStrNome(['Administrador','Básico','Expedição Correios'] , InfraDTO::$OPER_IN);
+		$objPerfilDTO = $objPerfilRN->listar($objPerfilDTO);
+
+		if ($objPerfilDTO == null) {
+			throw new InfraException('Perfil buscado no sistema SEI não encontrado.');
+		}
+
+		$arrPerfis = InfraArray::converterArrInfraDTO($objPerfilDTO,'IdPerfil','Nome');
+
+		/*
+		 * Inicia o vinculo dos perfis com recursos relacionados a integração
+		 * $k => Nome , $v => IdPerfil
+		 */
+		foreach($arrPerfis as $k => $v ) {
+			$this->logar('CRIANDO e VINCULANDO RECURSO DO PERFIL '. $k .' - Mapeamento das Integrações');
+
+			//Relacionamento dos recursos para todos os perfis do loop
+			$objRecursoComMenuDTO = $this->adicionarRecursoPerfil($numIdSistemaSei, $v , 'md_cor_adm_integracao_listar');
+
+			$this->adicionarRecursoPerfil($numIdSistemaSei, $v, 'md_cor_adm_integracao_consultar');
+            $this->adicionarRecursoPerfil($numIdSistemaSei, $v, 'md_cor_adm_integracao_alterar');
+
+            //Administrador já tem perfil relacionado a recurso md_cor_contrato_consultar, então cria somente
+            //para os perfis do array abaixo
+            if ( in_array( $k , ['Básico','Expedição Correios'] ) ) {
+                $this->adicionarRecursoPerfil($numIdSistemaSei, $v, 'md_cor_contrato_consultar');
+            }
+
+			if ( $k == 'Administrador') {
+                $this->adicionarRecursoPerfil($numIdSistemaSei, $v, 'md_cor_adm_integracao_cadastrar');
+                $this->adicionarRecursoPerfil($numIdSistemaSei, $v, 'md_cor_adm_integracao_excluir');
+                $this->adicionarRecursoPerfil($numIdSistemaSei, $v, 'md_cor_adm_integracao_desativar');
+                $this->adicionarRecursoPerfil($numIdSistemaSei, $v, 'md_cor_adm_integracao_reativar');
+
+				$idItemMenuPrincipal = $this->_getIdItemMenuCorreiosNaAdministracao($numIdSistemaSei);
+				$numIdMenuSei = $this->validarMenu('Principal', $numIdSistemaSei, $objMenuRN);
+
+				$this->adicionarItemMenu($numIdSistemaSei,
+					$v,
+					$numIdMenuSei,
+					$idItemMenuPrincipal,
+					$objRecursoComMenuDTO->getNumIdRecurso(),
+					'Mapeamento das Integrações',
+					110);
+			}
+		}
+
+        // Alterar nome de Menu Gerar e Expedir PLP para Gerar e Expedir Pré-Postagem
+        $numIdMenuSei = $this->validarMenu('Principal', $numIdSistemaSei, $objMenuRN);
+
+		// [ 0 => nomes atuais , 1 => nome para qual sera alterado ]
+		$arrNomesUrls = [
+            ['Gerar PLP','Expedir PLP','Consultar PLPs Geradas','Tipos de Situações SRO'],
+            ['Gerar Pré-Postagem','Expedir Pré-Postagem','Consultar Pré-Postagens Geradas','Tipos de Situações de Rastreamento']
+        ];
+
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retTodos();
+
+        $objItemMenuDTO->setNumIdSistema($numIdSistemaSei);
+        $objItemMenuDTO->setNumIdMenu($numIdMenuSei);
+        $objItemMenuDTO->setStrRotulo($arrNomesUrls[0],InfraDTO::$OPER_IN);
+
+        $arrObjItemMenuDTO = $objItemMenuRN->listar($objItemMenuDTO);
+
+        if ( $arrObjItemMenuDTO ) {
+            foreach ($arrObjItemMenuDTO as $itemMenuDTO) {
+                foreach ( $arrNomesUrls[0] as $k => $nmASerAlterado ) {
+                    if ( $itemMenuDTO->getStrRotulo() == $nmASerAlterado ) {
+                        $this->logar('Alterar nome do Menu '. $nmASerAlterado .' para '. $arrNomesUrls[1][$k] .'');
+                        $itemMenuDTO->setStrRotulo($arrNomesUrls[1][$k]);
+                        break;
+                    }
+                }
+                $objItemMenuRN->alterar($itemMenuDTO);
+            }
+        }
+
+        // Remover recursos relacionados ao rastreio
+        $numIdMenu     = $this->_getIdMenu($numIdSistemaSei);
+        $numIdItemMenu = $this->_getIdItemMenu($numIdSistemaSei,'Integração SRO');
+
+        $this->logar('Remover o Menu Integração SRO');
+        $this->removerItemMenu($numIdSistemaSei, $numIdMenu, $numIdItemMenu);
+
+        $this->logar('Remover os Recursos atrelados ao parametro de rastreio');
+        $this->removerRecurso($numIdSistemaSei, 'md_cor_parametro_rastreio_alterar');
+        $this->removerRecurso($numIdSistemaSei, 'md_cor_parametro_rastreio_consultar');
+        $this->removerRecurso($numIdSistemaSei, 'md_cor_parametro_rastreio_listar');
+        $this->removerRecurso($numIdSistemaSei, 'md_cor_parametro_rastreio_cadastrar');
+        $this->removerRecurso($numIdSistemaSei, 'md_cor_parametrizacao_rastreio_listar');
+
+		$this->atualizarNumeroVersao($nmVersao);
+	}
 
 	/**
 	 * Atualiza o número de versão do módulo na tabela de parâmetro do sistema
@@ -1095,6 +1210,82 @@ class MdCorAtualizadorSipRN extends InfraRN
         }
 
         return array('numIdPerfilSei' => $objPerfilDTO->getNumIdPerfil(), 'numIdSistemaSei' => $numIdSistemaSei);
+    }
+
+	private function _getIdItemMenuCorreiosNaAdministracao($numIdSistema)
+	{
+		$rotuloItemMenu    = 'Correios';
+		$rotuloItemMenuAdm = 'Administração';
+
+		$objItemMenuRN = new ItemMenuRN();
+
+		//captura informação do menu Administração
+		$objItemMenuAdmDTO = new ItemMenuDTO();
+		$objItemMenuAdmDTO->retNumIdItemMenu();
+
+		$objItemMenuAdmDTO->setNumIdSistema($numIdSistema);
+		$objItemMenuAdmDTO->setStrRotulo($rotuloItemMenuAdm);
+		$objItemMenuAdmDTO = $objItemMenuRN->consultar($objItemMenuAdmDTO);
+
+		if ($objItemMenuAdmDTO == null) {
+			$msg = 'Item de menu Administração do sistema no encontrado.';
+			throw new InfraException($msg);
+		}
+
+		$objItemMenuDTO = new ItemMenuDTO();
+		$objItemMenuDTO->retNumIdItemMenu();
+
+		$objItemMenuDTO->setNumIdSistema($numIdSistema);
+		$objItemMenuDTO->setStrRotulo($rotuloItemMenu);
+		$objItemMenuDTO->setNumIdItemMenuPai($objItemMenuAdmDTO->getNumIdItemMenu());
+
+		$objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+		if ($objItemMenuDTO == null) {
+			$msg = 'Item de menu ' . $rotuloItemMenu . ' do sistema no encontrado.';
+			throw new InfraException($msg);
+		}
+
+		$numIdItemMenuSeiAdm = $objItemMenuDTO->getNumIdItemMenu();
+
+		return $numIdItemMenuSeiAdm;
+	}
+
+    private function _getIdMenu($numIdSistema, $nomeMenu = 'Principal')
+    {
+        $objMenuRN = new MenuRN();
+        $objMenuDTO = new MenuDTO();
+        $objMenuDTO->retNumIdMenu();
+        $objMenuDTO->setNumIdSistema($numIdSistema);
+        $objMenuDTO->setStrNome($nomeMenu);
+        $objMenuDTO = $objMenuRN->consultar($objMenuDTO);
+
+        if ($objMenuDTO == null) {
+            throw new InfraException('Menu do sistema não encontrado.');
+        }
+
+        $idMenu = $objMenuDTO->getNumIdMenu();
+
+        return $idMenu;
+    }
+
+    private function _getIdItemMenu($numIdSistema, $rotuloItemMenu = 'Administração')
+    {
+        $objItemMenuRN = new ItemMenuRN();
+        $objItemMenuDTO = new ItemMenuDTO();
+        $objItemMenuDTO->retNumIdItemMenu();
+        $objItemMenuDTO->setNumIdSistema($numIdSistema);
+        $objItemMenuDTO->setStrRotulo($rotuloItemMenu);
+        $objItemMenuDTO = $objItemMenuRN->consultar($objItemMenuDTO);
+
+        if ($objItemMenuDTO == null) {
+            $msg = 'Item de menu ' . $rotuloItemMenu . ' do sistema no encontrado.';
+            throw new InfraException($msg);
+        }
+
+        $numIdItemMenuSeiAdm = $objItemMenuDTO->getNumIdItemMenu();
+
+        return $numIdItemMenuSeiAdm;
     }
 
 }

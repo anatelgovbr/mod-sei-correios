@@ -40,8 +40,8 @@ class MdCorExpedicaoFormatoDTO extends InfraDTO {
 
       //FKs e atributos relacionado - Procedimento
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdProcedimento', 'prot.id_protocolo', 'protocolo prot');
-      $this->configurarFK('IdProcedimento', 'procedimento proc', 'proc.id_procedimento', InfraDTO::$TIPO_FK_OPCIONAL);
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdTipoProcedimento', 'proc.id_tipo_procedimento', 'procedimento proc');
+      $this->configurarFK('IdProcedimento', 'procedimento proced', 'proced.id_procedimento', InfraDTO::$TIPO_FK_OPCIONAL);
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdTipoProcedimento', 'proced.id_tipo_procedimento', 'procedimento proced');
       $this->configurarFK('IdTipoProcedimento', 'tipo_procedimento tip', 'tip.id_tipo_procedimento', InfraDTO::$TIPO_FK_OPCIONAL);
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NomeProcedimento', 'tip.nome', 'tipo_procedimento tip');
 

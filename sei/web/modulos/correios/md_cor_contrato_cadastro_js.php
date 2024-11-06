@@ -29,7 +29,7 @@
             var $this = $(this);
             var val = $this.val();
             var $tr = $this.closest('tr');
-            $tr.find('td:eq(3) div').html(val); //index
+            $tr.find('td:eq(2) div').html(val); //index
             objTabelaContratoServicos.alterarLinha($tr.index());
             objTabelaContratoServicos.atualizaHdn();
         });
@@ -46,18 +46,17 @@
             var indice = (linhasTabela - 1) + index;
 
             row = {};
-            row.id = $(val).find('Id').text();
-            row.codigo = $(val).find('Codigo').text();
+            row.codigo = $(val).find('Codigo').text().trim();
             row.ar = '';
             row.desc = '';
-            row.tipo = '<div style="width:100px;"><select class="infraSelect form-control sl_tipo" name="sl_tipo[' + indice + ']" onchange="verificaAr(this)">' + comboTipoCorrepondencia + '</select></div>';
+            row.tipo = '<div style="width:100%;"><select id="slTipo_'+ indice +'" class="infraSelect form-control sl_tipo" name="sl_tipo[' + indice + ']" onchange="verificaAr(this)">' + comboTipoCorrepondencia + '</select></div>';
             row.nome = $(val).find('Descricao').text();
             rowRdS = '<div class="infraRadioDiv"><input class="infraRadioInput input-ar" type="radio" value="S" name="ar[' + indice + ']" id="arS[' + indice + ']"><label class="infraRadioLabel" for="arS['+ indice +']"></label></div><label id="lblArS['+ indice +']" for="arS['+ indice +']" class="infraLabelRadio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Sim</label>';
             rowRdN = '<div class="infraRadioDiv"><input class="infraRadioInput input-ar" type="radio" value="N" name="ar[' + indice + ']" id="arN[' + indice + ']" checked="checked"><label class="infraRadioLabel" for="arN['+ indice +']"></label></div><label id="lblArN['+ indice +']" for="arN['+ indice +']" class="infraLabelRadio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Não</label>';
             row.check = divIniRadio + rowRdS + rowRdN + '</div>';
             row.cobrar = divIniCheck + '<input class="input-cobrar infraCheckboxInput" type="checkbox" value="S" name="cobrar[' + indice + ']" id="cobrar[' + indice + ']"><label class="infraCheckboxLabel " for="cobrar['+ indice +']"></label></div></div>';
             row.anexarMidia = '<div class="infraDivCheckbox" style="text-align: center"> <div class="infraCheckboxDiv"> <input type="checkbox" class="infraCheckboxInput" value="S" name="anexarMidia['+indice+']" id="anexarMidia['+indice+']"> <label class="infraCheckboxLabel" for="anexarMidia['+indice+']"></label> </div> </div>';
-            row.txt = '<div style=""><input type="text" class="input-desc form-control" style="width: 100%" name="descricao[' + indice + ']" value=""><input type="hidden" name="id[' + indice + ']" value="' + $(val).find('Id').text() + '"><input class="input-desc" type="hidden" name="codigo[' + indice + ']" value="' + $(val).find('Codigo').text() + '"><input class="input-desc" type="hidden" name="nome[' + indice + ']" value="' + $(val).find('Descricao').text() + '"></div>';
+            row.txt = '<div><input type="text" id="idDesc_'+ indice +'" class="input-desc form-control" style="width: 100%" name="descricao[' + indice + ']" value=""><input type="hidden" name="codigo[' + indice + ']" value="' + $(val).find('Codigo').text() + '"><input type="hidden" name="nome[' + indice + ']" value="' + $(val).find('Descricao').text() + '"></div>';
             row.acoes = 'Ações';
             var bolContratoServicosCustomizado = 'hdnCustomizado';
 
@@ -68,17 +67,15 @@
     function receberContratoServicos(row, ContratoServicosCustomizado) {
         var qtdContratoServicosIndicados = objTabelaContratoServicos.tbl.rows.length;
         objTabelaContratoServicos.exibirMensagens = false;
-        objTabelaContratoServicos.adicionar([row.id, row.codigo, row.ar, row.desc, row.nome, row.tipo, row.check, row.cobrar, row.anexarMidia, row.txt, ''], false);
+        objTabelaContratoServicos.adicionar([row.codigo, row.ar, row.desc, row.nome, row.tipo, row.check, row.cobrar, row.anexarMidia, row.txt, ''], false);
         infraEfeitoTabelas();
     }
 
     function inicializar() {
 
         $('#hdnListaContratoServicosIndicados').val('<?= $hdnListaContratoServicosIndicados;?>');
-        //trVermelha
 
         objTabelaContratoServicos = new infraTabelaDinamica('tbContratoServicos', 'hdnListaContratoServicosIndicados', false, tabelaDinamicaRemover, false);
-
 
         objTabelaContratoServicos.gerarEfeitoTabela = true;
         objTabelaContratoServicos.inserirNoInicio = false;
@@ -90,8 +87,8 @@
             var tabela = document.getElementById('tbContratoServicos');
 
             // caso não seja um elemento incluido na tela verifica se pode ser excluido
-            if (tabela.rows[rowIndex].cells[8].querySelector('#idMdCorServicoPostal')) {
-                var idMdCorServicoPostal = tabela.rows[rowIndex].cells[8].querySelector('#idMdCorServicoPostal').value;
+            if (tabela.rows[rowIndex].cells[7].querySelector('#idMdCorServicoPostal')) {
+                var idMdCorServicoPostal = tabela.rows[rowIndex].cells[7].querySelector('#idMdCorServicoPostal').value;
                 var paramsAjax = {
                     idMdCorServicoPostal,
                 };
@@ -137,11 +134,13 @@
         for (let i = 1; i < tabela.rows.length; i++) {
 
             var linha = tabela.rows[i];
-            var coluna = tabela.rows[i].cells[10];
+
+            var coluna = tabela.rows[i].cells[9];
+
             var dirImg = '<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>';
 
 
-            if (lerCelula(tabela.rows[i].cells[2]) == 'S') {
+            if (lerCelula(tabela.rows[i].cells[1]) == 'S') {
 
                 var imgDesativar = document.createElement('img');
                 imgDesativar.src = dirImg + '/desativar.svg';
@@ -165,13 +164,9 @@
 
                 imgAtivar.onclick = function () {
                     objTabelaContratoServicos.alterarLinha(this.parentNode.parentNode.rowIndex, 'reativar');
-
                 };
-
                 coluna.appendChild(imgAtivar);
-
             }
-
         }
 
         objTabelaContratoServicos.alterarLinha = function (rowIndex, flag) {
@@ -183,31 +178,22 @@
                 arrLinha[i] = infraRemoverFormatacaoXML(this.lerCelula(tabela.rows[rowIndex].cells[i]));
             }
 
-
             /*
               Solução paliativa afim de agrupar todos os id's a serem desativados dentro de um array. Tratar o mesmo em MdCorContratoRn
             */
 
             if (flag == "desativar") {
-
                 tabela.rows[rowIndex].style.backgroundColor = "#F39D9D";
                 arrLinhasDesativadas[contadorDesativadas] = arrLinha[0];
                 $('#hdnListaContratoServicosDesativados').val(arrLinhasDesativadas);
                 contadorDesativadas = contadorDesativadas + 1;
-
-
             } else if (flag == "reativar") {
-
                 tabela.rows[rowIndex].style.backgroundColor = "#E4E4E4";
                 arrLinhasReativadas[contadorReativadas] = arrLinha[0];
                 $('#hdnListaContratoServicosReativadas').val(arrLinhasReativadas);
                 contadorReativadas = contadorReativadas + 1;
-
-
             }
-
         };
-
 
         objTabelaContratoServicos.atualizaHdn();
 
@@ -244,12 +230,11 @@
 
         document.getElementById('hdnIdProcedimento').value = '';
         document.getElementById('hdnNumeroProcessoContratacao').value = '';
-        //document.getElementById('lblTipoProcessoContratacao').innerHTML = '';
         document.getElementById('txtTipoProcessoContratacao').value = '';
 
         var numeroProcessoPreenchido = document.getElementById('txtNumeroProcessoContratacao').value != '';
         if (!numeroProcessoPreenchido) {
-            alert('Informe o Número.');
+            exibirAlert('Informe o Número.','txtNumeroProcessoContratacao');
             return false;
         }
 
@@ -264,11 +249,9 @@
             data: paramsAjax,
             success: function (r) {
                 if ($(r).find('MensagemValidacao').text()) {
-                    //inicializarCamposPadroesProcesso();
-                    alert($(r).find('MensagemValidacao').text());
+                    exibirAlert( $(r).find('MensagemValidacao').text() , 'txtNumeroProcessoContratacao');
                 } else {
                     document.getElementById('hdnIdProcedimento').value = $(r).find('IdProcedimento').text();
-                    //document.getElementById('lblTipoProcessoContratacao').innerHTML = $(r).find('TipoProcedimento').text();
                     document.getElementById('txtTipoProcessoContratacao').value = $(r).find('TipoProcedimento').text();
                     document.getElementById('txtNumeroProcessoContratacao').value = $(r).find('numeroProcesso').text();
                     document.getElementById('hdnNumeroProcessoContratacao').value = document.getElementById('txtNumeroProcessoContratacao').value;
@@ -277,8 +260,7 @@
             error: function (e) {
 
                 if ($(e.responseText).find('MensagemValidacao').text()) {
-                    //inicializarCamposPadroesProcesso();
-                    alert($(e.responseText).find('MensagemValidacao').text());
+                    exibirAlert( $(e.responseText).find('MensagemValidacao').text() , 'txtNumeroProcessoContratacao' );
                 }
                 console.error('Erro ao processar o XML do SEI: ' + e.responseText);
             }
@@ -286,6 +268,16 @@
     }
 
     function buscarServicosPostais() {
+
+        if ( infraTrim( $('#txtNumeroContratoCorreio').val() ) == '' ) {
+            exibirAlert('Informe o Número do Contrato nos Correios.','txtNumeroContratoCorreio');
+            return false;
+        }
+
+        if ( infraTrim( $('#txtCNPJ').val() ) == '' ) {
+            exibirAlert('Informe o CNPJ do Orgão do Contrato.','txtCNPJ');
+            return false;
+        }
 
         $.ajax({
             url: '<?=$strLinkAjaxBuscarServicosPostais?>',
@@ -300,8 +292,8 @@
                 infraAvisoCancelar();
             },
             success: function (xml) {
-                if ($(xml).find("erros").length > 0) {
-                    alert($(xml).find("erro").attr('descricao'));
+                if ($(xml).find("Erros").length > 0) {
+                    exibirAlert( $(xml).find("Msg").text() );
                     return false;
                 }
                 else {
@@ -311,7 +303,6 @@
                 }
             },
             error: function (e) {
-                alert('3')
                 console.error('Erro ao processar o XML do SEI: ' + e.responseText);
             }
         });
@@ -325,69 +316,36 @@
 
     function validarCadastro() {
         if (infraTrim(document.getElementById('txtNumeroContrato').value) == '') {
-            alert('Informe o Número do Contrato no Órgão.');
-            document.getElementById('txtNumeroContrato').focus();
+            exibirAlert('Informe o Número do Contrato no Órgão.','txtNumeroContrato');
             return false;
         }
 
-        if (infraTrim(document.getElementById('hdnNumeroProcessoContratacao').value) != infraTrim(document.getElementById('txtNumeroProcessoContratacao').value)) {
-            alert('Número do Processo de Contratação não foi validado.');
-            document.getElementById('txtNumeroProcessoContratacao').focus();
+        if (
+            infraTrim(document.getElementById('hdnNumeroProcessoContratacao').value) != infraTrim(document.getElementById('txtNumeroProcessoContratacao').value)
+            ||
+            document.getElementById('txtNumeroProcessoContratacao').value == ''
+        ){
+            exibirAlert('Número do Processo de Contratação não foi validado.','txtNumeroProcessoContratacao');
             return false;
         }
 
         if (infraTrim(document.getElementById('txtNumeroContratoCorreio').value) == '') {
-            alert('Informe o Número do Contrato nos Correios.');
-            document.getElementById('txtNumeroContratoCorreio').focus();
-            return false;
-        }
-
-        if (infraTrim(document.getElementById('txtNumeroAnoContratoCorreio').value) == '') {
-            alert('Informe o Ano do Contrato nos Correios.');
-            document.getElementById('txtNumeroAnoContratoCorreio').focus();
+            exibirAlert('Informe o Número do Contrato nos Correios.','txtNumeroContratoCorreio');
             return false;
         }
 
         if (infraTrim(document.getElementById('txtNumeroCartaoPostagem').value) == '') {
-            alert('Informe o Cartão de Postagem dos Correios correspondente ao Contrato.');
-            document.getElementById('txtNumeroCartaoPostagem').focus();
+            exibirAlert('Informe o Cartão de Postagem dos Correios correspondente ao Contrato.','txtNumeroCartaoPostagem');
             return false;
         }
 
         if (infraTrim(document.getElementById('txtCNPJ').value) == '') {
-            alert('Informe o CNPJ do Orgão do Contrato.');
-            document.getElementById('txtCNPJ').focus();
+            exibirAlert('Informe o CNPJ do Orgão do Contrato.','txtCNPJ');
             return false;
         }
 
-        if (infraTrim(document.getElementById('txtCodigoAdministrativo').value) == '') {
-            alert('Informe o Código Administrativo dos Correios correspondente ao Contrato.');
-            document.getElementById('txtCodigoAdministrativo').focus();
-            return false;
-        }
-
-        if (infraTrim(document.getElementById('txtUsuario').value) == '') {
-            alert('Informe o Usuário do SIGEP WEB fornecido pelos Correios.');
-            document.getElementById('txtUsuario').focus();
-            return false;
-        }
-
-        if (infraTrim(document.getElementById('txtSenha').value) == '') {
-            alert('Informe a Senha do SIGEP WEB fornecida pelos Correios.');
-            document.getElementById('txtSenha').focus();
-            return false;
-        }
-
-        if (infraTrim(document.getElementById('slCodigoDiretoria').value) == 'null') {
-            alert('Informe o Código da Diretoria dos Correios correspondente ao Contrato.');
-            document.getElementById('slCodigoDiretoria').focus();
-            return false;
-        }
-
-        var inputDescList = document.getElementsByClassName('input-desc');
-        if (inputDescList.length <= 0) {
-            alert('Endereço WSDL do Web Service do SIGEP WEB não foi validado.');
-			document.getElementById('txtUrlWebservice').focus();
+        if (document.getElementById('hdnListaContratoServicosIndicados').value == '' ) {
+            exibirAlert('A lista de Serviços Postais está vazia. Os Serviços Postais serão carregados abaixo após o fechamento desta mensagem.<br>Por favor, informar os dados necessários.','grid-validar-url');
             return false;
         }
 
@@ -396,27 +354,23 @@
         $('.input-desc').each(function (i, val) {
             if ($(val).val() == '') {
                 erroDescricao = true;
-                alert('Informe a Descrição.');
-                $(val).focus();
+                exibirAlert('Informe a Descrição.', $(val).attr('id'));
                 return false;
             }
         })
 
-        if(erroDescricao)
-            return false;
+        if (erroDescricao) return false;
 
         var erroDescricao = false;
         $('.sl_tipo').each(function (i, val) {
             if ($(val).find(':selected').val() == 'null') {
                 erroDescricao = true;
-                alert('Informe um Tipo.');
-                $(val).focus();
+                exibirAlert('Informe um Tipo.', $(val).attr('id'));
                 return false;
             }
         });
 
-        if(erroDescricao)
-            return false;
+        if (erroDescricao) return false;
 
         var flag = false;
         $.ajax({
@@ -430,15 +384,13 @@
             },
             success: function (r) {
                 if ($(r).find('MensagemValidacao').text() != 'false') {
-                    //inicializarCamposPadroesProcesso();
-                    alert($(r).find('MensagemValidacao').text());
+                    exibirAlert( $(r).find('MensagemValidacao').text() , 'txtNumeroContratoCorreio' );
                     flag = true;
                 }
             },
             error: function (e) {
                 if ($(e.responseText).find('MensagemValidacao').text()) {
-                    //inicializarCamposPadroesProcesso();
-                    alert($(e.responseText).find('MensagemValidacao').text());
+                    exibirAlert( $(e.responseText).find('MensagemValidacao').text() );
                 }
             }
         });
@@ -457,7 +409,6 @@
     function OnSubmitForm() {
         return validarCadastro();
     }
-
 
     function exibirBotao() {
         var div = document.getElementById('divInfraAvisoFundo');
@@ -504,14 +455,11 @@
 
         exibirAvisoEditor();
 
-        //timeoutExibirBotao = self.setTimeout('exibirBotao()',1000);
-
         if (INFRA_IE > 0) {
             window.tempoInicio = (new Date()).getTime();
         } else {
             console.time('s');
         }
-
     }
 
     function verificaAr(campo) {
@@ -551,5 +499,4 @@
         }
         return ret.infraReplaceAll('<br>', '<br />');
     }
-
 </script>

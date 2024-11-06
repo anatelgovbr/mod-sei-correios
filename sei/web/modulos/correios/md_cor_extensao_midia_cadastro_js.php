@@ -55,11 +55,9 @@
 
     function validarCadastro() {
         if (infraTrim(document.getElementById('hdnPrincipal').value) == '') {
-            alert('Informe a Extensão.');
-            //document.getElementById('txtNomeExtensao').focus();
+            exibirAlert('Informe a Extensão.');
             return false;
         }
-
         return true;
     }
 

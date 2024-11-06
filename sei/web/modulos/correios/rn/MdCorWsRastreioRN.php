@@ -19,6 +19,8 @@ class MdCorWsRastreioRN extends nusoap_client
     private $_resultado;
     private $_lingua;
     private $_wsdl;
+    private $_token;
+    private $_expiraEm;
 
     public function __construct($params = array())
     {
@@ -29,11 +31,14 @@ class MdCorWsRastreioRN extends nusoap_client
         $this->_resultado = isset($params['resultado']) ? $params['resultado'] : 'T'; //U - Ultimo evento, T - Todos os eventos
         $this->_lingua    = isset($params['lingua']) ? $params['lingua'] : '101';
         $this->_wsdl      = isset($params['wsdl']) ? $params['wsdl'] : true;
+	    $this->_token     = isset($params['token']) ? $params['token'] : '';
+	    $this->_expiraEm  = isset($params['expiraEm']) ? $params['expiraEm'] : '';
 
-        parent::nusoap_client($this->_endpoint, $this->_wsdl);
+        //parent::nusoap_client($this->_endpoint, $this->_wsdl);
 
     }
 
+    /*
     public function rastrearObjeto($codigoRastreio)
     {
         try {
@@ -55,11 +60,136 @@ class MdCorWsRastreioRN extends nusoap_client
             }else{
               return false;
             }
-
-
         } catch (Exception $e) {
             throw new Exception('Erro ao rastrear o objeto' . $e->getMessage());
         }
     }
+    */
 
+    public function rastrearObjeto($codigoRastreio){
+	    //$objInfraException = new InfraException();
+
+	    $urlServico = $this->_endpoint .'/'. $codigoRastreio;
+
+	    if ( !filter_var( $urlServico , FILTER_VALIDATE_URL ) )
+		    throw new InfraException("Endereço do WebService inválido!");
+
+	    $curl = curl_init( $urlServico );
+
+	    curl_setopt_array( $curl, [
+		    CURLOPT_RETURNTRANSFER => true,
+		    CURLOPT_SSL_VERIFYPEER => false,
+		    CURLOPT_CONNECTTIMEOUT => 5,
+		    CURLOPT_TIMEOUT        => 20,
+		    CURLOPT_CUSTOMREQUEST  => 'GET'
+	    ]);
+
+	    // monta dados de parametros necessarios
+	    if ( $this->_resultado ) {
+		    $payload = json_encode( ['resultado' => $this->_resultado] );
+		    curl_setopt( $curl, CURLOPT_POSTFIELDS, $payload );
+	    }
+
+	    // monta dados de cabecalho
+	    $headers = [
+		    'Content-Type: application/json',
+		    'Accept: application/json',
+		    'Authorization: Bearer ' . $this->_token
+	    ];
+
+	    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+	    // executa a consulta no webservice
+	    $ret  = curl_exec( $curl );
+	    $info = curl_getinfo( $curl );
+	    $ret  = self::trataRetornoCurl( $info , $ret );
+
+	    if ( $info['http_code'] == 0 ) $ret['msg'] = curl_error($curl);
+
+	    if ( $ret['suc'] === false ) {
+		    $strError = "STATUS CODE: " . $ret['code'] . " - ". $ret['msg'];
+		    return ['objeto' => ['erro' => $strError , 'numero' => $codigoRastreio] ];
+	    } else {
+		    curl_close( $curl );
+		    return $ret['dados'];
+	    }
+    }
+
+	public function gerarToken($arrParametro){
+		//$objInfraException = new InfraException();
+
+		$urlServico = 'https://api.correios.com.br/token/v1/autentica/cartaopostagem';
+
+		if ( !filter_var( $urlServico , FILTER_VALIDATE_URL ) )
+			throw new InfraException("Endereço do WebService inválido!");
+
+		$curl = curl_init( $urlServico );
+
+		curl_setopt_array( $curl, [
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_CONNECTTIMEOUT => 5,
+			CURLOPT_TIMEOUT        => 20,
+			CURLOPT_CUSTOMREQUEST  => 'POST'
+		]);
+
+		// monta dados de parametros necessarios, neste caso, somente o numero do cartao de postagem
+		//if ( $this->_resultado ) {
+			$payload = json_encode( ['numero' => '0073770523'] );
+			curl_setopt( $curl, CURLOPT_POSTFIELDS, $payload );
+		//}
+
+		// monta dados de cabecalho
+		$headers = [
+			'Content-Type: application/json',
+			'Accept: application/json',
+			'Authorization: Basic YW5hdGVsMDE6bVAzZldSeGRTZUdyTFl4a2FzeldJTVBQR0FKQkdkZFczRDlkdzZwZA==',
+		];
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+		// monta credenciais usuario e senha
+		curl_setopt($curl,CURLOPT_USERPWD,"{$arrParametro['usuario']}:{$arrParametro['senha']}");
+
+		// executa a consulta no webservice
+		$ret  = curl_exec( $curl );
+		$info = curl_getinfo( $curl );
+		$ret  = self::trataRetornoCurl( $info , $ret );
+
+		if ( $info['http_code'] == 0 ) $ret['msg'] = curl_error($curl);
+
+		if ( $ret['suc'] === false ) {
+			$strError = "STATUS CODE: " . $ret['code'] . " - ". $ret['msg'];
+			return ['objeto' => ['erro' => $strError , 'numero' => '0000000000'] ];
+		} else {
+			curl_close( $curl );
+			return $ret['dados'];
+		}
+	}
+
+	private static function trataRetornoCurl( $info , $ret ){
+		$arrRet = ['suc' => false , 'msg' => null , 'dados' => null , 'code' => $info['http_code']];
+		#$type   = gettype( $ret );
+		$rs     = json_decode( $ret , true );
+
+		switch ( $info['http_code'] ) {
+			case 200:
+			case 201:
+				$arrRet['suc']   = true;
+				$arrRet['dados'] = $rs;
+				break;
+
+			case 400:
+			case 403:
+			case 404:
+			case 500:
+				$arrRet['msg'] = utf8_decode( $rs['msgs'][0] );
+				break;
+
+			default:
+				$arrRet['msg'] = 'Falha não Identificada';
+				break;
+		}
+
+		return $arrRet;
+	}
 }

@@ -328,7 +328,7 @@ class MdCorRetornoArDocRN extends InfraRN {
                     $objMdCorRetornoArDocDTO->setNumIdMdCorParamArInfrigencia($coInfrigencia);
 
                     $strSituacaoRetorno = ' objeto devolvido,';
-                    if ($dados['co_motivo'][$chave] != 'null') {
+                    if ($dados['co_motivo'][$chave] != null) {
                         $mdCorParamArInfrigenRN = new MdCorParamArInfrigenRN();
                         $objMdCorParamArInfrigenDTO = new MdCorParamArInfrigenDTO();
                         $objMdCorParamArInfrigenDTO->setNumIdMdCorParamArInfrigencia($coInfrigencia);

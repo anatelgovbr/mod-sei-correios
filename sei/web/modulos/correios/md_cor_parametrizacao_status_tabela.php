@@ -56,11 +56,11 @@ if ($numRegistros > 0) {
     $strResultado = '';
 
     if ($_GET['acao'] != 'md_cor_parametrizacao_status_reativar') {
-        $strSumarioTabela = 'Tabela de Tipos de Situações SRO.';
-        $strCaptionTabela = 'Tipos de Situações SRO ';
+        $strSumarioTabela = 'Tabela de Tipos de Situações de Rastreamento de Objeto.';
+        $strCaptionTabela = 'Tipos de Situações de Rastreamento de Objeto ';
     } else {
-        $strSumarioTabela = 'Tabela de Tipos de Situações SRO Inativos.';
-        $strCaptionTabela = 'Tipos de Situações SRO ';
+        $strSumarioTabela = 'Tabela de Tipos de Situações de Rastreamento de Objeto Inativos.';
+        $strCaptionTabela = 'Tipos de Situações de Rastreamento de Objeto ';
     }
 
     $strResultado .= '<table width="100%" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";

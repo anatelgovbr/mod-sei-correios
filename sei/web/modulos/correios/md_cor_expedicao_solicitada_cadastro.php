@@ -32,6 +32,7 @@ try {
     $id_doc = $_GET['id_doc'];
 	$id_destinatario_aux = null;
 	$isPermiteGravarMidia = 'N';
+	$arrMsgValidacao = [];
 
     switch ($_GET['acao']) {
 
@@ -189,7 +190,8 @@ try {
 
                 $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
                 echo "<script>";
-                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';";
+                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
+				//echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.2
                 echo "</script>";
             }
 
@@ -416,7 +418,8 @@ try {
             $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
 
             echo "<script>";
-            echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';";
+            echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
+			//echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.2
             echo "</script>";
             break;
 
@@ -593,112 +596,135 @@ try {
                 $arrObjProtocoloDTO = $objProtocoloRN->pesquisarRN0967($objPesquisaProtocoloDTO);
                 $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
                 echo "<script>";
-                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';";
+                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
+				//echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.2
                 echo "</script>";
 
                 break;
             } else {
+                try {
+                    $docDTO = new DocumentoDTO();
+                    $docRN = new DocumentoRN();
+                    $docDTO->retDblIdDocumento();
+                    $docDTO->retDblIdProcedimento();
+                    $docDTO->setDblIdDocumento($id_doc);
+                    $docDTO = $docRN->consultarRN0005($docDTO);
+                    $id_procedimento = $docDTO->getDblIdProcedimento();
 
-                $docDTO = new DocumentoDTO();
-                $docRN = new DocumentoRN();
-                $docDTO->retDblIdDocumento();
-                $docDTO->retDblIdProcedimento();
-                $docDTO->setDblIdDocumento($id_doc);
-                $docDTO = $docRN->consultarRN0005($docDTO);
-                $id_procedimento = $docDTO->getDblIdProcedimento();
+                    //montando links para pesquisa de protocolos anexos
+                    $strLinkPopUpSelecaoProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_cadastro_protocolos_selecionar&tipo_selecao=2&id_procedimento=' . $id_procedimento . '&id_doc=' . $id_doc . '&id_object=objLupaProtocoloAnexo');
 
-                //montando links para pesquisa de protocolos anexos
-                $strLinkPopUpSelecaoProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_cadastro_protocolos_selecionar&tipo_selecao=2&id_procedimento=' . $id_procedimento . '&id_doc=' . $id_doc . '&id_object=objLupaProtocoloAnexo');
-
-                $strLinkAjaxProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_expedicao_cadastro_protocolos_autocompletar&id_procedimento=' . $id_procedimento);
+                    $strLinkAjaxProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_expedicao_cadastro_protocolos_autocompletar&id_procedimento=' . $id_procedimento);
 
 
-                //aplicar validaçao de informaçoes do destinatario do doc principal
-                require_once 'md_cor_expedicao_solicitada_cadastro_validar_destinatario.php';
+                    //aplicar validaçao de informaçoes do destinatario do doc principal
+                    require_once 'md_cor_expedicao_solicitada_cadastro_validar_destinatario.php';
 
-                //aplicar validaçao de informaçoes da unidade solicitante x serviços
-                $unidade_sol = '';
-                $id_num_unidade_solic = SessaoSei::getInstance()->getNumIdUnidadeAtual();
-                $id_num_servico_postal = 'null';
+                    //aplicar validaçao de informaçoes da unidade solicitante x serviços
+                    $unidade_sol = '';
+                    $id_num_unidade_solic = SessaoSei::getInstance()->getNumIdUnidadeAtual();
+                    $id_num_servico_postal = 'null';
 
-                require_once 'md_cor_expedicao_solicitada_cadastro_validar_unid_exp_serv.php';
+                    require_once 'md_cor_expedicao_solicitada_cadastro_validar_unid_exp_serv.php';
 
-	            $isPermiteGravarMidia = $id_num_servico_postal != 'null'
-                                    ? ( MdCorServicoPostalINT::getInfoServicoPostalPorId($id_num_servico_postal) )->getStrSinAnexarMidia() ?? 'N'
-	                                : 'N';
+                    $isPermiteGravarMidia = $id_num_servico_postal != 'null'
+                        ? (MdCorServicoPostalINT::getInfoServicoPostalPorId($id_num_servico_postal))->getStrSinAnexarMidia() ?? 'N'
+                        : 'N';
 
-                //obtendo informações do contato
-                $objContatoDTO = new ContatoDTO();
-                $objContatoRN = new ContatoRN();
-                //$objContatoDTO->retTodos(true);
-                $objContatoDTO->retNumIdContato();
-                //$objContatoDTO->getNumIdCargo();
-                $objContatoDTO->retStrExpressaoCargo();
-                $objContatoDTO->retStrExpressaoTratamentoCargo();
-                $objContatoDTO->retStrStaGenero();
-                $objContatoDTO->retStrNome();
-                $objContatoDTO->retStrEndereco();
-                $objContatoDTO->retStrComplemento();
-                $objContatoDTO->retStrBairro();
-                $objContatoDTO->retStrCep();
-                $objContatoDTO->retStrNomeCidade();
-                $objContatoDTO->retStrSiglaUf();
-                $objContatoDTO->retNumIdContatoAssociado();
-                $objContatoDTO->retStrNomeContatoAssociado();
-                $objContatoDTO->retStrSinEnderecoAssociado();
-                $objContatoDTO->setNumIdContato($objParticipanteDTO->getNumIdContato());
-                $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
+                    //obtendo informações do contato
+                    $objContatoDTO = new ContatoDTO();
+                    $objContatoRN = new ContatoRN();
+                    //$objContatoDTO->retTodos(true);
+                    $objContatoDTO->retNumIdContato();
+                    //$objContatoDTO->getNumIdCargo();
+                    $objContatoDTO->retStrExpressaoCargo();
+                    $objContatoDTO->retStrExpressaoTratamentoCargo();
+                    $objContatoDTO->retStrStaGenero();
+                    $objContatoDTO->retStrNome();
+                    $objContatoDTO->retStrEndereco();
+                    $objContatoDTO->retStrComplemento();
+                    $objContatoDTO->retStrBairro();
+                    $objContatoDTO->retStrCep();
+                    $objContatoDTO->retStrNomeCidade();
+                    $objContatoDTO->retStrSiglaUf();
+                    $objContatoDTO->retNumIdContatoAssociado();
+                    $objContatoDTO->retStrNomeContatoAssociado();
+                    $objContatoDTO->retStrSinEnderecoAssociado();
+                    $objContatoDTO->setNumIdContato($objParticipanteDTO->getNumIdContato());
+                    $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
 
-                $id_destinatario = $objContatoDTO->getNumIdContato();
-                $nome_destinatario = $objContatoDTO->getStrNome();
+                    $id_destinatario = $objContatoDTO->getNumIdContato();
+                    $nome_destinatario = $objContatoDTO->getStrNome();
 
-                $cargo_destinatario = $objContatoDTO->getStrExpressaoCargo();
+                    $cargo_destinatario = $objContatoDTO->getStrExpressaoCargo();
 
-                //$genero_destinatario = $objContatoDTO->getStrStaGenero();
-                $tratamento_destinatario = $objContatoDTO->getStrExpressaoTratamentoCargo();
+                    //$genero_destinatario = $objContatoDTO->getStrStaGenero();
+                    $tratamento_destinatario = $objContatoDTO->getStrExpressaoTratamentoCargo();
 
-                $endereco_destinatario = $objContatoDTO->getStrEndereco();
-                $complemento_destinatario = $objContatoDTO->getStrComplemento();
-                $bairro_destinatario = $objContatoDTO->getStrBairro();
-                $cep_destinatario = $objContatoDTO->getStrCep();
-                $cidade_destinatario = $objContatoDTO->getStrNomeCidade();
-                $uf_destinatario = $objContatoDTO->getStrSiglaUf();
+                    $endereco_destinatario = $objContatoDTO->getStrEndereco();
+                    $complemento_destinatario = $objContatoDTO->getStrComplemento();
+                    $bairro_destinatario = $objContatoDTO->getStrBairro();
+                    $cep_destinatario = $objContatoDTO->getStrCep();
+                    $cidade_destinatario = $objContatoDTO->getStrNomeCidade();
+                    $uf_destinatario = $objContatoDTO->getStrSiglaUf();
 
-                $idContatoAssociado = $objContatoDTO->getNumIdContatoAssociado();
-                //$nomeContatoAssociado = $objContatoDTO->getStrNomeContatoAssociado();
+                    $idContatoAssociado = $objContatoDTO->getNumIdContatoAssociado();
+                    //$nomeContatoAssociado = $objContatoDTO->getStrNomeContatoAssociado();
 
-                $nome_destinatario_associado = '';
-                //verifica se tem contato associado e se o contato associado é PJ
-                if ( !is_null( $idContatoAssociado ) ) {
-	                $objContatoAssociadoDTO = new ContatoDTO();
-	                $objContatoAssociadoDTO->retTodos(true);
-	                $objContatoAssociadoDTO->setNumIdContato($idContatoAssociado);
-	                $objContatoAssociadoDTO = $objContatoRN->consultarRN0324($objContatoAssociadoDTO);
+                    $nome_destinatario_associado = '';
+                    //verifica se tem contato associado e se o contato associado é PJ
+                    if (!is_null($idContatoAssociado)) {
+                        $objContatoAssociadoDTO = new ContatoDTO();
+                        $objContatoAssociadoDTO->retTodos(true);
+                        $objContatoAssociadoDTO->setNumIdContato($idContatoAssociado);
+                        $objContatoAssociadoDTO = $objContatoRN->consultarRN0324($objContatoAssociadoDTO);
 
-	                //captura o nome do associado caso a Natureza seja Pessoa Juridica
-	                if ( $objContatoAssociadoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_JURIDICA ) $nome_destinatario_associado = $objContatoAssociadoDTO->getStrNomeContatoAssociado();
+                        //captura o nome do associado caso a Natureza seja Pessoa Juridica
+                        if ($objContatoAssociadoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_JURIDICA) $nome_destinatario_associado = $objContatoAssociadoDTO->getStrNomeContatoAssociado();
 
-	                //captura o endereço do associado caso esteja sinalizado o uso do seu endereço
-	                if ( $objContatoDTO->getStrSinEnderecoAssociado() == 'S' ) {
-                        $endereco_destinatario = $objContatoAssociadoDTO->getStrEndereco();
-                        $complemento_destinatario = $objContatoAssociadoDTO->getStrComplemento();
-                        $bairro_destinatario = $objContatoAssociadoDTO->getStrBairro();
-                        $cep_destinatario = $objContatoAssociadoDTO->getStrCep();
-                        $cidade_destinatario = $objContatoAssociadoDTO->getStrNomeCidade();
-                        $uf_destinatario = $objContatoAssociadoDTO->getStrSiglaUf();
+                        //captura o endereço do associado caso esteja sinalizado o uso do seu endereço
+                        if ($objContatoDTO->getStrSinEnderecoAssociado() == 'S') {
+                            $endereco_destinatario = $objContatoAssociadoDTO->getStrEndereco();
+                            $complemento_destinatario = $objContatoAssociadoDTO->getStrComplemento();
+                            $bairro_destinatario = $objContatoAssociadoDTO->getStrBairro();
+                            $cep_destinatario = $objContatoAssociadoDTO->getStrCep();
+                            $cidade_destinatario = $objContatoAssociadoDTO->getStrNomeCidade();
+                            $uf_destinatario = $objContatoAssociadoDTO->getStrSiglaUf();
+                        }
                     }
-                }
 
-                //consulta de serviço postal
-                $strSelectServicoPostal = MdCorMapUnidServicoINT::montarSelectIdMdCorMapUnidServico('null', '&nbsp;', $id_num_servico_postal, $id_num_unidade_solic);
+                    //consulta de serviço postal
+                    $strSelectServicoPostal = MdCorMapUnidServicoINT::montarSelectIdMdCorMapUnidServico('null', '&nbsp;', $id_num_servico_postal, $id_num_unidade_solic);
 
-                $strTitulo = 'Solicitar Expedição pelos Correios';
+                    if ( empty($strSelectServicoPostal) ) {
+                        $msg = MdCorMensagemINT::setMensagemPadraoPersonalizada(MdCorMensagemINT::$MSG_COR_01,['Não']);
+                        PaginaSEI::getInstance()->adicionarMensagem( $msg , InfraPagina::$TIPO_MSG_AVISO );
+                    }
 
-                $arrComandos[] = '<button type="button" onclick="validarFormulario()" accesskey="S" id="btnSolicitarExpedicao" value="SolicitarExpedicao" class="infraButton">
+                    $strTitulo = 'Solicitar Expedição pelos Correios';
+
+                    $arrComandos[] = '<button type="button" onclick="validarFormulario()" accesskey="S" id="btnSolicitarExpedicao" value="SolicitarExpedicao" class="infraButton">
 	                              <span class="infraTeclaAtalho">S</span>olicitar Expedição</button>';
 
-                $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href = \'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=arvore_visualizar&acao_origem=protocolo_modelo_cadastrar&arvore=1&id_protocolo=' . $_GET['id_doc']) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
+                    $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href = \'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=arvore_visualizar&acao_origem=protocolo_modelo_cadastrar&arvore=1&id_protocolo=' . $_GET['id_doc']) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
+                } catch ( InfraException $e ) {
+                    echo '<div class="alert alert-danger alert-dismissible fade show" style="font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:98%; margin:0 auto;" role="alert">
+                            '.$e->getMessage().'
+                            <button type="button" class="close media h-100" data-dismiss="alert" aria-label="Fechar Mensagem" aria-labelledby="divInfraMsg0" onclick="atualizarTela()">
+                            <span aria-hidden="true" class="align-self-center"><b>X</b></span>
+                            </button>
+                        </div>';
+
+                    $link = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$id_procedimento.'&id_documento='.$id_doc);
+					
+                    echo "<script>";
+                    echo 	"function atualizarTela() {";
+                    echo 		"window.parent.document.getElementById('ifrArvore').src = '".$link."';"; // 4.0.12
+					//echo 		"window.top.document.getElementById('ifrArvore').src = '".$link."';"; // 4.1.2
+                    echo 	"}";
+                    echo "</script>";
+                }
                 break;
             }
 
@@ -871,19 +897,44 @@ try {
                     //montando links para pesquisa de protocolos anexos
                     $strLinkPopUpSelecaoProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_cadastro_protocolos_selecionar&tipo_selecao=2&id_procedimento=' . $dto->getDblIdProtocolo() . '&id_doc=' . $_GET['id_doc'] . '&id_object=objLupaProtocoloAnexo');
                     if (SessaoSei::getInstance()->getNumIdUnidadeAtual() == $dto->getNumIdUnidade() && $dto->getNumIdMdCorPlp() == null && $staAberto) {
+
+                        //require_once 'md_cor_expedicao_solicitada_cadastro_validar_destinatario.php';
+                        $validaContatoEdicao = MdCorExpedicaoSolicitadaINT::validaContatoPreeenchido($id_destinatario,true);
+
+                        if ( !empty($validaContatoEdicao)) array_push($arrMsgValidacao,$validaContatoEdicao);  //$arrMsgValidacao[] = $validaContatoEdicao;
+
                         $strTitulo = 'Alterar Expedição pelos Correios';
 
                         //Caso seja ALTERACAO da solicitacao de expedicao
                         $strSelectServicoPostal = MdCorMapUnidServicoINT::montarSelectIdMdCorMapUnidServico(null, null, $dto->getNumIdMdCorServicoPostal(), $dto->getNumIdUnidade(), true);
+
+                        if ( empty($strSelectServicoPostal) ) {
+                            array_push( $arrMsgValidacao , MdCorMensagemINT::setMensagemPadraoPersonalizada( MdCorMensagemINT::$MSG_COR_01 , ['Não'] ) );
+                        }
 
 	                    $isPermiteGravarMidia = ( MdCorServicoPostalINT::getInfoServicoPostalPorId( $dto->getNumIdMdCorServicoPostal() ) )->getStrSinAnexarMidia() ?? 'N';
 
                         // Se teve mudança no registro do contato, exibe aviso para o usuario
 	                    if ( $arrObjMdCorContato['isRegAlterado'] ) {
 		                    $id_destinatario_aux = $id_destinatario;
-		                    $msg  = 'Os dados do Contato indicado abaixo como Destinatário foram alterados entre a solicitação e o retorno nessa tela de Alteração. Para replicar as alterações nesta Solicitação de Expedição acione o botão "Alterar Solicitação". Caso não queira replicar as alterações no Contato acione o botão "Fechar".';
-		                    PaginaSEI::getInstance()->adicionarMensagem( $msg , InfraPagina::$TIPO_MSG_AVISO );
+                            array_push($arrMsgValidacao,MdCorMensagemINT::$MSG_COR_02);
 	                    }
+
+	                    // caso tenha alguma msg de alerta para o usuáro, trata no if abaixo
+	                    $msg = null;
+	                    if ( $arrMsgValidacao ) {
+	                        if ( count($arrMsgValidacao) == 1 ) {
+	                            $msg = str_replace( "<br>" , "\n" , $arrMsgValidacao[0] );
+                            } else {
+	                            foreach ( $arrMsgValidacao as $strMsg ) {
+                                    $msg .= "- " . str_replace( "<br>" , "\n" , $strMsg ) . "\n\n";
+                                }
+                            }
+                        }
+
+	                    if ( $msg ) {
+                            PaginaSEI::getInstance()->adicionarMensagem( $msg , InfraPagina::$TIPO_MSG_AVISO );
+                        }
 
                         if ($dto) {
                             if ($dto->getStrSinDevolvido() == "S") {
@@ -929,13 +980,14 @@ PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
-if ($_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_POST['txaJustificativa'])) {
-
-    ?>
+if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_POST['txaJustificativa']) && $arrComandos ) {
+?>
 
     <form id="frmSolicitarExpedicao" method="post" action="<?= $strAcaoForm ?>">
-        <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
-        <?php PaginaSEI::getInstance()->abrirAreaDados(); ?>
+        <?php
+             PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
+             PaginaSEI::getInstance()->abrirAreaDados();
+        ?>
         <?php $idMdCorEexpedicaoSolicitada = isset($_GET['id_md_cor_expedicao_solicitada']) ? $_GET['id_md_cor_expedicao_solicitada'] : ''; ?>
         <input type="hidden" id="hdnIdMdCorExpedicaoSolicitada" name="hdnIdMdCorExpedicaoSolicitada" value="<?= $idMdCorEexpedicaoSolicitada ?>"/>
 
@@ -1307,8 +1359,10 @@ if ($_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_
         <? endif; ?>
 
         <div class="clear">&nbsp;</div>
-        <?php PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos); ?>
-        <?php PaginaSEI::getInstance()->fecharAreaDados(); ?>
+        <?php
+            PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
+            PaginaSEI::getInstance()->fecharAreaDados();
+        ?>
         <input type="hidden" name="id_doc" value="<?php echo $id_doc; ?>"/>
         <input type="hidden" name="hdnIdProtocoloAnexo" id="hdnIdProtocoloAnexo" value=""/>
         <input type="hidden" name="hdnTbFormatos" id="hdnTbFormatos" value=""/>
@@ -1317,6 +1371,6 @@ if ($_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_
 PaginaSEI::getInstance()->montarAreaDebug();
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
-if (!isset($_POST['txaJustificativa'])) {
+if (!isset($_POST['txaJustificativa']) && $arrComandos ) {
     require_once 'md_cor_expedicao_solicitada_cadastro_js.php';
 }

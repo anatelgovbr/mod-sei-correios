@@ -119,7 +119,13 @@ try {
     }
 
     $objMdCorContratoDTO = new MdCorContratoDTO();
-    $objMdCorContratoDTO->retTodos(true);
+    $objMdCorContratoDTO->retNumIdMdCorContrato();
+    $objMdCorContratoDTO->retStrNumeroContrato();
+    $objMdCorContratoDTO->retStrNumeroContratoCorreio();
+    $objMdCorContratoDTO->retStrNumeroCartaoPostagem();
+    $objMdCorContratoDTO->retNumNumeroCnpj();
+    $objMdCorContratoDTO->retDblIdProcedimento();
+    $objMdCorContratoDTO->retStrSinAtivo();
 
     if (isset($_POST['txtNumeroContrato']) && !empty($_POST['txtNumeroContrato'])) {
         $objMdCorContratoDTO->setStrNumeroContrato('%' . $_POST['txtNumeroContrato'] . '%', InfraDTO::$OPER_LIKE);
@@ -241,9 +247,9 @@ try {
             $objMdCorObjetoRN = new MdCorObjetoRN();
             $objMdCorObjetoDTO = $objMdCorObjetoRN->contar($objMdCorObjetoDTO);
 
-            if ($objMdCorObjetoDTO > 0) {
+            //if ($objMdCorObjetoDTO > 0) {
                 $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_objeto_listar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_contrato=' . $arrObjMdCorContratoDTO[$i]->getNumIdMdCorContrato()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/embalagem.svg?'.Icone::VERSAO.'" style="width: 24px; height: 24px" title="Tipos de Embalagem" alt="Tipos de Embalagem" class="infraImgModulo" /></a>&nbsp;';
-            }
+            //}
 
             if ($bolAcaoConsultar) {
                 $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_contrato_consultar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_contrato=' . $arrObjMdCorContratoDTO[$i]->getNumIdMdCorContrato()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/consultar.svg" title="Consultar Contrato e Serviços Postais" alt="Consultar Contrato e Serviços Postais" class="infraImg" /></a>&nbsp;';

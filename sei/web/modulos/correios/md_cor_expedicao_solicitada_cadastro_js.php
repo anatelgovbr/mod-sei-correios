@@ -54,8 +54,7 @@
         objTabelaDinamicaFormatos.inserirNoInicio = false;
 
         //se for na acao de cadastrar, ja inserir na grid o documento principal
-        //id, Documento, Formato da Expedição, Impressão, Justificativa
-        //if ('<?= $_GET['acao'] ?>' == 'md_cor_expedicao_solicitada_cadastrar') {
+        //id, Documento, Formato da Expedição, Impressão, Justificativa        
         <?
         if (!isset($_POST['txaJustificativa'])) {
             //Anexo = extensao
@@ -473,26 +472,32 @@
     }
 
     function AddEventToSelect(elem, option) {
-        if (option == 'I') {
-            if (elem.addEventListener) {
-                elem.addEventListener('DOMNodeInserted', OnNodeInserted, false);
-            }
-        } else if (option == 'M') {
-            if (elem.addEventListener) {
-                elem.addEventListener('DOMCharacterDataModified', OnNodeModified, false);
-            }
-        }
+        let execImpressao = false;
+        const observer = new MutationObserver( mutations => {
+            mutations.forEach( mutation => {
+                if ( mutation.addedNodes.length > 0 ) {
+                    OnNodeInserted(mutation.addedNodes[0])
+                    execImpressao = true;
+                }
+            })
+
+            if ( execImpressao ) impressaoMostrar();
+        })
+
+        observer.observe( elem , { childList: true } )
     }
 
     function OnNodeModified(event) {}
 
-    function OnNodeInserted(event) {
-        var elemento = event.target;
+    function OnNodeInserted(evento) {
+        var elemento = evento; //event.target;
+
         if ( elemento.value == '' || elemento.value == undefined ) return false;
+
         var idCompleto = elemento.value;
         var id = idCompleto.split("#")[0];
         var extensaopermitida = idCompleto.split("#")[1];
-        var descricao = elemento.text;
+        var descricao = elemento.textContent; //elemento.text;
         var options = document.getElementById('selProtocoloAnexo').options;
         var existeTipoMidiaValido = verificarAnexoMidia(idCompleto);
 
@@ -581,9 +586,8 @@
 
         //adiciona nova item na tabela dinamica de formatos
         objTabelaDinamicaFormatos.adicionar(arrLinha);
-        //objTabelaDinamicaFormatos.adicionarAcoes(id, "", false, false);
 
-        impressaoMostrar(existeTipoMidiaValido);
+        //impressaoMostrar(existeTipoMidiaValido);
     }
 
     function validarFormulario(acao) {
@@ -619,23 +623,18 @@
                     return;
 
                 }
-                /*
-                var confirmar = confirm('Deseja realmente alterar esta Solicitação?');
-                if (confirmar == false) {
-                    return;
-                }
-                */
-                document.getElementsByClassName('documentoPrincipal').disabled = false;
 
+                document.getElementsByClassName('documentoPrincipal').disabled = false;
             }
+
             var selServicoPostal = document.getElementById('selServicoPostal').value;
             var selProtocoloAnexo = document.getElementById('selProtocoloAnexo').options.length;
             var chkDocumentoPossuiAnexo = document.getElementById('chkDocumentoPossuiAnexo');
             var arrSelect = ['<?= $id_doc ?>#0'];
 
             if (selServicoPostal == '' || selServicoPostal == 'null') {
-
-                alert('Informe o serviço postal.');
+                let msgCompl = "<?= MdCorMensagemINT::setMensagemPadraoPersonalizada( MdCorMensagemINT::$MSG_COR_01 , ['não'] ) ?>";
+                alert('O Serviço Postal não foi informado ou ' + msgCompl);
                 document.getElementById('selServicoPostal').focus();
                 return;
 

@@ -290,9 +290,9 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
         try {
             if($bolEntrada) {
-                $str_msg_validacao = 'O Destinatário deste documento está com dados cadastrais incompletos. \n\nAcesse o botão de ação sobre o documento \"Consultar/Alterar Documento\" para editar o Contato indicado como Destinatário e preencha os campos abaixo:\n';
+                $str_msg_validacao = 'O Destinatário deste documento está com dados cadastrais incompletos. <br>Acesse o botão de ação sobre o documento "Consultar/Alterar Documento" para editar o Contato indicado como Destinatário e preencha os campos abaixo:<br>';
             } else {
-                $str_msg_validacao = "O Destinatário deste documento está com dados cadastrais incompletos. \n\nAcesse o botão de ação sobre o documento \"Consultar/Alterar Documento\" para editar o Contato indicado como Destinatário e preencha os campos abaixo:\n";
+                $str_msg_validacao = "O Destinatário deste documento está com dados cadastrais incompletos. \nAcesse o botão de ação sobre o documento \"Consultar/Alterar Documento\" para editar o Contato indicado como Destinatário e preencha os campos abaixo:\n";
             }
             $erros = array();
             $id_contato = $idContato;
@@ -304,7 +304,11 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             $contatoDTO = $contatoRN->consultarRN0324($contatoDTO);
 
             if ( is_null($contatoDTO) ) {
-	              throw new InfraException('O Destinatário deste documento está com cadastro de Contato desativado. \n\nAcesse o botão de ação \"Consultar/Alterar Documento\" sobre o documento para trocar o Contato indicado como Destinatário por um contato ativo.');
+                if($bolEntrada) {
+                    $str_msg_validacao = 'O Destinatário deste documento está com cadastro de Contato desativado. <br><br>Acesse o botão de ação "Consultar/Alterar Documento" sobre o documento para trocar o Contato indicado como Destinatário por um contato ativo.';
+                } else {
+                    $str_msg_validacao = "O Destinatário deste documento está com cadastro de Contato desativado. \n\nAcesse o botão de ação \"Consultar/Alterar Documento\" sobre o documento para trocar o Contato indicado como Destinatário por um contato ativo.";
+                }
             }
 
             self::validarDestinatarioIntimacaoEletronica($contatoDTO, $bolEntrada);
@@ -316,15 +320,29 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 $contatoDTO = $contatoRN->consultarRN0324($contatoAssociadoDTO);
             }
 
-// checar Natureza, Endereco, Bairro, Estado, Cidade, CEP
+            // checar Natureza, Endereco, Bairro, Estado, Cidade, CEP
             $nome = $contatoDTO->getStrNome();
             $idCargo = $contatoDTO->getNumIdCargo();
             $natureza = $contatoDTO->getStrStaNatureza();
             $genero = $contatoDTO->getStrStaGenero();
             $endereco = $contatoDTO->getStrEndereco();
             $bairro = $contatoDTO->getStrBairro();
-            $idCidade = $contatoDTO->getNumIdCidade();
+
+            // retorna o nome da UF
             $uf = $contatoDTO->getNumIdUf();
+            $objUFDTO = new UfDTO();
+            $objUFDTO->setNumIdUf($uf);
+            $objUFDTO->retStrNome();
+            $objUFDTO->retStrSigla();
+            $objUFDTO = ( new UfRN() )->consultarRN0400($objUFDTO);
+
+            // retorna nome da Cidade
+            $idCidade = $contatoDTO->getNumIdCidade();
+            $objCidadeDTO = new CidadeDTO();
+            $objCidadeDTO->setNumIdCidade($idCidade);
+            $objCidadeDTO->retStrNome();
+            $objCidadeDTO = ( new CidadeRN() )->consultarRN0409($objCidadeDTO);
+
             $pais = $contatoDTO->getNumIdPais();
             $cep = preg_replace("/[^0-9]+/", '', $contatoDTO->getStrCep());
 
@@ -351,8 +369,6 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             $cepOrgao = preg_replace("/[^0-9]+/", '', $contatoOrgaoDTO->getStrCep());
             $enderecoOrgaoIncompleto = false;
 
-            $clienteWS = MdCorClientWsRN::gerarCliente(MdCorClientWsRN::URL_PRD);
-
             $objRelContJustificativa = new MdCorRelContatoJustificativaDTO();
             $objRelContJustificativa->retStrNomeJustificativa();
             $objRelContJustificativa->setNumIdContato($idContato);
@@ -368,7 +384,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             if ($qtdObjRelContJust > 0) {
 
                 if($bolEntrada){
-                    $srt_msg_validacao_justificativa = 'O Destinatário do Documento não pode receber Expedições pelos Correios pelo seguinte motivo: \n\n- ' . $objRelContJust->getStrNomeJustificativa();
+                    $srt_msg_validacao_justificativa = 'O Destinatário do Documento não pode receber Expedições pelos Correios pelo seguinte motivo: <br><br>- ' . $objRelContJust->getStrNomeJustificativa();
                     return $srt_msg_validacao_justificativa;
                 } else {
                     $srt_msg_validacao_justificativa = "O Destinatário do Documento não pode receber Expedições pelos Correios pelo seguinte motivo: \n\n- " . $objRelContJust->getStrNomeJustificativa();
@@ -388,7 +404,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             if (in_array($contatoDTO->getNumIdTipoContato(), $arrIdTipoContato)) {
 
                 if($bolEntrada){
-                    $str_msg_validacao_Tipo_contato = 'O Tipo de Contato do Destinatário ou da Pessoa Jurídica Associada não permite Expedição pelos Correios. Por exemplo, está utilizando o Tipo de Contato Temporário ou Usuário Externo. \n\nRevise o Contato para classificá-lo em Tipo de Contato adequado ou realize a expedição por meio de Intimação Eletrônica.';
+                    $str_msg_validacao_Tipo_contato = 'O Tipo de Contato do Destinatário ou da Pessoa Jurídica Associada não permite Expedição pelos Correios. Por exemplo, está utilizando o Tipo de Contato Temporário ou Usuário Externo. <br><br>Revise o Contato para classificá-lo em Tipo de Contato adequado ou realize a expedição por meio de Intimação Eletrônica.';
                     return $str_msg_validacao_Tipo_contato;
                 } else {
                     $str_msg_validacao_Tipo_contato = "O Tipo de Contato do Destinatário ou da Pessoa Jurídica Associada não permite Expedição pelos Correios. Por exemplo, está utilizando o Tipo de Contato Temporário ou Usuário Externo. \n\nRevise o Contato para classificá-lo em Tipo de Contato adequado ou realize a expedição por meio de Intimação Eletrônica.";
@@ -405,12 +421,12 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             } else {
 
                 if($bolEntrada){
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($clienteWS, $cepOrgao, 'O CEP do cadastro do órgão desta Unidade é inválido.\nFaça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.');
+                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cepOrgao, 'O CEP do cadastro do órgão desta Unidade é inválido.<br>Faça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.');
                     if ($str_msg_validacaoCorreios != '') {
-                        $str_msg_validacaoCorreios;
+                        return $str_msg_validacaoCorreios;
                     }
                 } else {
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($clienteWS, $cepOrgao, "O CEP do cadastro do órgão desta Unidade é inválido.\nFaça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.");
+                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cepOrgao, "O CEP do cadastro do órgão desta Unidade é inválido.\nFaça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.");
                     if ($str_msg_validacaoCorreios != '') {
                         return "<itens><flag>false</flag><mensagem>" . $str_msg_validacaoCorreios . "</mensagem></itens>";
                     }
@@ -458,7 +474,8 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 }
             } else {
                 if($bolEntrada){
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($clienteWS, $cep, 'O CEP do Destinatário é inválido (não encontrado na base dos Correios).\nAltere o Contato do Destinatário para indicar um CEP válido.');
+                    $arrOpt = ['ufDest' => $objUFDTO->getStrSigla(),'cidadeDest' => $objCidadeDTO->getStrNome()];
+                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cep, "O CEP do Destinatário é inválido (não encontrado na base dos Correios).<br>Altere o Contato do Destinatário para indicar um CEP válido.",$arrOpt);
                     if ($str_msg_validacaoCorreios != '') {
                         return $str_msg_validacaoCorreios;
                     }
@@ -467,7 +484,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                         $str_msg_validacaoCep = "O CEP do Destinatário está com formato formato inválido.\nAltere o Contato do Destinatário para indicar o CEP no formato válido: XXXXX-YYY.";
                         return "<item><flag>false</flag><mensagem>" . $str_msg_validacaoCep . "</mensagem></item>";
                     }
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($clienteWS, $cep, "O CEP do Destinatário é inválido, pois não existe na base de dados de CEPs dos Correios.\nAltere o Contato do Destinatário para indicar um CEP válido.");
+                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cep, "O CEP do Destinatário é inválido, pois não existe na base de dados de CEPs dos Correios.\nAltere o Contato do Destinatário para indicar um CEP válido.");
                     if ($str_msg_validacaoCorreios != '') {
                         return "<itens><flag>false</flag><mensagem>" . $str_msg_validacaoCorreios . "</mensagem></itens>";
                     }
@@ -475,7 +492,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 if ($enderecoOrgaoIncompleto) {
 
                     if($bolEntrada){
-                        $str_msg_validacao_orgao = 'Os dados cadastrais do órgão desta Unidade estão incompletos.\nFaça contato com a Gestão do SEI do seu órgão para que preencham os dados cadastrais do órgão.';
+                        $str_msg_validacao_orgao = 'Os dados cadastrais do órgão desta Unidade estão incompletos.<br>Faça contato com a Gestão do SEI do seu órgão para que preencham os dados cadastrais do órgão.';
                         return $str_msg_validacao_orgao;
                     } else {
                         $str_msg_validacao_orgao = "Os dados cadastrais do órgão desta Unidade estão incompletos.\nFaça contato com a Gestão do SEI do seu órgão para que preencham os dados cadastrais do órgão.";
@@ -484,7 +501,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 }
             }
 
-//se for pessoa fisica checar ainda: Genero e Cargo
+            //se for pessoa fisica checar ainda: Genero e Cargo
             if ($natureza == ContatoRN::$TN_PESSOA_FISICA) {
 
                 if ($idCargo == '') {
@@ -516,25 +533,57 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 	        }
         	return "<item><flag>false</flag><mensagem>{$e->getMessage()}</mensagem></item>";
 
-        } catch (SoapFault $soapFault) {
-            if($bolEntrada){
-                return 'Problema ao acessar o Web Service dos Correios. Por Favor, tentar mais tarde.';
-            } else {
-                return "<item><flag>false</flag><mensagem>Problema ao acessar o Web Service dos Correios. Por Favor, tentar mais tarde.</mensagem></item>";
-            }
         }
     }
 
-    public static function validarCepBaseCorreios($clienteWS, $cep, $msgErro)
+    public static function validarCepBaseCorreios($cep, $msgErro=null, $opt=null)
     {
         try {
-            $obj = $clienteWS->consultaCEP(['cep' => $cep])->return;
-            if (is_null($obj)) {
-                return $msgErro;
+	        $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+
+	        $objMdCorIntegCEP = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CEP);
+	        if ( is_array( $objMdCorIntegCEP ) && isset( $objMdCorIntegCEP['suc'] ) && $objMdCorIntegCEP['suc'] === false )
+	            return 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_CEP .' não existe ou está inativa.';
+
+	        $arrParametro = [
+		        'endpoint'  => $objMdCorIntegCEP->getStrUrlOperacao(),
+		        'token'     => $objMdCorIntegCEP->getStrToken(),
+		        'expiraEm'  => $objMdCorIntegCEP->getDthDataExpiraToken(),
+	        ];
+
+            $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegCEP);
+
+            // recupera algum erro sobre a validacao de token expirado
+            if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false )
+                return "Falha na Integração: ". MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN . ".\n". $ret['msg'];
+
+	        $objMdCorWsCEP = new MdCorApiRestRN($arrParametro);
+
+	        $ret = $objMdCorWsCEP->consultarCEP($cep);
+
+            // recupera algum erro sobre o retorno do consultar CEP
+            if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
+                return "Falha na Integração: ". MdCorAdmIntegracaoRN::$STR_CEP . ".\n". $ret['msg'];
             }
-            return '';
+
+            //validacoes de dados do Endereço
+	        if ( !empty( $opt ) ) {
+	            if ( isset($opt['ufDest'] ) ) {
+	                if ( $opt['ufDest'] != $ret['uf'] )
+                        return "Não foi possível iniciar ou alterar a Solicitação de Expedição, antes é necessário revisar o cadastro do Contato definido como Destinatário, pois a UF dele, \"{$opt['ufDest']}\", não está relacionada ao CEP " . self::criarMascara($cep,'#####-###');
+                }
+
+	            if ( isset($opt['cidadeDest'] ) ) {
+	                $cidadeREST = isset($ret['localidadeSuperior']) ? utf8_decode($ret['localidadeSuperior']) : utf8_decode($ret['localidade']);
+	                if ( strcasecmp( InfraString::excluirAcentos($opt['cidadeDest']) , InfraString::excluirAcentos( $cidadeREST ) ) != 0 )
+                        return "Não foi possível iniciar ou alterar a Solicitação de Expedição, antes é necessário revisar o cadastro do Contato definido como Destinatário, pois a Cidade dele, \"{$opt['cidadeDest']}\", não está relacionada ao CEP " . self::criarMascara($cep,'#####-###');
+                }
+            }
+
+	        return '';
+
         } catch (Exception $e) {
-            return $msgErro;
+            return $e->getMessage();
         }
     }
 
@@ -581,7 +630,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
                     if (count($listaContato) > 0) {
                         if($bolEntrada){
-                            return $msgErro;
+                            throw new Exception( str_replace('\n','<br>', $msgErro) );
                         } else {
                             return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                         }
@@ -592,7 +641,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
                         if (count($arrObjMdPetVinculoDTO) > 0) {
                             if($bolEntrada){
-                                return $msgErro;
+                                throw new Exception( str_replace('\n','<br>', $msgErro) );
                             } else {
                                 return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                             }
@@ -604,7 +653,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
                     if (count($arrObjMdPetVinculoDTO) > 0) {
                         if($bolEntrada){
-                            return $msgErro;
+                            throw new Exception( str_replace('\n','<br>', $msgErro) );
                         } else {
                             return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                         }
@@ -618,7 +667,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
                     if (count($arrObjMdPetVinculoDTO) > 0) {
                         if($bolEntrada){
-                            return $msgErro;
+                            throw new Exception( str_replace('\n','<br>', $msgErro) );
                         } else {
                             return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                         }
@@ -634,7 +683,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
                         if (count($arrObjMdPetVinculoDTO) > 0) {
                             if($bolEntrada){
-                                return $msgErro;
+                                throw new Exception( str_replace('\n','<br>', $msgErro) );
                             } else {
                                 return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                             }
@@ -643,9 +692,12 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 }
 
             } else {
-                if ($usuarioDTO->getStrStaTipo() == UsuarioRN::$TU_EXTERNO &&
-                    $usuarioDTO->getStrSinAtivo() == 'S') {
-                    return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
+                if ($usuarioDTO->getStrStaTipo() == UsuarioRN::$TU_EXTERNO && $usuarioDTO->getStrSinAtivo() == 'S') {
+                    if ( $bolEntrada ){
+                        throw new Exception( str_replace('\n','<br>', $msgErro) );
+                    } else {
+                        return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
+                    }
                 }
             }
         }
@@ -660,6 +712,24 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
         $objMdPetVinculoRN = new MdPetVinculoRN();
         return $objMdPetVinculoRN->listar($objMdPetVinculoDTO);
+    }
+
+    public static function criarMascara($val, $mask){
+        $maskared = '';
+        $k = 0;
+        for ($i = 0; $i <= strlen($mask) - 1; ++$i) {
+            if ($mask[$i] == '#') {
+                if (isset($val[$k])) {
+                    $maskared .= $val[$k++];
+                }
+            } else {
+                if (isset($mask[$i])) {
+                    $maskared .= $mask[$i];
+                }
+            }
+        }
+
+        return $maskared;
     }
 }
 ?>

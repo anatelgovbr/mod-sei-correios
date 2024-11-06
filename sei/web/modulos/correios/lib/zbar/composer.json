@@ -1,0 +1,5 @@
+{
+    "require": {
+        "robbiep/zbar-qrdecoder": "^2.0"
+    }
+}

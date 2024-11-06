@@ -5,10 +5,10 @@ class MdCorAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.2.0';
+    private $versaoAtualDesteModulo = '2.3.0';
     private $nomeDesteModulo = 'MÓDULO CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0');
 
     public function __construct()
     {
@@ -66,15 +66,6 @@ class MdCorAtualizadorSeiRN extends InfraRN
         die;
     }
 
-    protected function normalizaVersao($versao)
-    {
-        $ultimoPonto = strrpos($versao, '.');
-        if ($ultimoPonto !== false) {
-            $versao = substr($versao, 0, $ultimoPonto) . substr($versao, $ultimoPonto + 1);
-        }
-        return $versao;
-    }
-
     protected function atualizarVersaoConectado()
     {
 
@@ -90,7 +81,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
 
             //testando versao do framework
             $numVersaoInfraRequerida = '2.0.18';
-            if ($this->normalizaVersao(VERSAO_INFRA) < $this->normalizaVersao($numVersaoInfraRequerida)) {
+            if (version_compare(VERSAO_INFRA, $numVersaoInfraRequerida) < 0) {
                 $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
 
@@ -116,6 +107,8 @@ class MdCorAtualizadorSeiRN extends InfraRN
                     $this->instalarv210();
                 case '2.1.0':
 	                $this->instalarv220();
+	            case '2.2.0':
+	                $this->instalarv230();
                     break;
 
                 default:
@@ -1260,6 +1253,211 @@ ATENÇÃO: As informações contidas neste e-mail, incluindo seus anexos, podem ser 
 
 	    $this->atualizarNumeroVersao($nmVersao);
     }
+
+	protected function instalarv230(){
+		$nmVersao = '2.3.0';
+		$objInfraParametro = new InfraParametro(BancoSEI::getInstance());
+		$this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+		$objInfraMetaBD     = new InfraMetaBD(BancoSEI::getInstance());
+        $objMdCorAdmIntegRN = new MdCorAdmIntegracaoRN();
+
+		$this->logar('CRIANDO A TABELA md_cor_adm_integracao');
+		BancoSEI::getInstance()->executarSql('CREATE TABLE md_cor_adm_integracao ( 
+					id_md_cor_adm_integracao ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL ,
+					funcionalidade ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL , 
+					nome ' . $objInfraMetaBD->tipoTextoVariavel(200) . ' NOT NULL,
+					url_operacao '. $objInfraMetaBD->tipoTextoVariavel(500) .' NOT NULL,					
+					usuario '. $objInfraMetaBD->tipoTextoVariavel(100) .' NULL,
+					senha '. $objInfraMetaBD->tipoTextoVariavel(1000) .' NULL,
+					token '. $objInfraMetaBD->tipoTextoVariavel(1500) .' NULL,					
+					data_exp_token '. $objInfraMetaBD->tipoDataHora() .' NULL,
+					sin_ativo '. $objInfraMetaBD->tipoTextoFixo(1) .' NOT NULL
+				)'
+		);
+
+		$objInfraMetaBD->adicionarChavePrimaria('md_cor_adm_integracao', 'pk_md_cor_adm_integracao', array('id_md_cor_adm_integracao'));
+
+		$this->logar('CRIANDO A SEQUENCE seq_md_cor_adm_integracao');
+		BancoSEI::getInstance()->criarSequencialNativa('seq_md_cor_adm_integracao', 1);
+
+		// GERAR TOKEN
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: GERAR TOKEN');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(1);
+		$objMdCorAdmIntegDTO->setStrNome('Gerar Token');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/token/v1/autentica/cartaopostagem');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(null);
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		// RASTREAR OBJETO
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: RASTREAR OBJETO');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(2);
+		$objMdCorAdmIntegDTO->setStrNome('Rastrear Objeto');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/srorastro/v1');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		// CONSULTAR CEP
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: CONSULTAR CEP');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(3);
+		$objMdCorAdmIntegDTO->setStrNome('Consultar CEP');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/cep/v2');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		// CONTRATO - SERVICOS POSTAIS
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: SERVICOS POSTAIS');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(4);
+		$objMdCorAdmIntegDTO->setStrNome('Serviços Postais');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/meucontrato/v1');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		// SOLICITA ETIQUETAS
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: PRE POSTAGEM - SOLICITA ETIQUETAS');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(5);
+		$objMdCorAdmIntegDTO->setStrNome('Solicitar Etiquetas');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/prepostagem/v1/prepostagens/rotulo/range');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		// PRE POSTAGEM
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: PRE POSTAGEM - SOLICITA PRE-POSTAGEM');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(6);
+		$objMdCorAdmIntegDTO->setStrNome('Pré Postagem Nacional');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/prepostagem/v1/prepostagens');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		// EMITE ROTULO
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: EMISSAO DE ROTULO');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(7);
+		$objMdCorAdmIntegDTO->setStrNome('Emitir Rótulo');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/prepostagem/v1/prepostagens/rotulo/assincrono/pdf');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		// DOWNLOAD DO ROTULO
+		$this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: DOWNLOAD DO ROTULO');
+		$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+		$objMdCorAdmIntegDTO->retTodos();
+		$objMdCorAdmIntegDTO->setNumFuncionalidade(8);
+		$objMdCorAdmIntegDTO->setStrNome('Download Rótulo');
+		$objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/prepostagem/v1/prepostagens/rotulo/download');
+		$objMdCorAdmIntegDTO->setStrUsuario(null);
+		$objMdCorAdmIntegDTO->setStrSenha(null);
+		$objMdCorAdmIntegDTO->setStrToken(null);
+		$objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+		$objMdCorAdmIntegDTO->setStrSinAtivo('S');
+		$objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+        // AVISO DE RECEBIMENTO
+        $this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: AVISO DE RECEBIMENTO');
+        $objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+        $objMdCorAdmIntegDTO->retTodos();
+        $objMdCorAdmIntegDTO->setNumFuncionalidade(9);
+        $objMdCorAdmIntegDTO->setStrNome('Aviso de Recebimento');
+        $objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/prepostagem/v1/prepostagens');
+        $objMdCorAdmIntegDTO->setStrUsuario(null);
+        $objMdCorAdmIntegDTO->setStrSenha(null);
+        $objMdCorAdmIntegDTO->setStrToken(null);
+        $objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+        $objMdCorAdmIntegDTO->setStrSinAtivo('S');
+        $objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+        // CANCELAR PRE POSTAGEM
+        $this->logar('CADASTRAR REGISTRO DE INTEGRAÇÃO: CANCELAR PRE POSTAGEM');
+        $objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
+        $objMdCorAdmIntegDTO->retTodos();
+        $objMdCorAdmIntegDTO->setNumFuncionalidade(10);
+        $objMdCorAdmIntegDTO->setStrNome('Cancelar Pré Postagem');
+        $objMdCorAdmIntegDTO->setStrUrlOperacao('https://apihom.correios.com.br/prepostagem/v1/prepostagens');
+        $objMdCorAdmIntegDTO->setStrUsuario(null);
+        $objMdCorAdmIntegDTO->setStrSenha(null);
+        $objMdCorAdmIntegDTO->setStrToken(null);
+        $objMdCorAdmIntegDTO->setDthDataExpiraToken(InfraData::getStrDataHoraAtual());
+        $objMdCorAdmIntegDTO->setStrSinAtivo('S');
+        $objMdCorAdmIntegRN->cadastrar($objMdCorAdmIntegDTO);
+
+		$this->logar('ADICIONANDO COLUNA "id_pre_postagem" NA TABELA "md_cor_expedicao_solicitad"');
+		$objInfraMetaBD->adicionarColuna('md_cor_expedicao_solicitad', 'id_pre_postagem', $objInfraMetaBD->tipoTextoVariavel(100), 'NULL');
+
+		// Remocao de colunas da tabela md_cor_contrato e alteração na coluna id_md_cor_diretoria para NULL
+        $this->logar('Removendo a COLUNA "url_webservice" NA TABELA "md_cor_contrato"');
+        $objInfraMetaBD->excluirColuna('md_cor_contrato','url_webservice');
+
+        $this->logar('Removendo a COLUNA "codigo_administrativo" NA TABELA "md_cor_contrato"');
+        $objInfraMetaBD->excluirColuna('md_cor_contrato','codigo_administrativo');
+
+        $this->logar('Removendo a COLUNA "usuario" NA TABELA "md_cor_contrato"');
+        $objInfraMetaBD->excluirColuna('md_cor_contrato','usuario');
+
+        $this->logar('Removendo a COLUNA "senha" NA TABELA "md_cor_contrato"');
+        $objInfraMetaBD->excluirColuna('md_cor_contrato','senha');
+
+        $this->logar('Removendo a COLUNA "numero_ano_contrato" NA TABELA "md_cor_contrato"');
+        $objInfraMetaBD->excluirColuna('md_cor_contrato','numero_ano_contrato');
+
+        $objInfraMetaBD->alterarColuna('md_cor_contrato', 'id_md_cor_diretoria', $objInfraMetaBD->tipoNumero(), 'null');
+
+        // Drop na tabela md_cor_parametro_rastreio
+        $this->logar('Remover a sequence e tabela md_cor_parametro_rastreio');
+        if (BancoSEI::getInstance() instanceof InfraOracle) {
+            BancoSEI::getInstance()->executarSql('drop sequence seq_md_cor_parametro_rastreio');
+        } else {
+            BancoSEI::getInstance()->executarSql('DROP TABLE seq_md_cor_parametro_rastreio');
+        }
+        BancoSEI::getInstance()->executarSql('DROP TABLE md_cor_parametro_rastreio');
+
+        $this->logar('Altera as colunas numero_contrato, numero_contrato_correio e numero_cartao_postagem de char() para varchar()');
+        $objInfraMetaBD->alterarColuna('md_cor_contrato', 'numero_contrato', $objInfraMetaBD->tipoTextoVariavel(50), 'not null');
+        $objInfraMetaBD->alterarColuna('md_cor_contrato', 'numero_contrato_correio', $objInfraMetaBD->tipoTextoVariavel(50), 'not null');
+        $objInfraMetaBD->alterarColuna('md_cor_contrato', 'numero_cartao_postagem', $objInfraMetaBD->tipoTextoVariavel(50), 'not null');
+
+		$this->atualizarNumeroVersao($nmVersao);
+	}
 
     protected function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas)
     {

@@ -8,7 +8,8 @@
  */
 
 require_once dirname(__FILE__) . '/../../../SEI.php';
-require_once dirname(__FILE__) . '/../lib/qrcode/vendor/autoload.php';
+require_once dirname(__FILE__) . '/../lib/zbar/vendor/autoload.php';
+//require_once dirname(__FILE__) . '/../lib/qrcode/vendor/autoload.php';
 
 class MdCorRetornoArRN extends InfraRN
 {
@@ -269,20 +270,32 @@ class MdCorRetornoArRN extends InfraRN
 
     $objInfraException = new InfraException();
 
+    if ( file_exists($url) === false ) {
+        $objInfraException->adicionarValidacao('Arquivo Zip não encontrado no caminho: ' . $url);
+        $objInfraException->lancarValidacoes();
+    }
+
     $zip = new ZipArchive();
-    $zip->open($url);
+    $bolOpenZip = $zip->open($url);
+
+    if ( $bolOpenZip !== true ) {
+        $objInfraException->adicionarValidacao('Não foi possível abrir o arquivo Zip no caminho: ' . $url);
+        $objInfraException->lancarValidacoes();
+    }
+
     $arrArs = [];
     $arrArs['numFiles'] = $zip->numFiles;
     if ($zip->numFiles <= 50) {
         if ($zip->extractTo($destino) == TRUE) {
           $arrArs = $this->converterPdfImage($destino);
-        } else {
-            $objInfraException->adicionarValidacao('Dentro do ZIP somente deve constar 50 arquivos PDFs.');
-            $objInfraException->lancarValidacoes();
         }
+        $zip->close();
         return $this->verificarArs($arrArs);
+    } else {
+        $zip->close();
+        $objInfraException->adicionarValidacao('Dentro do ZIP somente deve constar 50 arquivos PDFs.');
+        $objInfraException->lancarValidacoes();
     }
-    $zip->close();
   }
 
   protected function converterPdfImageControlado($url)
@@ -294,9 +307,10 @@ class MdCorRetornoArRN extends InfraRN
     $objInfraException = new InfraException();
     $files = array_diff(scandir($url), array('.', '..'));
 
-    $QRCodeReader = new Libern\QRCodeReader\QRCodeReader();
+    $objDecoder = new \RobbieP\ZbarQrdecoder\ZbarDecoder();
 
     $arrQrCode = [];
+
     foreach ($files as $chave => $file) {
       $localArquivo = $url . '/' . $file;
       $noArquivoJpg = $url . '/' . str_replace('pdf', 'jpg', $file);
@@ -313,16 +327,25 @@ class MdCorRetornoArRN extends InfraRN
         $objInfraException->lancarValidacoes();
       }
 
-
       $im = new Imagick();
-      $im->setResolution(80, 80);
+      $im->setResolution(380, 380);
       $im->readimage($url . '/' . $file . '[0]');
-      $im->setImageFormat("jpeg");
-      $im->setImageCompressionQuality(80);
+      $im->setImageFormat("jpg");
+      $im->setImageCompressionQuality(100);
       $im->writeImage($noArquivoJpg);
       $im->destroy();
 
-      $arrQrCode[$file] = $QRCodeReader->decode($noArquivoJpg);
+      // realiza leitura de qrcode ou barcode
+      $result = $objDecoder->make($noArquivoJpg);
+
+      if ( $result->code == 400 ) {
+          //$objInfraException->adicionarValidacao('Não foi possível fazer a leitura do QRCode ou Código de Barras.');
+          //$objInfraException->lancarValidacoes();
+          $result = '0';
+      }
+
+      $arrQrCode[$file] = $result;
+
       if (($key = array_search($file, $files)) !== false) {
         unset($files[$key]);
       }
@@ -330,7 +353,6 @@ class MdCorRetornoArRN extends InfraRN
     }
 
     return $arrQrCode;
-
 
   }
 

@@ -48,7 +48,7 @@ try {
             break;
 
         case 'md_cor_parametrizacao_status_listar':
-            $strTitulo = 'Tipos de Situações SRO';
+            $strTitulo = 'Tipos de Situações de Rastreamento de Objeto';
 
             $arrComandos = array();
             $arrComandos[] = '<button type="submit" accesskey="p" id="btnPesquisar" value="Pesquisar" onclick="pesquisar();" class="infraButton"><span class="infraTeclaAtalho">P</span>esquisar</button>';

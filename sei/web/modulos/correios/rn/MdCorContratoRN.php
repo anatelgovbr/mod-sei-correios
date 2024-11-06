@@ -61,19 +61,6 @@ class MdCorContratoRN extends InfraRN
         }
     }
 
-    private function validarStrUrlWebservice(MdCorContratoDTO $objMdCorContratoDTO, InfraException $objInfraException)
-    {
-        if (InfraString::isBolVazia($objMdCorContratoDTO->getStrUrlWebservice())) {
-            $objInfraException->adicionarValidacao('Endereço WSDL do Webservice do SIGEP WEB não informada.');
-        } else {
-            $objMdCorContratoDTO->setStrUrlWebservice(trim($objMdCorContratoDTO->getStrUrlWebservice()));
-
-            if (strlen($objMdCorContratoDTO->getStrUrlWebservice()) > 2081) {
-                $objInfraException->adicionarValidacao('Endereço WSDL do Webservice do SIGEP WEB possui tamanho superior a 2081 caracteres.');
-            }
-        }
-    }
-
     private function validarDblIdProcedimento(MdCorContratoDTO $objMdCorContratoDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorContratoDTO->getDblIdProcedimento())) {
@@ -109,16 +96,10 @@ class MdCorContratoRN extends InfraRN
             $objMdCorContratoDTO->setStrNumeroContrato($arr['txtNumeroContrato']);
             $objMdCorContratoDTO->setStrNumeroContratoCorreio($arr['txtNumeroContratoCorreio']);
             $objMdCorContratoDTO->setStrNumeroCartaoPostagem($arr['txtNumeroCartaoPostagem']);
-            $objMdCorContratoDTO->setStrUrlWebservice($arr['txtUrlWebservice']);
             $objMdCorContratoDTO->setDblIdProcedimento($arr['hdnIdProcedimento']);
             $objMdCorContratoDTO->setStrSinAtivo('S');
-
             $objMdCorContratoDTO->setNumNumeroCnpj(InfraUtil::retirarFormatacao($_POST['txtCNPJ']));
-            $objMdCorContratoDTO->setStrUsuario($_POST['txtUsuario']);
-            $objMdCorContratoDTO->setStrSenha($_POST['txtSenha']);
-            $objMdCorContratoDTO->setNumIdMdCorDiretoria($_POST['slCodigoDiretoria']);
-            $objMdCorContratoDTO->setStrCodigoAdministrativo($_POST['txtCodigoAdministrativo']);
-            $objMdCorContratoDTO->setNumAnoContratoCorreio($arr['txtNumeroAnoContratoCorreio']);
+            $objMdCorContratoDTO->setNumIdMdCorDiretoria($arr['slCodigoDiretoria']);
 
             //Regras de Negocio
             $objInfraException = new InfraException();
@@ -126,7 +107,6 @@ class MdCorContratoRN extends InfraRN
             $this->validarStrNumeroContrato($objMdCorContratoDTO, $objInfraException);
             $this->validarStrNumeroContratoCorreio($objMdCorContratoDTO, $objInfraException);
             $this->validarStrNumeroCartaoPostagem($objMdCorContratoDTO, $objInfraException);
-            $this->validarStrUrlWebservice($objMdCorContratoDTO, $objInfraException);
             $this->validarDblIdProcedimento($objMdCorContratoDTO, $objInfraException);
             $this->validarStrSinAtivo($objMdCorContratoDTO, $objInfraException);
 
@@ -136,13 +116,12 @@ class MdCorContratoRN extends InfraRN
             $ret = $objMdCorContratoBD->cadastrar($objMdCorContratoDTO);
 
             $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
-            foreach ($arr['ar'] as $i => $ar) {
+            foreach ($arr['codigo'] as $i => $ar) {
                 $cobrar = isset($arr['cobrar'][$i]) ? $arr['cobrar'][$i] : 'N';
                 $anexarMidia = isset($arr['anexarMidia'][$i]) ? $arr['anexarMidia'][$i] : 'N';
 
                 $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
                 $objMdCorServicoPostalDTO->setNumIdMdCorContrato($objMdCorContratoDTO->getNumIdMdCorContrato());
-                $objMdCorServicoPostalDTO->setStrIdWsCorreios($arr['id'][$i]);
                 $objMdCorServicoPostalDTO->setStrCodigoWsCorreios($arr['codigo'][$i]);
                 $objMdCorServicoPostalDTO->setStrNome($arr['nome'][$i]);
                 $objMdCorServicoPostalDTO->setStrExpedicaoAvisoRecebimento($arr['ar'][$i]);
@@ -150,10 +129,8 @@ class MdCorContratoRN extends InfraRN
                 $objMdCorServicoPostalDTO->setStrSinAtivo('S');
                 $objMdCorServicoPostalDTO->setStrSinServicoCobrar($cobrar);
                 $objMdCorServicoPostalDTO->setStrSinAnexarMidia($anexarMidia);
-                $objMdCorContratoDTO->setNumNumeroCnpj(InfraUtil::retirarFormatacao($arr['txtCNPJ']));
-                $objMdCorContratoDTO->setStrUsuario($arr['txtUsuario']);
-                $objMdCorContratoDTO->setStrSenha($arr['txtSenha']);
 
+                //trata dados sobre tipoo de correspondencia
                 $arrTipoCorrespondencia = explode('|', $arr['sl_tipo'][$i]);
                 $tipoCorrespondencia = current($arrTipoCorrespondencia);
                 $objMdCorServicoPostalDTO->setNumIdMdCorTipoCorrespondencia($tipoCorrespondencia);
@@ -183,16 +160,10 @@ class MdCorContratoRN extends InfraRN
             $objMdCorContratoDTO->setStrNumeroContrato($arr['txtNumeroContrato']);
             $objMdCorContratoDTO->setStrNumeroContratoCorreio($arr['txtNumeroContratoCorreio']);
             $objMdCorContratoDTO->setStrNumeroCartaoPostagem($arr['txtNumeroCartaoPostagem']);
-            $objMdCorContratoDTO->setStrUrlWebservice($arr['txtUrlWebservice']);
             $objMdCorContratoDTO->setDblIdProcedimento($arr['hdnIdProcedimento']);
             $objMdCorContratoDTO->setNumNumeroCnpj(InfraUtil::retirarFormatacao($arr['txtCNPJ']));
-            $objMdCorContratoDTO->setStrUsuario($arr['txtUsuario']);
-            $objMdCorContratoDTO->setStrSenha($arr['txtSenha']);
             $objMdCorContratoDTO->setNumIdMdCorDiretoria($arr['slCodigoDiretoria']);
-            $objMdCorContratoDTO->setStrCodigoAdministrativo($arr['txtCodigoAdministrativo']);
             $objMdCorContratoDTO->setStrSinAtivo('S');
-            $objMdCorContratoDTO->setNumAnoContratoCorreio($arr['txtNumeroAnoContratoCorreio']);
-
 
             /*
              * Trata os id's a serem desativados/reativados vindo do post.
@@ -212,9 +183,6 @@ class MdCorContratoRN extends InfraRN
             if ($objMdCorContratoDTO->isSetStrNumeroCartaoPostagem()) {
                 $this->validarStrNumeroCartaoPostagem($objMdCorContratoDTO, $objInfraException);
             }
-            if ($objMdCorContratoDTO->isSetStrUrlWebservice()) {
-                $this->validarStrUrlWebservice($objMdCorContratoDTO, $objInfraException);
-            }
             if ($objMdCorContratoDTO->isSetDblIdProcedimento()) {
                 $this->validarDblIdProcedimento($objMdCorContratoDTO, $objInfraException);
             }
@@ -231,7 +199,7 @@ class MdCorContratoRN extends InfraRN
             $objMdCorMapUnidServicoRN = new MdCorMapUnidServicoRN();
 
             $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
-//            $objMdCorServicoPostalDTO->retNumIdMdCorServicoPostal();
+
             $objMdCorServicoPostalDTO->retTodos();
             $objMdCorServicoPostalDTO->setNumIdMdCorContrato($arr['hdnIdMdCorContrato']);
             $objMdCorServicoPostalDTO->setBolExclusaoLogica(array());
@@ -242,16 +210,17 @@ class MdCorContratoRN extends InfraRN
             $arrIdServicoPostalPost = array();
 
             for ($j = 0; $j < count($arrObjMdCorServicoPostalDTO); $j++) {
-                $key = $arrObjMdCorServicoPostalDTO[$j]->getStrIdWsCorreios();
+	            $arrObjMdCorServicoPostalDTO[$j]->setStrCodigoWsCorreios( trim( $arrObjMdCorServicoPostalDTO[$j]->getStrCodigoWsCorreios() ) );
+	            $key = $arrObjMdCorServicoPostalDTO[$j]->getStrCodigoWsCorreios();
                 $arrIdServicoPostalBanco[$key] = $arrObjMdCorServicoPostalDTO[$j];
             }
-            foreach ($arr['id'] as $i => $ar) {
+
+	        foreach ($arr['codigo'] as $i => $ar) {
                 $cobrar = isset($arr['cobrar'][$i]) ? $arr['cobrar'][$i] : 'N';
                 $anexarMidia = isset($arr['anexarMidia'][$i]) ? $arr['anexarMidia'][$i] : 'N';
 
                 $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
                 $objMdCorServicoPostalDTO->setNumIdMdCorContrato($arr['hdnIdMdCorContrato']);
-                $objMdCorServicoPostalDTO->setStrIdWsCorreios($arr['id'][$i]);
                 $objMdCorServicoPostalDTO->setStrCodigoWsCorreios($arr['codigo'][$i]);
                 $objMdCorServicoPostalDTO->setStrNome($arr['nome'][$i]);
                 $objMdCorServicoPostalDTO->setStrDescricao($arr['descricao'][$i]);
@@ -262,7 +231,6 @@ class MdCorContratoRN extends InfraRN
                 $tipoCorrespondencia = current($arrTipoCorrespondencia);
                 $sinAr = end($arrTipoCorrespondencia);
 
-
                 $objMdCorServicoPostalDTO->setStrSinAtivo('S');
 
                 $objMdCorServicoPostalDTO->setStrExpedicaoAvisoRecebimento($arr['ar'][$i]);
@@ -272,7 +240,7 @@ class MdCorContratoRN extends InfraRN
 
                 $objMdCorServicoPostalDTO->setNumIdMdCorTipoCorrespondencia($tipoCorrespondencia);
 
-                $key = $objMdCorServicoPostalDTO->getStrIdWsCorreios();
+		        $key = $objMdCorServicoPostalDTO->getStrCodigoWsCorreios();
                 $arrIdServicoPostalPost[$key] = $objMdCorServicoPostalDTO;
             }
 
@@ -285,13 +253,12 @@ class MdCorContratoRN extends InfraRN
             foreach ($arrIdParaAtualizar as $j => $objMdCorServicoPostalDTO) {
 
                 /*
-                 * If para verificar se o IdWsCorreios está contido no array de serviçoes desativados vindo do post, se sim seta N para sin
+                 * If para verificar se o CodigoWsCorreios está contido no array de serviçoes desativados vindo do post, se sim seta N para sin
                  * sin_ativo.
                  */
-               // in_array($arrIdServicoPostalPost[$j]->getStrIdWsCorreios(), $arr['hdnListaContratoServicosDesativados']) $arrIdParaAtualizar[$j]->setStrSinAtivo('N');
-                if(in_array($arrIdServicoPostalPost[$j]->getStrIdWsCorreios(), $arr['hdnListaContratoServicosDesativados'])){
+	            if(in_array($arrIdServicoPostalPost[$j]->getStrCodigoWsCorreios(), $arr['hdnListaContratoServicosDesativados'])){
                     $arrIdParaAtualizar[$j]->setStrSinAtivo('N');
-                }else if (in_array($arrIdServicoPostalPost[$j]->getStrIdWsCorreios(), $arr['hdnListaContratoServicosReativadas'])){
+	            }else if (in_array($arrIdServicoPostalPost[$j]->getStrCodigoWsCorreios(), $arr['hdnListaContratoServicosReativadas'])){
                     $arrIdParaAtualizar[$j]->setStrSinAtivo('S');
                 }
 
@@ -308,10 +275,8 @@ class MdCorContratoRN extends InfraRN
                 $objMdCorServicoPostalRN->cadastrar($objMdCorServicoPostalDTO);
             }
 
-
             // excluindo se nao tiver mapeado para alguma unidade
             foreach ($arrIdParaExcluir as $j => $objMdCorServicoPostalDTO) {
-
                 $objMdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
                 $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
                 $objMdCorMapUnidServicoDTO = new MdCorMapUnidServicoDTO();
@@ -330,25 +295,18 @@ class MdCorContratoRN extends InfraRN
 
                     /* Verifica se o serviço está vinculado a alguma solicitação de expedição */
                     if (!(in_array($arrIdParaExcluir[$j]->getNumIdMdCorServicoPostal(),$arrIdMdCorServicoPostal))) {
-
                         $objMdCorServicoPostalRN->excluir(array($objMdCorServicoPostalDTO));
-
                     } else {
-
                         PaginaSEI::getInstance()->setStrMensagem('Não é permitido excluir o Serviço Postal ' . $arrIdParaExcluir[$j]->getStrNome() . ' pois ele está vinculado a alguma Solicitação de Expedição.', InfraPagina::$TIPO_MSG_AVISO);
-
                     }
 
-
                 } else {
-
                     PaginaSEI::getInstance()->setStrMensagem('Não é permitido excluir o Serviço Postal ' . $arrIdParaExcluir[$j]->getStrNome() . ' pois ele está parametrizado no Mapeamento de Unidades Solicitantes e Serviços Postais.', InfraPagina::$TIPO_MSG_AVISO);
 
                     if ($arrIdParaExcluir[$j]->getStrSinAtivo() == 'N') {
                         $arrIdParaExcluir[$j]->setStrSinAtivo('S');
                         $objMdCorServicoPostalRN->alterar($objMdCorServicoPostalDTO);
                     }
-
                 }
             }
 
@@ -400,23 +358,15 @@ class MdCorContratoRN extends InfraRN
                         /* Verifica se o serviço está mapeado em alguma unidade */
                         if (count($arrObjMdCorMapUnidServicoDTO) > 0) {
                             $alterarContrato = true;
-//                        $objMdCorServicoPostalRN->desativar(array($objItemMdCorServicoPostalDTO));
                             PaginaSEI::getInstance()->setStrMensagem('Não foi possível excluir este Contrato, pois existem outras parametrizações ou expedições que já o ultilizaram.', InfraPagina::$TIPO_MSG_AVISO);
                         } else {
                             $objMdCorServicoPostalRN->excluir(array($objItemMdCorServicoPostalDTO));
                         }
-                        $objMdCorServicoPostalExcluirDTO = new MdCorServicoPostalDTO();
-                        $objMdCorServicoPostalExcluirDTO->retTodos();
-                        $objMdCorServicoPostalExcluirDTO->setNumIdMdCorServicoPostal($objItemMdCorServicoPostalDTO->getNumIdMdCorServicoPostal());
-                        $arrObjMdCorServicoPostalExcluirDTO = $objMdCorServicoPostalRN->consultar($objMdCorServicoPostalExcluirDTO);
-
-                        $objMdCorServicoPostalRN->excluir($arrObjMdCorServicoPostalExcluirDTO);
                     }
                 }
 
                 if ($alterarContrato) {
                     PaginaSEI::getInstance()->setStrMensagem('Não foi possível excluir este Contrato, pois existem outras parametrizações ou expedições que já o ultilizaram.', InfraPagina::$TIPO_MSG_AVISO);
-//                    $objMdCorContratoBD->desativar($objMdCorContratoDTO);
                 } else {
                     $mdCorObjetoRN = new MdCorObjetoRN();
                     $objMdCorObjetoDTO = new MdCorObjetoDTO();
@@ -676,6 +626,17 @@ class MdCorContratoRN extends InfraRN
         return $xml;
     }
 
+    public function getNumeroPostagemContratoAtivo(){
+		$objMdCorContratoDTO = new MdCorContratoDTO();
+	    $objMdCorContratoDTO->setStrSinAtivo('S');
+	    $objMdCorContratoDTO->retStrNumeroCartaoPostagem();
+
+	    $objMdCorContratoDTO = $this->consultar($objMdCorContratoDTO);
+
+	    if ( $objMdCorContratoDTO )	return $objMdCorContratoDTO->getStrNumeroCartaoPostagem();
+
+	    return false;
+    }
 }
 
 ?>

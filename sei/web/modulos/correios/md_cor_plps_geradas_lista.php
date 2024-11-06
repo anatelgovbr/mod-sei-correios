@@ -15,11 +15,11 @@ try {
     SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
     switch ($_GET['acao']) {
         case 'md_cor_plps_geradas_listar':
-            $strTitulo = 'Consultar PLPs Geradas';
+            $strTitulo = 'Consultar '. MdCorPlpRN::$STR_PLURAL_PRE_POSTAGEM .' Geradas';
             $strAcao = 'md_cor_plp_detalhada';
             break;
-        case  'md_cor_expedicao_plp_listar' :
-            $strTitulo = 'PLPs Geradas para Expedição';
+        case  'md_cor_expedicao_plp_listar':
+            $strTitulo = MdCorPlpRN::$STR_PLURAL_PRE_POSTAGEM .' Geradas para Expedição';
             $strAcao = 'md_cor_plp_expedir';
             break;
         default:
@@ -74,21 +74,21 @@ try {
 
         $strResultado = '';
 
-        $strSumarioTabela = 'Tabela de PLPs geradas';
-        $strCaptionTabela = 'Lista de PLPs geradas';
+        $strSumarioTabela = 'Tabela de '.MdCorPlpRN::$STR_PLURAL_PRE_POSTAGEM.' geradas';
+        $strCaptionTabela = MdCorPlpRN::$STR_PLURAL_PRE_POSTAGEM . ' geradas';
 
         $strResultado .= '<table width="100%" class="infraTable" summary="' . $strSumarioTabela . '">' . "\n";
         $strResultado .= '<caption class="infraCaption">' . PaginaSEI::getInstance()->gerarCaptionTabela($strCaptionTabela, $numRegistros) . '</caption>';
         $strResultado .= '<tr>';
         $strResultado .= '<th class="infraTh" width="1%">' . PaginaSEI::getInstance()->getThCheck() . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="12%">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'PLP', 'CodigoPlp', $arrObjMdCorPlpDTO) . '</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="15%">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'PLP', 'CodigoPlp', $arrObjMdCorPlpDTO) . '</th>' . "\n";
 
-        $strResultado .= '<th class="infraTh" width="150px">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Data da PLP', 'DataCadastro', $arrObjMdCorPlpDTO) . '</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="17%">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Data de Geração', 'DataCadastro', $arrObjMdCorPlpDTO) . '</th>' . "\n";
 
-        $strResultado .= '<th class="infraTh">' . 'Serviços Postais' . '</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="45%">' . 'Serviço Postal' . '</th>' . "\n";
         $strResultado .= '<th class="infraTh text-center">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Objetos', 'Contagem', $arrObjMdCorPlpDTO) . '</th>' . "\n";
         $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Situação', 'StaPlp', $arrObjMdCorPlpDTO) . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="5%">Ações</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="8%">Ações</th>' . "\n";
 
         $strResultado .= '</tr>' . "\n";
         $strCssTr = '';
@@ -96,7 +96,7 @@ try {
         foreach ($arrObjMdCorPlpDTO as $objMdCorPlpDTO) {
             $midia = '';
             if ($objMdCorPlpDTO->getStrMidia() == 'S') {
-                $midia = '<img src="modulos/correios/imagens/svg/media.svg?'.Icone::VERSAO.'" title="PLP possui midia para gravação." style="width: 24px; height: 24px" alt="PLP possui midia para gravação." class="infraImg inline-block mr-1" />';
+                $midia = '<img src="modulos/correios/imagens/svg/media.svg?'.Icone::VERSAO.'" title="'. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' possui midia para gravação." style="width: 24px; height: 24px" alt="'. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' possui midia para gravação." class="infraImg inline-block mr-1" />';
             }
 
 
@@ -108,14 +108,20 @@ try {
 
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($objMdCorPlpDTO->getDthDataCadastro()) . '</td>';
 
-            $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($arrServico) . '</td>';
+            $strResultado .= '<td style="word-break:break-all" align="center">' . PaginaSEI::tratarHTML($arrServico) . '</td>';
             $strResultado .= '<td class="d-flex align-items-center justify-content-center">' . $midia . PaginaSEI::tratarHTML($objMdCorPlpDTO->getNumContagem()) . '</td>';
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($objMdCorPlpDTO->getStrNomeStaPlp()) . '</td>';
             $strResultado .= '<td align="center">';
             if ($_GET['acao'] == 'md_cor_expedicao_plp_listar') {
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $strAcao . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_plp=' . $objMdCorPlpDTO->getNumIdMdPlp())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/solicitacao_correios.svg?'.Icone::VERSAO.'" style="width: 24px; height: 24px" title="Expedir PLP" alt="Expedir PLP" class="infraImgAcoes" /></a>&nbsp;';
+                $strResultado .= '<a href="'. PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $strAcao . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_plp=' . $objMdCorPlpDTO->getNumIdMdPlp())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/solicitacao_correios.svg?'.Icone::VERSAO.'" style="width: 24px; height: 24px" title="Expedir '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" alt="Expedir '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" class="infraImgAcoes" /></a>&nbsp;';
+
+                $linkCancelarPlp = PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_plp_cancelar_plp'));
+                $codRastreamento = $objMdCorPlpDTO->getArrMdCorExpedicaoSolicitadaDTO()[0]->getStrCodigoRastreamento();
+                $strResultado .= '<a href="#" onclick="cancelarPLP('. $objMdCorPlpDTO->getDblCodigoPlp() .','. $objMdCorPlpDTO->getNumIdMdPlp() .',\''. $codRastreamento .'\',\''. $linkCancelarPlp .'\')" tabindex="'. PaginaSEI::getInstance()->getProxTabTabela() .'">
+                                    <img src="'.Icone::DOCUMENTO_CANCELAR.'" style="width: 24px; height: 24px" title="Cancelar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" alt="Cancelar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" class="infraImgAcoes" />
+                                  </a>&nbsp;';
             } else {
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $strAcao . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_plp=' . $objMdCorPlpDTO->getNumIdMdPlp())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/consultar.svg" title="Detalhar PLP" alt="Detalhar PLP" class="infraImg" /></a>&nbsp;';
+                $strResultado .= '<a href="' . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $strAcao . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_plp=' . $objMdCorPlpDTO->getNumIdMdPlp())) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/consultar.svg" title="Detalhar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" alt="Detalhar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" class="infraImg" /></a>&nbsp;';
             }
             $strResultado .= '</td></tr>' . "\n";
             $cContador++;
