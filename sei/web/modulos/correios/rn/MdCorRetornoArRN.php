@@ -337,14 +337,9 @@ class MdCorRetornoArRN extends InfraRN
 
       // realiza leitura de qrcode ou barcode
       $result = $objDecoder->make($noArquivoJpg);
+      $codigo = $result->code == 200 ? $result->text : '0';
 
-      if ( $result->code == 400 ) {
-          //$objInfraException->adicionarValidacao('Não foi possível fazer a leitura do QRCode ou Código de Barras.');
-          //$objInfraException->lancarValidacoes();
-          $result = '0';
-      }
-
-      $arrQrCode[$file] = $result;
+      $arrQrCode[$file] = $codigo;
 
       if (($key = array_search($file, $files)) !== false) {
         unset($files[$key]);
