@@ -190,8 +190,8 @@ try {
 
                 $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
                 echo "<script>";
-                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
-				//echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.2
+                //echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
+				echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.*
                 echo "</script>";
             }
 
@@ -418,8 +418,8 @@ try {
             $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
 
             echo "<script>";
-            echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
-			//echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.2
+            //echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
+			echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.*
             echo "</script>";
             break;
 
@@ -596,8 +596,8 @@ try {
                 $arrObjProtocoloDTO = $objProtocoloRN->pesquisarRN0967($objPesquisaProtocoloDTO);
                 $strLinkMontarArvore = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_visualizar&acao_origem='.$_GET["acao"].'&montar_visualizacao=1&arvore=1&id_procedimento='.$arrObjProtocoloDTO[0]->getDblIdProcedimentoDocumento() .'&id_documento='.$_POST['id_doc']);
                 echo "<script>";
-                echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
-				//echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.2
+                //echo "window.parent.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.0.12
+				echo "window.top.document.getElementById('ifrArvore').src = '".$strLinkMontarArvore."';"; // 4.1.*
                 echo "</script>";
 
                 break;
@@ -720,8 +720,8 @@ try {
 					
                     echo "<script>";
                     echo 	"function atualizarTela() {";
-                    echo 		"window.parent.document.getElementById('ifrArvore').src = '".$link."';"; // 4.0.12
-					//echo 		"window.top.document.getElementById('ifrArvore').src = '".$link."';"; // 4.1.2
+                    //echo 		"window.parent.document.getElementById('ifrArvore').src = '".$link."';"; // 4.0.12
+					echo 		"window.top.document.getElementById('ifrArvore').src = '".$link."';"; // 4.1.*
                     echo 	"}";
                     echo "</script>";
                 }

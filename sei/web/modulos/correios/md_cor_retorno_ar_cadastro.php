@@ -219,7 +219,7 @@ function verificarDocumentoExpedicao($numIdDocumentoPrincipal)
     $objProtocoloDocPrincipalDTO = $objProtocoloDocPrincipalRN->consultarRN0186($objProtocoloDocPrincipalDTO);
 
     $objInfraParametro = new InfraParametro(BancoSEI::getInstance());
-    $strValor = $objInfraParametro->getValor('MODULO_CORREIOS_ID_DOCUMENTO_EXPEDICAO');
+    $strValor = $objInfraParametro->getValor('MODULO_CORREIOS_ID_DOCUMENTO_EXPEDICAO',false);
 
     if (!empty($strValor) && !is_null($objProtocoloDocPrincipalDTO)) {
         $arrIdSerieDocumento = explode(',', $strValor);

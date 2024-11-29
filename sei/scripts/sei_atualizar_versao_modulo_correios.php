@@ -5,10 +5,10 @@ class MdCorAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.3.0';
+    private $versaoAtualDesteModulo = '2.4.0';
     private $nomeDesteModulo = 'MÓDULO CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0');
 
     public function __construct()
     {
@@ -75,12 +75,13 @@ class MdCorAtualizadorSeiRN extends InfraRN
             //checando BDs suportados
             if (!(BancoSEI::getInstance() instanceof InfraMySql) &&
                 !(BancoSEI::getInstance() instanceof InfraSqlServer) &&
-                !(BancoSEI::getInstance() instanceof InfraOracle)) {
+                !(BancoSEI::getInstance() instanceof InfraOracle) &&
+                !(BancoSEI::getInstance() instanceof InfraPostgreSql)) {
                 $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSEI::getInstance()), true);
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '2.0.18';
+            $numVersaoInfraRequerida = '2.23.8';
             if (version_compare(VERSAO_INFRA, $numVersaoInfraRequerida) < 0) {
                 $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
@@ -109,6 +110,8 @@ class MdCorAtualizadorSeiRN extends InfraRN
 	                $this->instalarv220();
 	            case '2.2.0':
 	                $this->instalarv230();
+                case '2.3.0':
+                    $this->instalarv240();
                     break;
 
                 default:
@@ -559,15 +562,19 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $tarefaDTO1->setStrSinFecharAndamentosAbertos('S');
         $tarefaDTO1->setStrSinLancarAndamentoFechado('N');
         $tarefaDTO1->setStrSinPermiteProcessoFechado('N');
+        $tarefaDTO1->setStrSinConsultaProcessual('N');
 
         if (BancoSEI::getInstance() instanceof InfraMySql) {
             BancoSEI::getInstance()->executarSql(" DELETE FROM seq_tarefa");
             BancoSEI::getInstance()->executarSql(" INSERT INTO seq_tarefa (id) VALUES (" . $numIdTarefaMax . ") ");
-        } elseif (BancoSEI::getInstance() instanceof InfraOracle) {
+        } elseif (BancoSEI::getInstance() instanceof InfraOracle ) {
             BancoSEI::getInstance()->executarSql("drop sequence seq_tarefa");
             BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NOCACHE NOCYCLE");
         } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
             BancoSEI::getInstance()->executarSql("TRUNCATE TABLE seq_tarefa; SET IDENTITY_INSERT seq_tarefa ON; INSERT INTO seq_tarefa (id) VALUES (" . $numIdTarefaMax . "); SET IDENTITY_INSERT seq_tarefa OFF;");
+        } else if( BancoSEI::getInstance() instanceof InfraPostgreSql ){
+            BancoSEI::getInstance()->executarSql("drop sequence seq_tarefa");
+            BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NO CYCLE");
         }
 
         $tarefaRN = new TarefaRN();
@@ -583,6 +590,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $tarefaDTO2->setStrSinFecharAndamentosAbertos('S');
         $tarefaDTO2->setStrSinLancarAndamentoFechado('N');
         $tarefaDTO2->setStrSinPermiteProcessoFechado('N');
+        $tarefaDTO2->setStrSinConsultaProcessual('N');
 
         $tarefaRN = new TarefaRN();
         $tarefaRN->cadastrar($tarefaDTO2);
@@ -597,6 +605,9 @@ class MdCorAtualizadorSeiRN extends InfraRN
             BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . ++$idMaxIdTarefa . " INCREMENT BY 1 NOCACHE NOCYCLE");
         } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
             BancoSEI::getInstance()->executarSql("TRUNCATE TABLE seq_tarefa; SET IDENTITY_INSERT seq_tarefa ON; INSERT INTO seq_tarefa (id) VALUES (" . ++$idMaxIdTarefa . "); SET IDENTITY_INSERT seq_tarefa OFF;");
+        } else if( BancoSEI::getInstance() instanceof InfraPostgreSql ){
+            BancoSEI::getInstance()->executarSql("drop sequence seq_tarefa");
+            BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NO CYCLE");
         }
 
         $this->logar('CRIANDO A TABELA md_cor_adm_parametro_ar');
@@ -801,6 +812,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $tarefaDTO1->setStrSinFecharAndamentosAbertos('S');
         $tarefaDTO1->setStrSinLancarAndamentoFechado('N');
         $tarefaDTO1->setStrSinPermiteProcessoFechado('S');
+        $tarefaDTO1->setStrSinConsultaProcessual('N');
 
         if (BancoSEI::getInstance() instanceof InfraMySql) {
             BancoSEI::getInstance()->executarSql(" DELETE FROM seq_tarefa");
@@ -811,6 +823,10 @@ class MdCorAtualizadorSeiRN extends InfraRN
             BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NOCACHE NOCYCLE");
         } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
             BancoSEI::getInstance()->executarSql("TRUNCATE TABLE seq_tarefa; SET IDENTITY_INSERT seq_tarefa ON; INSERT INTO seq_tarefa (id) VALUES (" . $numIdTarefaMax . "); SET IDENTITY_INSERT seq_tarefa OFF;");
+        }
+        else if( BancoSEI::getInstance() instanceof InfraPostgreSql ){
+            BancoSEI::getInstance()->executarSql("drop sequence seq_tarefa");
+            BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NO CYCLE");
         }
 
         $tarefaRN = new TarefaRN();
@@ -945,6 +961,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $tarefaDTO1->setStrSinFecharAndamentosAbertos('S');
         $tarefaDTO1->setStrSinLancarAndamentoFechado('N');
         $tarefaDTO1->setStrSinPermiteProcessoFechado('N');
+        $tarefaDTO1->setStrSinConsultaProcessual('N');
 
         if (BancoSEI::getInstance() instanceof InfraMySql) {
             BancoSEI::getInstance()->executarSql(" DELETE FROM seq_tarefa");
@@ -955,6 +972,10 @@ class MdCorAtualizadorSeiRN extends InfraRN
             BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NOCACHE NOCYCLE");
         } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
             BancoSEI::getInstance()->executarSql("TRUNCATE TABLE seq_tarefa; SET IDENTITY_INSERT seq_tarefa ON; INSERT INTO seq_tarefa (id) VALUES (" . $numIdTarefaMax . "); SET IDENTITY_INSERT seq_tarefa OFF;");
+        }
+        else if( BancoSEI::getInstance() instanceof InfraPostgreSql ){
+            BancoSEI::getInstance()->executarSql("drop sequence seq_tarefa");
+            BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NO CYCLE");
         }
 
         $tarefaRN = new TarefaRN();
@@ -995,6 +1016,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $tarefaDTO2->setStrSinFecharAndamentosAbertos('S');
         $tarefaDTO2->setStrSinLancarAndamentoFechado('N');
         $tarefaDTO2->setStrSinPermiteProcessoFechado('N');
+        $tarefaDTO2->setStrSinConsultaProcessual('N');
 
         if (BancoSEI::getInstance() instanceof InfraMySql) {
             BancoSEI::getInstance()->executarSql(" DELETE FROM seq_tarefa");
@@ -1005,6 +1027,9 @@ class MdCorAtualizadorSeiRN extends InfraRN
             BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NOCACHE NOCYCLE");
         } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
             BancoSEI::getInstance()->executarSql("TRUNCATE TABLE seq_tarefa; SET IDENTITY_INSERT seq_tarefa ON; INSERT INTO seq_tarefa (id) VALUES (" . $numIdTarefaMax . "); SET IDENTITY_INSERT seq_tarefa OFF;");
+        } else if( BancoSEI::getInstance() instanceof InfraPostgreSql ){
+            BancoSEI::getInstance()->executarSql("drop sequence seq_tarefa");
+            BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NO CYCLE");
         }
 
         $tarefaRN = new TarefaRN();
@@ -1159,6 +1184,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
         $tarefaDTO1->setStrSinFecharAndamentosAbertos('S');
         $tarefaDTO1->setStrSinLancarAndamentoFechado('N');
         $tarefaDTO1->setStrSinPermiteProcessoFechado('N');
+        $tarefaDTO1->setStrSinConsultaProcessual('N');
 
         if (BancoSEI::getInstance() instanceof InfraMySql) {
             BancoSEI::getInstance()->executarSql(" DELETE FROM seq_tarefa");
@@ -1168,6 +1194,9 @@ class MdCorAtualizadorSeiRN extends InfraRN
             BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NOCACHE NOCYCLE");
         } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
             BancoSEI::getInstance()->executarSql("TRUNCATE TABLE seq_tarefa; SET IDENTITY_INSERT seq_tarefa ON; INSERT INTO seq_tarefa (id) VALUES (" . $numIdTarefaMax . "); SET IDENTITY_INSERT seq_tarefa OFF;");
+        } else if( BancoSEI::getInstance() instanceof InfraPostgreSql ){
+            BancoSEI::getInstance()->executarSql("drop sequence seq_tarefa");
+            BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_tarefa START WITH " . $numIdTarefaMax . " INCREMENT BY 1 NO CYCLE");
         }
 
         $tarefaRN = new TarefaRN();
@@ -1255,6 +1284,7 @@ ATENÇÃO: As informações contidas neste e-mail, incluindo seus anexos, podem ser 
     }
 
 	protected function instalarv230(){
+
 		$nmVersao = '2.3.0';
 		$objInfraParametro = new InfraParametro(BancoSEI::getInstance());
 		$this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
@@ -1444,7 +1474,7 @@ ATENÇÃO: As informações contidas neste e-mail, incluindo seus anexos, podem ser 
 
         // Drop na tabela md_cor_parametro_rastreio
         $this->logar('Remover a sequence e tabela md_cor_parametro_rastreio');
-        if (BancoSEI::getInstance() instanceof InfraOracle) {
+        if (BancoSEI::getInstance() instanceof InfraOracle || BancoSEI::getInstance() instanceof InfraPostgreSql ) {
             BancoSEI::getInstance()->executarSql('drop sequence seq_md_cor_parametro_rastreio');
         } else {
             BancoSEI::getInstance()->executarSql('DROP TABLE seq_md_cor_parametro_rastreio');
@@ -1458,6 +1488,12 @@ ATENÇÃO: As informações contidas neste e-mail, incluindo seus anexos, podem ser 
 
 		$this->atualizarNumeroVersao($nmVersao);
 	}
+
+	protected function instalarv240() {
+        $nmVersao = '2.4.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+        $this->atualizarNumeroVersao($nmVersao);
+    }
 
     protected function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas)
     {

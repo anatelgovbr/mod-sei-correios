@@ -5,10 +5,10 @@ class MdCorAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.3.0';
+    private $versaoAtualDesteModulo = '2.4.0';
     private $nomeDesteModulo = 'MÓDULO DOS CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0');
 
     public function __construct()
     {
@@ -75,12 +75,13 @@ class MdCorAtualizadorSipRN extends InfraRN
             //checando BDs suportados
             if (!(BancoSip::getInstance() instanceof InfraMySql) &&
                 !(BancoSip::getInstance() instanceof InfraSqlServer) &&
-                !(BancoSip::getInstance() instanceof InfraOracle)) {
+                !(BancoSip::getInstance() instanceof InfraOracle) &&
+                !(BancoSip::getInstance() instanceof InfraPostgreSql)) {
                 $this->finalizar('BANCO DE DADOS NÃO SUPORTADO: ' . get_parent_class(BancoSip::getInstance()), true);
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '2.0.18';
+            $numVersaoInfraRequerida = '2.23.8';
             if (version_compare(VERSAO_INFRA, $numVersaoInfraRequerida) < 0) {
                 $this->finalizar('VERSÃO DO FRAMEWORK PHP INCOMPATÍVEL (VERSÃO ATUAL ' . VERSAO_INFRA . ', SENDO REQUERIDA VERSÃO IGUAL OU SUPERIOR A ' . $numVersaoInfraRequerida . ')', true);
             }
@@ -109,6 +110,8 @@ class MdCorAtualizadorSipRN extends InfraRN
 					$this->instalarv220();
 	            case '2.2.0':
 		            $this->instalarv230();
+                case '2.3.0':
+                    $this->instalarv240();
                     break;
 
                 default:
@@ -171,6 +174,7 @@ class MdCorAtualizadorSipRN extends InfraRN
         $objPerfilExpedicaoDTO->setStrDescricao($dsPerfilExpedicao);
         $objPerfilExpedicaoDTO->setStrSinCoordenado('N');
         $objPerfilExpedicaoDTO->setStrSinAtivo('S');
+        $objPerfilExpedicaoDTO->setStrSin2Fatores('N');
         $objPerfilRN->cadastrar($objPerfilExpedicaoDTO);
 
         $objPerfilDTO = new PerfilDTO();
@@ -804,6 +808,12 @@ class MdCorAtualizadorSipRN extends InfraRN
 
 		$this->atualizarNumeroVersao($nmVersao);
 	}
+
+	protected function instalarv240() {
+        $nmVersao = '2.4.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $nmVersao . ' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        $this->atualizarNumeroVersao($nmVersao);
+    }
 
 	/**
 	 * Atualiza o número de versão do módulo na tabela de parâmetro do sistema
