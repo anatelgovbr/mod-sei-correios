@@ -35,27 +35,30 @@
 8. Em caso de erro durante a execução do script, verificar (lendo as mensagens de erro e no menu Infra > Log do SEI e do SIP) se a causa é algum problema na infraestrutura local ou ajustes indevidos na estrutura de banco do core do sistema. Neste caso, após a correção, deve recuperar o backup do banco pertinente e repetir o procedimento, especialmente a execução dos scripts de banco indicados acima.
 	- Caso não seja possível identificar a causa, entrar em contato com: Nei Jobson - neijobson@anatel.gov.br
 9. Após a execução com sucesso, com um usuário com permissão de Administrador no SEI, seguir os passos dispostos no tópico "Orientações Negociais" mais abaixo.
-10. Para o funcionamento correto do Módulo SEI Correios é necessária a instalação da biblioteca PHP "ImageMagick" e "ImageMagick-devel" em cada nó de aplicação do SEI, conforme comandos abaixo:
+10. Para o funcionamento correto do Módulo SEI Correios é necessário a instalação da biblioteca PHP "ImageMagick" e "ImageMagick-devel" em cada nó de aplicação do SEI, conforme comandos abaixo:
 
 		Execute a linha de comando "yum install -y ImageMagick ImageMagick-devel"
 		Execute a linha de comando "pecl install imagick"
 		Modifique o arquvivo "/etc/php.ini", incluindo a linha "extension=imagick.so" no final da seção "Dynamic Extensions"
-
-
+11. Para o funcionamento do Processamento de Retorno do AR é necessário a instalação do kit de ferramenta Zbar. Para saber mais ver o link: [https://github.com/robbiepaul/zbar-qrdecoder](https://github.com/robbiepaul/zbar-qrdecoder) no tópico **Requirements**. Exemplo de instalação para uso no Sistema Operacional Centos:
+    
+        yum install zbar
 ## Orientações Negociais
 1. Imediatamente após a instalação com sucesso, com usuário com permissão de "Administrador" do SEI, acessar os menus de administração do Módulo pelo seguinte caminho: Administração > Correios. Somente com tudo parametrizado adequadamente será possível o uso do módulo.
-2. O script de banco do SIP já cria todos os Recursos e Menus e os associam automaticamente ao Perfil "Básico" ou ao Perfil "Administrador".
-	- Independente da criação de outros Perfis, os recursos indicados para o Perfil "Básico" ou "Administrador" devem manter correspondência com os Perfis dos Usuários internos que utilizarão o Módulo e dos Usuários Administradores do Módulo.
-	- Tão quanto ocorre com as atualizações do SEI, versões futuras deste Módulo continuarão a atualizar e criar Recursos e associá-los apenas aos Perfis "Básico" e "Administrador".
+2. O script de banco do SIP já cria todos os Recursos e Menus e os associam automaticamente aos Perfis "Básico", "Administrador" e "Expedição Correios".
+	- Independente da criação de outros Perfis, os recursos indicados para o Perfil "Básico", "Administrador" e "Expedição Correios" devem manter correspondência com os Perfis dos Usuários internos que utilizarão o Módulo e dos Usuários Administradores do Módulo.
+	- Tão quanto ocorre com as atualizações do SEI, versões futuras deste Módulo continuarão a atualizar e criar Recursos e associá-los apenas aos Perfis "Básico", "Administrador" e "Expedição Correios".
 	- Todos os recursos do Módulo iniciam pelo prefixo **"md_cor_"**.
 	- Não foi possível ainda elaborar Manuais do módulo. Contudo, é importante ler o resumo sobre cada funcionalidade abaixo para poder entender o funcionamento do módulo e poder parametrizá-lo da forma correta.
 3. Funcionalidades do Módulo SEI Correios:
 	- 3.1. Administração:
 		- Correios > Contratos e Serviços Postais:
 			- Cadastra o Contrato que o órgão possui com os Correios e pelo menos o Tipo de Embalagem "Envelope".
-			- Na tela de Cadastro do Contrato deve informar todos os campos sobre o Contrato junto aos Correios, especialmente o Usuário e Senha do SIGEP-WEB informado pelos Correios ao Órgão para que as integrações funcionem.
-				- [Acesse o Manual dos Correios](https://www2.correios.com.br/sistemas/encomendas/sigepweb/doc/Manual_de_Implementacao_do_Web_Service_SIGEP_WEB.pdf "Acesse o Manual") para utilizar os dados para integração com o ambiente de Homologação do SIGEP WEB, disponíveis no tópico 3.1.
-				- Se ainda não tiver, deve solicitar ao contato comercial dos Correios que atende o Órgão o Usuário e Senha do SIGEP-WEB de produção para que o módulo funcione em produção.
+			- Na tela de Cadastro do Contrato deve informar todos os campos sobre o Contrato junto aos Correios, especialmente os Números de Contrato e Postagem informado pelos Correios ao Órgão para que as integrações funcionem.
+				- [Acesse o Link dos Correios](https://www.correios.com.br/atendimento/developers "Acesso à documentação das API's") para acesso à documentação sobre o uso das API's dos Correios.
+				- Caso não tenha usuário no ambiente de Homologação, acesse [https://cwshom.correios.com.br](https://cwshom.correios.com.br), clicar na opção "Cadastrar" e informar os dados solicitados.
+				- Caso não tenha usuário no ambiente de Produção, acesse [https://cws.correios.com.br](https://cws.correios.com.br) e realizar o mesmo procedimento feito no ambiente de Homologação.
+				- Caso tenha dúvidas, entrar em contato com o agente comercial dos Correios que atende o Órgão. 
 			- Deve deixar na lista de Serviços Postais somente os serviços que quer que fiquem disponíveis para uso, sendo o mais tradicional o serviço "CARTA COM A FATURAR SELO E SE", tipo "Carta Registrada", Expedido com AR "Sim", Descrição Amigável "Correspondência Registrada".
 				- Remover os serviços que não for utilizar.
 				- Os serviços mantidos na lista deverão depois serem mapeados com as unidades no menu Administração > Correios > Mapeamento Unidades e Serviços Postais.
@@ -72,21 +75,23 @@
 			- Tela onde cadastra as Extensões Permitidas de Arquivos para Gravação em Mídia.
 		- Parâmetros para Retorno da AR:
 			- Tela onde indica os Parâmetros para Retorno da AR.
-		- Integração SRO:
-			- Tela de cadastro da Integração SRO onde deve informar todos os campos junto aos Correios, especialmente o Usuário e Senha e o Endereço do WSDL do Webservice do SRO.
-			- [Acesse o Manual Web Service de Rastreamento dos Correios (SRO)](https://www.correios.com.br/atendimento/ferramentas/sistemas/arquivos/web-service-de-rastreamento "Acesse o Manual").
-			- Se ainda não tiver, deve solicitar ao contato comercial dos Correios que atende o Órgão o Usuário e Senha do SRO de produção para que o módulo funcione em produção.
-				- Inclusive, somente com códigos de rastreio já existentes/reais é que o rastreio de objetos funciona, inclusive em outros ambientes internos do Órgão. Assim, para testes, tem que pegar códigos de rastreios reais recentes (menos de 180 dias) e incluir manualmente pelo banco do módulo para que possa testar.
-			- Atenção: conforme disposto nos Manuais dos Correios, os códigos de Rastreio de Objeto ficam disponíveis para consulta apenas por 180 dias, inclusive na página na Internet de Rastrio de Objetos dos Correios.
+		- Mapeamento das Integrações:
+			- A Tela inicial é a listagem das integrações cadastradas após a execução do Script de instalação do módulo. 
+			Para uso inicial das integrações é necessário cadastrar usuário, senha e token correspondente ao ambiente utilizado.
+			O Authorization a ser usado na API **Token** pode ser recuperado no ambiente de [Homologação](https://cwshom.correios.com.br) ou [Produção](https://cws.correios.com.br) após seguir as instruções da documentação do uso das API's mencionada no item
+			3 > 3.1 Administração.
+			- Atenção: conforme disposto nos Manuais dos Correios, os códigos de Rastreio de Objeto ficam disponíveis para consulta apenas por 180 dias, inclusive na página na Internet de Rastreio de Objetos dos Correios.
+			- Inclusive, somente com códigos de rastreio já existentes/reais é que o rastreio de objetos funciona, inclusive em outros ambientes internos do Órgão. Assim, para testes, tem que pegar códigos de rastreios reais recentes (menos de 180 dias) e incluir manualmente pelo banco do módulo para que possa testar.
 		- Tipos de Situações SRO:
-			- Tela onde lista os Tipos de Situações SRO vinculados ao Serviço WSDL cadastrado.
+			- Tela onde lista os Tipos de Situações SRO vinculados ao Serviço.
 		- Destinatários não Habilitados para Expedição:
 			- Tela onde cadastrado os Contatos que não são Destinatários Habilitados para Expedição.
 	- 3.2. Unidade de Expedição:
 		- Expedição pelos Correios:
-			- Gerar PLP: 
+		    - Nomenclatura PLP = Identificador para **Pré lista de Pré-Postagens**
+			- Gerar Pré-Postagem: 
 				- Tela onde lista as solicitações de expedições realizadas pelos Usuários e gera a PLP(pré-lista de postagem), sendo possível selecionar o "Formato de Expedição do Objeto" e visualizar a "Solicitação de Expedição" cadastrada.
-			- Expedir PLP:
+			- Expedir Pré-Postagem:
 				- Lista as PLPs(pré-lista de postagem) geradas para expedição e realiza o "Expedir PLP".
 					- Antes de "Concluir a Expedição da PLP" e possível Imprimir os Documentos, Envelopes, ARs e Voucher da PLP.
 			- Consultar PLPs Geradas:
