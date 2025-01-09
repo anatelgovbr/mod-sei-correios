@@ -29,7 +29,7 @@ class MdCorRetornoArINT extends InfraINT {
     return parent::montarSelectArray($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorRetornoArDTO);
   }
   
-  public function contarAr($strNomeArquivo) {
+  public static function contarAr($strNomeArquivo) {
         $nome = $strNomeArquivo;
         $url = DIR_SEI_TEMP . '/' . $nome;
         $arrNome = substr($nome, 0, -4);

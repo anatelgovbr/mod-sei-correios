@@ -1234,8 +1234,8 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
                                 if (count($arrContatoAssociadoDTO) > 0) {
                                     $contatoAssociadoDTO = current($arrContatoAssociadoDTO);
 
-                                    $newMdCorContatoDTO->setNumIdContatoAssociado($objContato->getNumIdContatoAssociado());
-                                    $newMdCorContatoDTO->setNumIdTipoContatoAssociado($objContato->getNumIdTipoContato());
+                                    $newMdCorContatoDTO->setNumIdContatoAssociado($contatoAssociadoDTO->getNumIdContato());
+                                    $newMdCorContatoDTO->setNumIdTipoContatoAssociado($contatoAssociadoDTO->getNumIdTipoContato());
                                     $newMdCorContatoDTO->setStrNomeContatoAssociado($contatoAssociadoDTO->getStrNome());
                                     $newMdCorContatoDTO->setStrStaNaturezaContatoAssociado($contatoAssociadoDTO->getStrStaNatureza());
                                     $newMdCorContatoDTO->setStrEndereco($contatoAssociadoDTO->getStrEndereco());
@@ -1250,7 +1250,27 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
                                     $newMdCorContatoDTO->setStrSiglaUf($siglaUf);
                                 }
                             } else {
-                                $newMdCorContatoDTO->setNumIdContatoAssociado($objContato->getNumIdContato());
+                                if ( $objContato->getNumIdContato() != $objContato->getNumIdContatoAssociado() ) {
+                                    $contatoAssociadoDTO = new ContatoDTO();
+                                    $contatoAssociadoDTO->retTodos();
+                                    $contatoAssociadoDTO->setNumIdContato($objContato->getNumIdContatoAssociado());
+                                    $contatoAssociadoDTO->setDistinct(true);
+
+                                    $rn = new ContatoRN();
+                                    $arrContatoAssociadoDTO = $rn->listarRN0325($contatoAssociadoDTO);
+                                    $contatoAssociadoDTO = current($arrContatoAssociadoDTO);
+
+                                    $newMdCorContatoDTO->setStrStaNaturezaContatoAssociado($contatoAssociadoDTO->getStrStaNatureza());
+                                    $newMdCorContatoDTO->setStrNomeContatoAssociado($contatoAssociadoDTO->getStrNome());
+                                    $newMdCorContatoDTO->setNumIdTipoContatoAssociado($contatoAssociadoDTO->getNumIdTipoContato());
+                                    $newMdCorContatoDTO->setNumIdContatoAssociado($contatoAssociadoDTO->getNumIdContato());
+                                } else {
+                                    $newMdCorContatoDTO->setStrStaNaturezaContatoAssociado($objContato->getStrStaNatureza());
+                                    $newMdCorContatoDTO->setStrNomeContatoAssociado($objContato->getStrNome());
+                                    $newMdCorContatoDTO->setNumIdTipoContatoAssociado($objContato->getNumIdTipoContato());
+                                    $newMdCorContatoDTO->setNumIdContatoAssociado($objContato->getNumIdContato());
+                                }
+
                                 $newMdCorContatoDTO->setStrEndereco($objContato->getStrEndereco());
                                 $newMdCorContatoDTO->setStrComplemento($objContato->getStrComplemento());
                                 $newMdCorContatoDTO->setStrBairro($objContato->getStrBairro());

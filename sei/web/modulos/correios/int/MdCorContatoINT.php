@@ -65,76 +65,93 @@ class MdCorContatoINT extends InfraINT
         return $xml;
     }
 
-	public static function _isDadoAlterado( $idContato , $idMdCorExpedSolic ){
-		try {
-			$arrAtributos       = ['Endereco','Cep','Complemento','Bairro','NomeCidade','SiglaUf'];
-			$objContato         = self::getInfoContato($idContato);
-			$nmContatoPrincipal = $objContato->getStrNome();
-			$isContatoAssociado = false;
+    public static function _isDadoAlterado( $idContato , $idMdCorExpedSolic, $isPodeAtualizar = true){
+        try {
+            $arrAtributos       = ['Endereco','Cep','Complemento','Bairro','NomeCidade','SiglaUf'];
+            $objContato         = self::getInfoContato($idContato);
+            $nmContatoPrincipal = $objContato->getStrNome();
+            $isContatoAssociado = false;
 
-			if ( $objContato->getStrSinEnderecoAssociado() == 'S' ) {
-				$idContato          = $objContato->getNumIdContatoAssociado();
-				$isContatoAssociado = true;
+            if ( $objContato->getStrSinEnderecoAssociado() == 'S' ) {
+                $isContatoAssociado = true;
 
-				//busca novamente dados do contato, mas sera do associado que sera usado nas consultas abaixo
-				$objContato         = self::getInfoContato($idContato);
-			}
-			$objMdCorContato = self::getinfoMdCorContato( $idContato, $idMdCorExpedSolic, $isContatoAssociado );
+                //busca novamente dados do contato, mas sera do associado que sera usado nas consultas abaixo
+                $objContato = self::getInfoContato( $objContato->getNumIdContatoAssociado() );
+            }
 
-			$isTeveRegistroAlterado = false;
-			foreach ( $arrAtributos as $atributo ) {
-				if ( $objContato->get($atributo) != $objMdCorContato->get($atributo) ) {
-					$isTeveRegistroAlterado = true;
-					$objMdCorContato->set($atributo,$objContato->get($atributo));
-				}
-			}
+            $objMdCorContato = self::getinfoMdCorContato( $idMdCorExpedSolic );
 
-			if ( $isContatoAssociado ) {
-				if (
-					$objContato->getStrNome() != $objMdCorContato->getStrNomeContatoAssociado()
-					|| $nmContatoPrincipal != $objMdCorContato->getStrNome()
-				) {
-					$objMdCorContato->setStrNomeContatoAssociado($objContato->getStrNome());
-					$objMdCorContato->setStrNome($nmContatoPrincipal);
-					$isTeveRegistroAlterado = true;
-				}
-			} else {
-				if ( $objContato->getStrNome() != $objMdCorContato->getStrNome() ) {
-					$objMdCorContato->setStrNome($objContato->getStrNome());
-					$isTeveRegistroAlterado = true;
-				}
-			}
+            $isTeveRegistroAlterado = false;
 
-			return ['objMdCorContato' => $objMdCorContato , 'isRegAlterado' => $isTeveRegistroAlterado];
-		} catch (Exception $e) {
-			throw new InfraException('Não foi possível comparar dados modificados do Contato no Módulo dos Correios',$e);
-		}
-	}
+            if ( $isPodeAtualizar ) {
+                // verifica se houve mudança nos dados do endereço, sendo do associado ou não
+                foreach ($arrAtributos as $atributo) {
+                    if ($objContato->get($atributo) != $objMdCorContato->get($atributo)) {
+                        $isTeveRegistroAlterado = true;
+                        $objMdCorContato->set($atributo, $objContato->get($atributo));
+                    }
+                }
 
-	private static function getInfoContato( $idContato ){
-		$objContatoDTO = new ContatoDTO();
-		$objContatoRN = new ContatoRN();
+                //verifica se usa endereço do associado ou nao e, em seguida, se houve mudança nos nomes e/ou
+                //vinculo com associado, mesmo não usando o endereço do mesmo
+                if ( $isContatoAssociado ) {
+                    if ( $objContato->getStrNome() != $objMdCorContato->getStrNomeContatoAssociado()
+                        ||
+                        $nmContatoPrincipal != $objMdCorContato->getStrNome()
+                    ) {
+                        $objMdCorContato->setStrNomeContatoAssociado($objContato->getStrNome());
+                        $objMdCorContato->setStrNome($nmContatoPrincipal);
+                        $isTeveRegistroAlterado = true;
+                    }
 
-		$objContatoDTO->setNumIdContato($idContato);
-		$objContatoDTO->retTodos(true);
+                    if ( $objContato->getNumIdContatoAssociado() != $objMdCorContato->getNumIdContatoAssociado() ) {
+                        $objMdCorContato->setStrNomeContatoAssociado( $objContato->getStrNome() );
+                        $objMdCorContato->setNumIdContatoAssociado( $objContato->getNumIdContato() );
+                        $objMdCorContato->setStrStaNaturezaContatoAssociado( $objContato->getStrStaNatureza() );
 
-		return $objContatoRN->consultarRN0324($objContatoDTO);
-	}
+                        $isTeveRegistroAlterado = true;
+                    }
+                } else {
+                    if ( $objContato->getStrNome() != $objMdCorContato->getStrNome() ) {
+                        $objMdCorContato->setStrNome($objContato->getStrNome());
+                        $isTeveRegistroAlterado = true;
+                    }
 
-	private static function getinfoMdCorContato( $idContato , $idMdCorExpedSolic , $isContatoAssociado ){
-		$objMdCorContatoDTO = new MdCorContatoDTO();
-		$objMdCorContatoRN  = new MdCorContatoRN();
+                    if ( $objContato->getNumIdContatoAssociado() != $objMdCorContato->getNumIdContatoAssociado() ) {
+                        $objMdCorContato->setStrNomeContatoAssociado( $objContato->getStrNomeContatoAssociado() );
+                        $objMdCorContato->setNumIdContatoAssociado( $objContato->getNumIdContatoAssociado() );
+                        $objMdCorContato->setStrStaNaturezaContatoAssociado( $objContato->getStrStaNaturezaContatoAssociado() );
 
-		if ( $isContatoAssociado )
-			$objMdCorContatoDTO->setNumIdContatoAssociado($idContato);
-		else
-			$objMdCorContatoDTO->setNumIdContato($idContato);
+                        $isTeveRegistroAlterado = true;
+                    }
+                }
+            }
 
-		$objMdCorContatoDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedSolic);
-		$objMdCorContatoDTO->retTodos(true);
+            return ['objMdCorContato' => $objMdCorContato , 'isRegAlterado' => $isTeveRegistroAlterado];
+        } catch (Exception $e) {
+            throw new InfraException('Não foi possível comparar dados modificados do Contato no Módulo dos Correios',$e);
+        }
+    }
 
-		return $objMdCorContatoRN->consultar($objMdCorContatoDTO);
-	}
+    private static function getInfoContato( $idContato ){
+        $objContatoDTO = new ContatoDTO();
+        $objContatoRN = new ContatoRN();
+
+        $objContatoDTO->setNumIdContato($idContato);
+        $objContatoDTO->retTodos(true);
+
+        return $objContatoRN->consultarRN0324($objContatoDTO);
+    }
+
+    private static function getinfoMdCorContato( $idMdCorExpedSolic ){
+        $objMdCorContatoDTO = new MdCorContatoDTO();
+        $objMdCorContatoRN  = new MdCorContatoRN();
+
+        $objMdCorContatoDTO->setNumIdMdCorExpedicaoSolicitada($idMdCorExpedSolic);
+        $objMdCorContatoDTO->retTodos(true);
+
+        return $objMdCorContatoRN->consultar($objMdCorContatoDTO);
+    }
 
 }
 

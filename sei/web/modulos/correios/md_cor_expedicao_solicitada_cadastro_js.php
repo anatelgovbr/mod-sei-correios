@@ -45,8 +45,8 @@
             }
         }
         if (isset($_GET['visualizar']) || $bolExistePLP || $staAberto) { ?>
-        infraDesabilitarCamposAreaDados();
-        $("#imgAjuda").css("visibility", "visible");
+            infraDesabilitarCamposAreaDados();
+            $("#imgAjuda").css("visibility", "visible");
         <?}
         }?>
 
@@ -65,7 +65,6 @@
             $objAnexoDTO->setDblIdProtocolo($objProtocoloDocPrincipalDTO->getDblIdProtocolo());
             $objAnexoRN = new AnexoRN();
 
-            //$arrObjAnexoDTO = $objAnexoRN->listarRN0218($objAnexoDTO);
             $arrObjAnexo = InfraArray::converterArrInfraDTO($objAnexoRN->listarRN0218($objAnexoDTO), 'Nome');
 
             if (count($arrObjAnexo) == 1) {
@@ -92,183 +91,184 @@
         //HTML para a coluna Formato
         var arrLinhaInicial = [];
         <?php if ($_GET['acao'] == 'md_cor_expedicao_solicitada_cadastrar') : ?>
-        var id = '<?php echo $objProtocoloDocPrincipalDTO->getDblIdProtocolo() ?>';
+            var id = '<?php echo $objProtocoloDocPrincipalDTO->getDblIdProtocolo() ?>';
 
-        var formato = '';
+            var formato = '';
 
-        formato += '<div class="row">';
-        formato += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
-        formato += '        <div id="divRdoImpressao" class="infraDivRadio">';
-        formato += '            <div class="infraRadioDiv">';
-        formato += '                <input type="radio" name="rdoFormato_' + id + '" id="rdoImpresso_' + id + '"';
-        formato += '               value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_IMPRESSO; ?>" checked="checked"';
-        formato += '               class="infraRadioInput" onclick="impressaoMostrar()">';
-        formato += '                <label class="infraRadioLabel" for="rdoImpresso_' + id + '"></label>';
-        formato += '            </div>';
-        formato += '            <label id="lblImpresso_' + id + '" for="rdoImpresso_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Impresso</label>';
-        formato += '        </div>';
-        formato += '    </div>';
-        formato += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
-        formato += '        <div id="divRdoGravacao" class="infraDivRadio">';
-        formato += '            <div class="infraRadioDiv ">';
-        formato += '                <input type="radio" name="rdoFormato_' + id + '" id="rdoFormato_' + id + '"';
-        formato += '                value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA; ?>"';
-        formato += '                disabled';
-        formato += '                class="infraRadioInput" onclick="impressaoMostrar()">';
-        formato += '                <label class="infraRadioLabel" for="rdoFormato_' + id + '"></label>';
-        formato += '            </div>';
-        formato += '        <label id="lblImpresso_' + id + '" for="rdoFormato_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Gravação em Mídia</label>';
-        formato += '    </div>';
-        formato += '</div>';
+            formato += '<div class="row">';
+            formato += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
+            formato += '        <div id="divRdoImpressao" class="infraDivRadio">';
+            formato += '            <div class="infraRadioDiv">';
+            formato += '                <input type="radio" name="rdoFormato_' + id + '" id="rdoImpresso_' + id + '"';
+            formato += '               value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_IMPRESSO; ?>" checked="checked"';
+            formato += '               class="infraRadioInput" onclick="impressaoMostrar()">';
+            formato += '                <label class="infraRadioLabel" for="rdoImpresso_' + id + '"></label>';
+            formato += '            </div>';
+            formato += '            <label id="lblImpresso_' + id + '" for="rdoImpresso_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Impresso</label>';
+            formato += '        </div>';
+            formato += '    </div>';
+            formato += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
+            formato += '        <div id="divRdoGravacao" class="infraDivRadio">';
+            formato += '            <div class="infraRadioDiv ">';
+            formato += '                <input type="radio" name="rdoFormato_' + id + '" id="rdoFormato_' + id + '"';
+            formato += '                value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA; ?>"';
+            formato += '                disabled';
+            formato += '                class="infraRadioInput" onclick="impressaoMostrar()">';
+            formato += '                <label class="infraRadioLabel" for="rdoFormato_' + id + '"></label>';
+            formato += '            </div>';
+            formato += '        <label id="lblImpresso_' + id + '" for="rdoFormato_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Gravação em Mídia</label>';
+            formato += '    </div>';
+            formato += '</div>';
 
-        //HTML para a coluna impressao
-        var impressao = '';
+            //HTML para a coluna impressao
+            var impressao = '';
 
-        impressao += '<div class="row">';
-        impressao += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
-        impressao += '          <div id="divRdoImpressao" class="infraDivRadio">';
-        impressao += '              <div class="infraRadioDiv ">';
-        impressao += '                  <input type="radio" name="rdoImpressao_' + id + '" id="rdoImpressao1_' + id + '"';
-        impressao += '                  value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_PRETO_BRANCO; ?>" checked="checked"';
-        impressao += '                  class="infraRadioInput" onclick="justificativaImprimir(this)">';
-        impressao += '              <label class="infraRadioLabel" for="rdoImpressao1_' + id + '"></label>';
-        impressao += '              </div>';
-        impressao += '              <label id="lblImpressao_' + id + '" for="rdoImpressao1_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Preto e Branco</label>';
-        impressao += '          </div>';
-        impressao += '    </div>';
-        impressao += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
-        impressao += '          <div id="divRdoGravacao" class="infraDivRadio ">';
-        impressao += '              <div class="infraRadioDiv ">';
-        impressao += '              <input type="radio" name="rdoImpressao_' + id + '" id="rdoImpressao2_' + id + '"';
-        impressao += '               value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO; ?>"';
-        impressao += '               class="infraRadioInput" onclick="justificativaImprimir(this)">';
-        impressao += '              <label class="infraRadioLabel" for="rdoImpressao2_' + id + '"></label>';
-        impressao += '          </div>';
-        impressao += '          <label id="lblImpressao_' + id + '" for="rdoImpressao2_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Colorido</label>';
-        impressao += '    </div>';
-        impressao += '</div>';
+            impressao += '<div class="row">';
+            impressao += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
+            impressao += '          <div id="divRdoImpressao" class="infraDivRadio">';
+            impressao += '              <div class="infraRadioDiv ">';
+            impressao += '                  <input type="radio" name="rdoImpressao_' + id + '" id="rdoImpressao1_' + id + '"';
+            impressao += '                  value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_PRETO_BRANCO; ?>" checked="checked"';
+            impressao += '                  class="infraRadioInput" onclick="justificativaImprimir(this)">';
+            impressao += '              <label class="infraRadioLabel" for="rdoImpressao1_' + id + '"></label>';
+            impressao += '              </div>';
+            impressao += '              <label id="lblImpressao_' + id + '" for="rdoImpressao1_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Preto e Branco</label>';
+            impressao += '          </div>';
+            impressao += '    </div>';
+            impressao += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
+            impressao += '          <div id="divRdoGravacao" class="infraDivRadio ">';
+            impressao += '              <div class="infraRadioDiv ">';
+            impressao += '              <input type="radio" name="rdoImpressao_' + id + '" id="rdoImpressao2_' + id + '"';
+            impressao += '               value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO; ?>"';
+            impressao += '               class="infraRadioInput" onclick="justificativaImprimir(this)">';
+            impressao += '              <label class="infraRadioLabel" for="rdoImpressao2_' + id + '"></label>';
+            impressao += '          </div>';
+            impressao += '          <label id="lblImpressao_' + id + '" for="rdoImpressao2_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Colorido</label>';
+            impressao += '    </div>';
+            impressao += '</div>';
 
-        //HTML para a coluna justificativa
-        var justificativa = '<textarea name="txtJustificativa[' + id + ']" class="infraTextArea form-control" style="width: 100%;" disabled="disabled"></textarea>';
+            //HTML para a coluna justificativa
+            var justificativa = '<textarea name="txtJustificativa[' + id + ']" class="infraTextArea form-control" style="width: 100%;" disabled="disabled"></textarea>';
 
 
-        arrLinhaInicial = [
-            '<?php echo $objProtocoloDocPrincipalDTO->getDblIdProtocolo() . '#' . $bolExtensaoPermitida; ?>',
-            '<?php echo $descricao_documento_principal; ?> - Principal',
-            formato, //html aqui
-            impressao, //html aqui
-            justificativa //justificativa html aqui
-        ];
-        objTabelaDinamicaFormatos.adicionar(arrLinhaInicial);
+            arrLinhaInicial = [
+                '<?php echo $objProtocoloDocPrincipalDTO->getDblIdProtocolo() . '#' . $bolExtensaoPermitida; ?>',
+                '<?php echo $descricao_documento_principal; ?> - Principal',
+                formato, //html aqui
+                impressao, //html aqui
+                justificativa //justificativa html aqui
+            ];
+            objTabelaDinamicaFormatos.adicionar(arrLinhaInicial);
+
         <?php else: ?>
 
+            <?php
+            $bolExistePLP = false;
+            if ($dto) {
+                $bolExistePLP = $dto->getNumIdMdCorPlp() == null ? true : false;
+            }
+            if (!isset($_GET['visualizar']) && $bolExistePLP) {
+                foreach ($arrFormatos as $formatoDTO) {
+            ?>
+                    var visualizarListagemPLP = <?php echo ($_GET['acao_origem'] == 'md_cor_geracao_plp_listar') ? "disabled='disabled'" : "''"; ?>;
+                    var existeTipoMidiaValido = verificarAnexoMidia(<?php echo $formatoDTO->getDblIdProtocolo(); ?>);
+                    var checkImpressao = existeTipoMidiaValido == 'false' ? "" : "disabled='disabled'";
+                    var id = '<?php echo $formatoDTO->getDblIdProtocolo() ?>';
+                    var configJust = '';
+                    var formato = '';
+
+                    formato += '<div class="row">';
+                    formato += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
+                    formato += '        <div id="divRdoImpressao" class="infraDivRadio">';
+                    formato += '            <div class="infraRadioDiv ">';
+                    formato += '                <input id="rdoImpresso_' + id + '" <?php if ($formatoDTO->getStrFormaExpedicao() == MdCorExpedicaoFormatoRN::$TP_FORMATO_IMPRESSO) echo 'checked'; ?> '+ checkImpressao +'  value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_IMPRESSO; ?>" type="radio" name="rdoFormato_' + id + '" class="infraRadioInput" onclick="impressaoMostrar()" ' + visualizarListagemPLP +'>';
+                    formato += '                <label class="infraRadioLabel" for="rdoImpresso_' + id + '"></label>';
+                    formato += '            </div>';
+                    formato += '            <label id="lblImpresso_' + id + '" for="rdoImpresso_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Impresso</label>';
+                    formato += '        </div>';
+                    formato += '    </div>';
+                    formato += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
+                    formato += '        <div id="divRdoGravacao" class="infraDivRadio">';
+                    formato += '            <div class="infraRadioDiv ">';
+                    formato += '            <input id="rdoFormato_' + id + '" <?php if ($formatoDTO->getStrFormaExpedicao() == MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA) echo 'checked'; ?>  value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA; ?>" type="radio" name="rdoFormato_' + id + '" class="infraRadioInput" onclick="impressaoMostrar()" ' + visualizarListagemPLP ;
+                    <?php if ($numeroProtocoloFormatado == $formatoDTO->getStrProtocoloFormatado()) { ?>
+                    formato += ' disabled=disabled';
+                    <?php } ?>
+                    formato += '>';
+                    formato += '            <label class="infraRadioLabel" for="rdoFormato_' + id + '"></label>';
+                    formato += '        </div>';
+                    formato += '        <label id="lblImpresso_' + id + '" for="rdoFormato_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Gravação em Mídia</label>';
+                    formato += '    </div>';
+                    formato += '</div>';
+
+                    var impressaoMostrar = "display:none;";
+                    <?php if ($formatoDTO->getStrFormaExpedicao() != MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA) { ?>
+                    var impressaoMostrar = "";
+                    <?php } ?>
+
+                    var impressao = '';
+
+                    impressao += '<div class="row">';
+                    impressao += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
+                    impressao += '          <div id="divRdoImpressao" class="infraDivRadio" style="'+impressaoMostrar+'">';
+                    impressao += '              <div class="infraRadioDiv ">';
+                    impressao += '              <input id="rdoImpressao1_' + id + '" <?php if ($formatoDTO->getStrImpressao() == MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_PRETO_BRANCO) echo 'checked'; ?> value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_PRETO_BRANCO; ?>" type="radio" name="rdoImpressao_' + id + '" onclick="justificativaImprimir(this)"' + visualizarListagemPLP + '>';
+                    impressao += '              <label class="infraRadioLabel" for="rdoImpressao1_' + id + '"></label>';
+                    impressao += '              </div>';
+                    impressao += '              <label id="lblImpressao_' + id + '" for="rdoImpressao1_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Preto e Branco</label>';
+                    impressao += '          </div>';
+                    impressao += '    </div>';
+                    impressao += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
+                    impressao += '          <div id="divRdoGravacao" class="infraDivRadio"  style="'+impressaoMostrar+'">';
+                    impressao += '              <div class="infraRadioDiv ">';
+                    impressao += '              <input id="rdoImpressao2_' + id + '" <?php if ($formatoDTO->getStrImpressao() == MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO) echo 'checked'; ?> value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO; ?>" type="radio" name="rdoImpressao_' + id + '" onclick="justificativaImprimir(this)" ' + visualizarListagemPLP + '>';
+                    impressao += '              <label class="infraRadioLabel" for="rdoImpressao2_' + id + '"></label>';
+                    impressao += '          </div>';
+                    impressao += '          <label id="lblImpressao_' + id + '" for="rdoImpressao2_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Colorido</label>';
+                    impressao += '    </div>';
+                    impressao += '</div>';
+
+                    <?php
+                    if ($formatoDTO->getStrImpressao() == MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO) {
+                        $disabled = "";
+                    } elseif ($formatoDTO->getStrFormaExpedicao() == MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA) {
+                        $disabled = "";
+                    } else {
+                        $disabled = 'disabled="disabled"';
+                    }
+                    ?>
+
+                    //HTML para a coluna justificativa
+                    configJust = checkImpressao.length > 0 ? 'readonly' : '';
+                    var justificativa = '<textarea name="txtJustificativa[' + id + ']" ' + configJust + ' class="infraTextArea form-control" style="width: 100%;" value="<?php echo $formatoDTO->getStrJustificativa(); ?>" <?php echo $disabled; ?> ' + visualizarListagemPLP + '><?php echo $formatoDTO->getStrJustificativa(); ?></textarea>';
+
+                    arrLinhaInicial = [
+                        <?php if ($numeroProtocoloFormatado == $formatoDTO->getStrProtocoloFormatado()) { ?>
+                        '<?php echo $formatoDTO->getDblIdProtocolo() . '#' . $bolExtensaoPermitida; ?>'
+                        <?php } else { ?>
+                        '<?php echo $formatoDTO->getDblIdProtocolo(); ?>'
+                        <?php } ?>,
+                        '<?php
+
+                            $strUrlDocumento = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&id_documento=' . $formatoDTO->getDblIdDocumentoPrincipal());
+                            $strNomeAnexo = $formatoDTO->getStrNomeSerie() ? $formatoDTO->getStrNomeSerie() . ' ' . $formatoDTO->getStrNumeroDocumento() : $formatoDTO->getStrNomeProcedimento();
+                            echo  $strNomeAnexo . '<a class="protocoloNormal" style="font-size: 1.0em !important; font-size:1em" href="'.$strUrlDocumento.'" target="_blank">(' . $formatoDTO->getStrProtocoloFormatado() . ')</a>';
+
+                            if ($numeroProtocoloFormatado == $formatoDTO->getStrProtocoloFormatado()) {
+                                echo " - Principal";
+                            }else{
+                                echo " - Anexo";
+                            }
+                            ?>',
+                        formato, //html aqui
+                        impressao, //html aqui
+                        justificativa //justificativa html aqui
+                    ];
+
+                    objTabelaDinamicaFormatos.adicionar(arrLinhaInicial);
         <?php
-        $bolExistePLP = false;
-        if ($dto) {
-            $bolExistePLP = $dto->getNumIdMdCorPlp() == null ? true : false;
-        }
-        if (!isset($_GET['visualizar']) && $bolExistePLP) {
-        foreach ($arrFormatos as $formatoDTO) {
-        ?>
-        var visualizarListagemPLP = <?php echo ($_GET['acao_origem'] == 'md_cor_geracao_plp_listar') ? "disabled='disabled'" : "''"; ?>;
-        var existeTipoMidiaValido = verificarAnexoMidia(<?php echo $formatoDTO->getDblIdProtocolo(); ?>);
-        var checkImpressao = existeTipoMidiaValido == 'false' ? "" : "disabled='disabled'";
-        var id = '<?php echo $formatoDTO->getDblIdProtocolo() ?>';
-        var configJust = '';
-        var formato = '';
-
-        formato += '<div class="row">';
-        formato += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
-        formato += '        <div id="divRdoImpressao" class="infraDivRadio">';
-        formato += '            <div class="infraRadioDiv ">';
-        formato += '                <input id="rdoImpresso_' + id + '" <?php if ($formatoDTO->getStrFormaExpedicao() == MdCorExpedicaoFormatoRN::$TP_FORMATO_IMPRESSO) echo 'checked'; ?> '+ checkImpressao +'  value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_IMPRESSO; ?>" type="radio" name="rdoFormato_' + id + '" class="infraRadioInput" onclick="impressaoMostrar()" ' + visualizarListagemPLP +'>';
-        formato += '                <label class="infraRadioLabel" for="rdoImpresso_' + id + '"></label>';
-        formato += '            </div>';
-        formato += '            <label id="lblImpresso_' + id + '" for="rdoImpresso_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Impresso</label>';
-        formato += '        </div>';
-        formato += '    </div>';
-        formato += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
-        formato += '        <div id="divRdoGravacao" class="infraDivRadio">';
-        formato += '            <div class="infraRadioDiv ">';
-        formato += '            <input id="rdoFormato_' + id + '" <?php if ($formatoDTO->getStrFormaExpedicao() == MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA) echo 'checked'; ?>  value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA; ?>" type="radio" name="rdoFormato_' + id + '" class="infraRadioInput" onclick="impressaoMostrar()" ' + visualizarListagemPLP ;
-        <?php if ($numeroProtocoloFormatado == $formatoDTO->getStrProtocoloFormatado()) { ?>
-        formato += ' disabled=disabled';
-        <?php } ?>
-        formato += '>';
-        formato += '            <label class="infraRadioLabel" for="rdoFormato_' + id + '"></label>';
-        formato += '        </div>';
-        formato += '        <label id="lblImpresso_' + id + '" for="rdoFormato_' + id + '" class="infraLabelRadio lblImpresso_' + id + '" tabindex="507">Gravação em Mídia</label>';
-        formato += '    </div>';
-        formato += '</div>';
-
-        var impressaoMostrar = "display:none;";
-        <?php if ($formatoDTO->getStrFormaExpedicao() != MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA) { ?>
-        var impressaoMostrar = "";
-        <?php } ?>
-
-        var impressao = '';
-
-        impressao += '<div class="row">';
-        impressao += '    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">';
-        impressao += '          <div id="divRdoImpressao" class="infraDivRadio" style="'+impressaoMostrar+'">';
-        impressao += '              <div class="infraRadioDiv ">';
-        impressao += '              <input id="rdoImpressao1_' + id + '" <?php if ($formatoDTO->getStrImpressao() == MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_PRETO_BRANCO) echo 'checked'; ?> value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_PRETO_BRANCO; ?>" type="radio" name="rdoImpressao_' + id + '" onclick="justificativaImprimir(this)"' + visualizarListagemPLP + '>';
-        impressao += '              <label class="infraRadioLabel" for="rdoImpressao1_' + id + '"></label>';
-        impressao += '              </div>';
-        impressao += '              <label id="lblImpressao_' + id + '" for="rdoImpressao1_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Preto e Branco</label>';
-        impressao += '          </div>';
-        impressao += '    </div>';
-        impressao += '    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">';
-        impressao += '          <div id="divRdoGravacao" class="infraDivRadio"  style="'+impressaoMostrar+'">';
-        impressao += '              <div class="infraRadioDiv ">';
-        impressao += '              <input id="rdoImpressao2_' + id + '" <?php if ($formatoDTO->getStrImpressao() == MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO) echo 'checked'; ?> value="<?php echo MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO; ?>" type="radio" name="rdoImpressao_' + id + '" onclick="justificativaImprimir(this)" ' + visualizarListagemPLP + '>';
-        impressao += '              <label class="infraRadioLabel" for="rdoImpressao2_' + id + '"></label>';
-        impressao += '          </div>';
-        impressao += '          <label id="lblImpressao_' + id + '" for="rdoImpressao2_' + id + '" class="infraLabelRadio lblImpressao_' + id + '" tabindex="507">Colorido</label>';
-        impressao += '    </div>';
-        impressao += '</div>';
-
-        <?php
-        if ($formatoDTO->getStrImpressao() == MdCorExpedicaoFormatoRN::$TP_IMPRESSAO_COLORIDO) {
-            $disabled = "";
-        } elseif ($formatoDTO->getStrFormaExpedicao() == MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA) {
-            $disabled = "";
-        } else {
-            $disabled = 'disabled="disabled"';
-        }
-        ?>
-
-        //HTML para a coluna justificativa
-        configJust = checkImpressao.length > 0 ? 'readonly' : '';
-        var justificativa = '<textarea name="txtJustificativa[' + id + ']" ' + configJust + ' class="infraTextArea form-control" style="width: 100%;" value="<?php echo $formatoDTO->getStrJustificativa(); ?>" <?php echo $disabled; ?> ' + visualizarListagemPLP + '><?php echo $formatoDTO->getStrJustificativa(); ?></textarea>';
-
-        arrLinhaInicial = [
-            <?php if ($numeroProtocoloFormatado == $formatoDTO->getStrProtocoloFormatado()) { ?>
-            '<?php echo $formatoDTO->getDblIdProtocolo() . '#' . $bolExtensaoPermitida; ?>'
-            <?php } else { ?>
-            '<?php echo $formatoDTO->getDblIdProtocolo(); ?>'
-            <?php } ?>,
-            '<?php
-
-                $strUrlDocumento = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&id_documento=' . $formatoDTO->getDblIdDocumentoPrincipal());
-                $strNomeAnexo = $formatoDTO->getStrNomeSerie() ? $formatoDTO->getStrNomeSerie() . ' ' . $formatoDTO->getStrNumeroDocumento() : $formatoDTO->getStrNomeProcedimento();
-                echo  $strNomeAnexo . '<a class="protocoloNormal" style="font-size: 1.0em !important; font-size:1em" href="'.$strUrlDocumento.'" target="_blank">(' . $formatoDTO->getStrProtocoloFormatado() . ')</a>';
-
-                if ($numeroProtocoloFormatado == $formatoDTO->getStrProtocoloFormatado()) {
-                    echo " - Principal";
-                }else{
-                    echo " - Anexo";
                 }
-                ?>',
-            formato, //html aqui
-            impressao, //html aqui
-            justificativa //justificativa html aqui
-        ];
-
-        objTabelaDinamicaFormatos.adicionar(arrLinhaInicial);
-        <?php
-        }
-        }
+            }
         ?>
         <?php endif; ?>
 
@@ -395,6 +395,10 @@
 
         if ( document.querySelector('#selServicoPostal').value != 'null' )
             document.querySelector('#chkDocumentoPossuiAnexo').removeAttribute('disabled');
+
+        <?php if ( PaginaSEI::GET('acao') == 'md_cor_expedicao_solicitada_consultar' && $strIsConsultar ): ?>
+            document.querySelector('#chkDocumentoPossuiAnexo').setAttribute('disabled',true);
+        <?php endif; ?>
     }
 
     function validaExtArquivosExternos( arrIdsProtocolos , arrDescricaoDoc ){
@@ -909,15 +913,18 @@
     function alterarContato() {
         funcaoCallbackAlterarContato(identificaFechamentoModalAlterarContato);
     }
+
     function fecharConsulta() {
         window.onbeforeunload = null;
         document.location = '<?= $strUrlFecharConsulta ?>';
     }
+
     function identificaFechamentoModalAlterarContato() {
-        $("div[id^='divInfraSparklingModalClose']", window.parent.document).on('click',function(){
+        $("div[id^='divInfraSparklingModalClose']", window.top.document).on('click',function(){
             recarregarContato()
         });
     }
+
     function funcaoCallbackAlterarContato(callback) {
         let dest = <?= $id_destinatario ?? 0 ?>;
         //dest = (dest == null || dest == '') ? 0 : dest;

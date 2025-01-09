@@ -61,8 +61,7 @@ try {
                 $objMdCorMapeamentoUniExpSolDTO = new MdCorMapeamentoUniExpSolDTO();
                 $objMdCorMapeamentoUniExpSolRN = new MdCorMapeamentoUniExpSolRN();
                 $objMdCorMapeamentoUniExpSolDTO->setNumIdUnidadeExp($arrStrIds[0]);
-                $objMdCorMapeamentoUniExpSolDTO->retNumIdUnidadeExp();
-                $objMdCorMapeamentoUniExpSolDTO->retNumIdUnidadeSolicitante();
+                $objMdCorMapeamentoUniExpSolDTO->retTodos();
 
                 $arrObjDto = $objMdCorMapeamentoUniExpSolRN->listar($objMdCorMapeamentoUniExpSolDTO);
                 $objMdCorMapeamentoUniExpSolRN->reativar($arrObjDto);

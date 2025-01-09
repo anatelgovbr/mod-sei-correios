@@ -40,6 +40,7 @@ class MdCorMapUnidServicoINT extends InfraINT {
     $objMdCorMapUnidServicoRN = new MdCorMapUnidServicoRN();
     $arrObjMdCorMapUnidServicoDTO = $objMdCorMapUnidServicoRN->listar($objMdCorMapUnidServicoDTO);
 
+    if ( empty($arrObjMdCorMapUnidServicoDTO) ) return null;
 
     return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorMapUnidServicoDTO, 'IdMdCorServicoPostal', 'DescricaoServico');
   }
