@@ -15,7 +15,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.4.0';
+        return '2.4.1';
     }
 
     public function getInstituicao()
@@ -788,6 +788,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 $dtoExpSolicitada->retNumIdMdCorExpedicaoSolicitada();
                 $dtoExpSolicitada->retDthDataExpedicao();
                 $dtoExpSolicitada->retDblIdProtocolo();
+                $dtoExpSolicitada->retStrSinDevolvido();
                 $dtoExpSolicitada->setDblIdDocumentoPrincipal($idDocumento);
                 $dtoExpSolicitada->setDblIdProtocolo($objProcedimentoAPI->getIdProcedimento());
 //                $dtoExpSolicitada->adicionarCriterio(array('DataExpedicao', 'DataExpedicao'), array(InfraDTO::$OPER_IGUAL, InfraDTO::$OPER_IGUAL), array('', null), InfraDTO::$OPER_LOGICO_OR);
@@ -835,7 +836,9 @@ class CorreiosIntegracao extends SeiIntegracao
                         //já tem expedição solicitada usando esse doc como principal
                         $idExpedicao = $arrDtoExpSolicitada[0]->getNumIdMdCorExpedicaoSolicitada();
 
-                        $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc=' . $idDocumento . '&id_md_cor_expedicao_solicitada=' . $idExpedicao . "&staAberto=" . $objProcedimentoAPI->getSinAberto());
+                        $isConsultar = $arrDtoExpSolicitada[0]->getStrSinDevolvido() == 'S' ? '' : '&isConsultar=S';
+
+                        $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc=' . $idDocumento . '&id_md_cor_expedicao_solicitada=' . $idExpedicao . "&staAberto=" . $objProcedimentoAPI->getSinAberto() . $isConsultar);
                         $title = "Consultar Expedição pelos Correios";
                     }
 
@@ -994,14 +997,14 @@ class CorreiosIntegracao extends SeiIntegracao
                             if (is_null($stPlpNaoGerada)) {
                                 $icone = 'modulos/correios/imagens/svg/plp_nao_gerada.svg?'.Icone::VERSAO;
                                 $title = 'Aguardando Expedição';
-                                $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada() . "&staAberto=" . $objProcedimentoAPI->getSinAberto());
+                                $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada() . "&staAberto=" . $objProcedimentoAPI->getSinAberto().'&isConsultar=S');
                             }
 
                             $stPlpGerada = $mdCorExpedicaoSolicitadaDTO->getStrStaPlp();
                             if ($stPlpGerada == MdCorPlpRN::$STA_GERADA) {
                                 $icone = 'modulos/correios/imagens/svg/plp_gerada.svg?'.Icone::VERSAO;
                                 $title = 'Documento em procedimento de postagem';
-                                $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada());
+                                $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada() .'&isConsultar=S');
                             }
 
                             $stSolicitacaoDevolvida = $mdCorExpedicaoSolicitadaDTO->getStrSinDevolvido();
@@ -1009,7 +1012,7 @@ class CorreiosIntegracao extends SeiIntegracao
                             if ($stSolicitacaoDevolvida == "S") {
                                 $icone = 'modulos/correios/imagens/svg/devolucao_solicitacao.svg?'.Icone::VERSAO;
                                 $title = 'Solicitação de expedição devolvida';
-                                $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada() . "&staAberto=" . $objProcedimentoAPI->getSinAberto());
+                                $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada() . "&staAberto=" . $objProcedimentoAPI->getSinAberto().'&isAlterar=S');
                             }
                             
                             $arrIcones[$idDocumento] = [];

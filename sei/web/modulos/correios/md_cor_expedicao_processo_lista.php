@@ -152,7 +152,7 @@ try {
                     $strResultado .= 'class="infraImg"/></a>';
 
                     //Consultar Expedição
-                    $strUrlConsultarExpedicao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&acao_origem=' . $_GET['acao'] . '&id_md_cor_expedicao_solicitada=' . $strId . '&visualizar=true');
+                    $strUrlConsultarExpedicao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&acao_origem=' . $_GET['acao'] . '&id_md_cor_expedicao_solicitada=' . $strId . '&visualizar=true&isConsultar=S');
 
                     $strResultado .= "<a onclick='acaoConsultarExpedicao(\"" . $strUrlConsultarExpedicao . "\")'>";
                     $strResultado .= '<img src="' . PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/consultar.svg"';

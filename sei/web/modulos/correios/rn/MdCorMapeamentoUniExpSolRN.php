@@ -359,19 +359,13 @@ class MdCorMapeamentoUniExpSolRN extends InfraRN {
 
         $operacao = $params;
 
-        $arrUnidadesSolicitantes = PaginaSEI::getInstance()->getArrValuesSelect($post['hdnIdUnidades']);
-
-        // @TODO Bloco de validações - Não precisa $this->validarCadastro($params);
-
         try {
-            $objMdCorMapeamentoUniExpSolDTO = new MdCorMapeamentoUniExpSolDTO();
 
             $arrStrIds = PaginaSEI::getInstance()->getArrStrItensSelecionados();
 
             $objMdCorMapeamentoUniExpSolDTO = new MdCorMapeamentoUniExpSolDTO();
             $objMdCorMapeamentoUniExpSolDTO->setNumIdUnidadeExp($arrStrIds[0]);
-            $objMdCorMapeamentoUniExpSolDTO->retNumIdUnidadeExp();
-            $objMdCorMapeamentoUniExpSolDTO->retNumIdUnidadeSolicitante();            
+            $objMdCorMapeamentoUniExpSolDTO->retTodos();
             $arrMdCorMapeamentoUniExpSolDTO = $this->listar($objMdCorMapeamentoUniExpSolDTO);
 
             $arrUnidadesSolicitantes = InfraArray::converterArrInfraDTO($arrMdCorMapeamentoUniExpSolDTO,'IdUnidadeSolicitante');

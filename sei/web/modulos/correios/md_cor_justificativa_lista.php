@@ -26,10 +26,15 @@ try {
 
                 $objMdCorJustDTO = new MdCorJustificativaDTO();
                 $objMdCorJustDTO->setNumIdMdCorJustificativa($_POST['hdnInfraItemId']);
+				$objMdCorJustDTO->retNumIdMdCorJustificativa();
+                $objMdCorJustDTO->retStrSinAtivo();
 
                 $MdCorJustificativaRN = new MdCorJustificativaRN();
-                $MdCorJustificativaRN->desativar($objMdCorJustDTO);
-                PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.');
+
+                $dto = $MdCorJustificativaRN->consultar($objMdCorJustDTO);
+
+                $MdCorJustificativaRN->desativar($dto);
+                PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.',InfraPagina::$TIPO_MSG_AVISO);
             } catch (Exception $e) {
                 PaginaSEI::getInstance()->processarExcecao($e);
             }
@@ -43,10 +48,15 @@ try {
 
                     $objMdCorJustDTO = new MdCorJustificativaDTO();
                     $objMdCorJustDTO->setNumIdMdCorJustificativa($_POST['hdnInfraItemId']);
+					$objMdCorJustDTO->retNumIdMdCorJustificativa();
+                    $objMdCorJustDTO->retStrSinAtivo();
 
                     $MdCorJustificativaRN = new MdCorJustificativaRN();
-                    $MdCorJustificativaRN->reativar($objMdCorJustDTO);
-                    PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.');
+
+                    $dto = $MdCorJustificativaRN->consultar($objMdCorJustDTO);
+
+                    $MdCorJustificativaRN->reativar($dto);
+                    PaginaSEI::getInstance()->adicionarMensagem('Operação realizada com sucesso.',InfraPagina::$TIPO_MSG_AVISO);
                 } catch (Exception $e) {
                     PaginaSEI::getInstance()->processarExcecao($e);
                 }
