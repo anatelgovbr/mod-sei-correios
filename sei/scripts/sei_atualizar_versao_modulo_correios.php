@@ -502,6 +502,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
             foreach ($dados as $tipo => $dado) {
                 foreach ($dado as $desc => $nomeImagem) {
                     BancoSEI::getInstance()->executarSql("INSERT INTO md_cor_lista_status (id_md_cor_lista_status, status, tipo, nome_imagem, descricao, sin_ativo) VALUES('".$numMdCorListaStatus."', '".$status."', '".$tipo."', '".$nomeImagem."', '".$desc."', 'S')");
+                    BancoSEI::getInstance()->executarSql("INSERT INTO seq_md_cor_lista_status (id, campo) VALUES('".$numMdCorListaStatus."', '0')");
                     $numMdCorListaStatus++;
                 }
             }
