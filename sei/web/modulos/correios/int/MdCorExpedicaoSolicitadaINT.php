@@ -328,6 +328,16 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             $endereco = $contatoDTO->getStrEndereco();
             $bairro = $contatoDTO->getStrBairro();
 
+            // critica qtd de caracteres do endereço, pois na API dos Correios, o logradouro aceita somente ate 50 caracteres
+            if (strlen($endereco) > 50) {
+                $msgValidacaoQtdLogra = "O campo 'Endereço' do destinatário extrapolou os 50 caracteres aceitos pelos Correios, o que pode implicar em insucesso na entrega do objeto postal. Dessa forma, revise o campo 'Endereço' do destinatário para que tenha até 50 caracteres antes de fazer uma nova solicitação de expedição";
+                if($bolEntrada){
+                    return $msgValidacaoQtdLogra;
+                } else {
+                    return "<item><flag>false</flag><mensagem>" . $msgValidacaoQtdLogra . "</mensagem></item>";
+                }
+            }
+
             // retorna o nome da UF
             $uf = $contatoDTO->getNumIdUf();
             $objUFDTO = new UfDTO();
