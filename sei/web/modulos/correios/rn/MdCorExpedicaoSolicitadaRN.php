@@ -78,6 +78,16 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
         }
     }
 
+    private function validarTamanhoEnderecoDest($arrObjContatoDTO , $objInfraException)
+    {
+        $msgValid = "O campo 'Endereço' do destinatário extrapolou os 50 caracteres aceitos pelos Correios, o que pode implicar em insucesso na entrega do objeto postal. Dessa forma, revise o campo 'Endereço' do destinatário para que tenha até 50 caracteres antes de fazer uma nova solicitação de expedição";
+        if ( $arrObjContatoDTO->getStrSinEnderecoAssociado() == 'S' ) {
+            if ( strlen( $arrObjContatoDTO->getStrEnderecoContatoAssociado() ) > 50 ) $objInfraException->adicionarValidacao($msgValid);
+        } else {
+            if ( strlen( $arrObjContatoDTO->getStrEndereco() ) > 50 )  $objInfraException->adicionarValidacao($msgValid);
+        }
+    }
+
     private function validarNumIdUsuarioExpAutorizador(MdCorExpedicaoSolicitadaDTO $objMdCorExpedicaoSolicitadaDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getNumIdUsuarioExpAutorizador())) {
@@ -117,20 +127,26 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             $this->validarDthDataSolicitacao($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
             $this->validarNumIdUsuarioSolicitante($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
 
-            //@todo validar conteudos dos arrays de protocolo anexo e formatos
-
-            $objInfraException->lancarValidacoes();
-
-            $objMdCorExpedicaoSolicitadaBD = new MdCorExpedicaoSolicitadaBD($this->getObjInfraIBanco());
-            $ret = $objMdCorExpedicaoSolicitadaBD->cadastrar($objMdCorExpedicaoSolicitadaDTO);
-
-            //snap contato
+            // Validação do endereço do destinatario
+            // Dados do Contato
             $objContatoDTO = new ContatoDTO();
             $objContatoDTO->retTodos(true);
             $idDestinatario = $objMdCorExpedicaoSolicitadaDTO->getNumIdContatoDestinatario();
             $objContatoDTO->setNumIdContato($objMdCorExpedicaoSolicitadaDTO->getNumIdContatoDestinatario());
             $objContatoRN = new ContatoRN();
             $arrObjContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
+
+            if (!is_null($arrObjContatoDTO)) {
+                $this->validarTamanhoEnderecoDest($arrObjContatoDTO,$objInfraException);
+            }
+            // fim Validação do endereço do destinatario
+
+            //@todo validar conteudos dos arrays de protocolo anexo e formatos
+
+            $objInfraException->lancarValidacoes();
+
+            $objMdCorExpedicaoSolicitadaBD = new MdCorExpedicaoSolicitadaBD($this->getObjInfraIBanco());
+            $ret = $objMdCorExpedicaoSolicitadaBD->cadastrar($objMdCorExpedicaoSolicitadaDTO);
 
             if (!is_null($arrObjContatoDTO)) {
                 $itemDTO = new MdCorContatoDTO();
@@ -157,8 +173,8 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
                     $itemDTO->setStrSiglaUf($arrObjContatoDTO->getStrSiglaUfContatoAssociado());
                 } else {
                     $itemDTO->setNumIdContatoAssociado($arrObjContatoDTO->getNumIdContatoAssociado());
-	                  $itemDTO->setStrNomeContatoAssociado($arrObjContatoDTO->getStrNomeContatoAssociado());
-	                  $itemDTO->setStrStaNaturezaContatoAssociado($arrObjContatoDTO->getStrStaNaturezaContatoAssociado());
+                    $itemDTO->setStrNomeContatoAssociado($arrObjContatoDTO->getStrNomeContatoAssociado());
+	                $itemDTO->setStrStaNaturezaContatoAssociado($arrObjContatoDTO->getStrStaNaturezaContatoAssociado());
                     $itemDTO->setStrEndereco($arrObjContatoDTO->getStrEndereco());
                     $itemDTO->setStrComplemento($arrObjContatoDTO->getStrComplemento());
                     $itemDTO->setStrBairro($arrObjContatoDTO->getStrBairro());
