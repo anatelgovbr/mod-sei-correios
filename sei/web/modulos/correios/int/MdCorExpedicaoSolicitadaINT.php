@@ -286,7 +286,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
      * @return string Sera retornado uma string ou uma mensagem de alerta
      * @throws InfraException Caso tenha um erro na chamada Soap ele ira dar a excecao.
      */
-    public static function validaContatoPreeenchido($idContato, $bolEntrada = false){
+    public static function validaContatoPreeenchido($idContato, $bolEntrada = false, $id_contrato = 0){
 
         try {
             if($bolEntrada) {
@@ -429,14 +429,10 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 InfraString::isBolVazia($cepOrgao)) {
                 $enderecoOrgaoIncompleto = true;
             } else {
-
-                if($bolEntrada){
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cepOrgao, 'O CEP do cadastro do órgão desta Unidade é inválido.<br>Faça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.');
-                    if ($str_msg_validacaoCorreios != '') {
-                        return $str_msg_validacaoCorreios;
-                    }
-                } else {
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cepOrgao, "O CEP do cadastro do órgão desta Unidade é inválido.\nFaça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.");
+                    if(!$bolEntrada){
+                        
+                        $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cepOrgao, "O CEP do cadastro do órgão desta Unidade é inválido.\nFaça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.", null, $id_contrato);
+                        return "<itens><flag>false</flag><mensagem>$str_msg_validacaoCorreios</mensagem></itens>";
                     if ($str_msg_validacaoCorreios != '') {
                         return "<itens><flag>false</flag><mensagem>" . $str_msg_validacaoCorreios . "</mensagem></itens>";
                     }
@@ -483,22 +479,18 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                     return "<itens><flag>false</flag><mensagem>" . $str_msg_validacao . "</mensagem></itens>";
                 }
             } else {
-                if($bolEntrada){
-                    $arrOpt = ['ufDest' => $objUFDTO->getStrSigla(),'cidadeDest' => $objCidadeDTO->getStrNome()];
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cep, "O CEP do Destinatário é inválido (não encontrado na base dos Correios).<br>Altere o Contato do Destinatário para indicar um CEP válido.",$arrOpt);
-                    if ($str_msg_validacaoCorreios != '') {
-                        return $str_msg_validacaoCorreios;
-                    }
-                } else {
+                if(!$bolEntrada){
+                    
                     if (!preg_match('/^[0-9]{5,5}([-]?[0-9]{3,3})$/', $contatoDTO->getStrCep()) && $contatoDTO->getNumIdPais() == 76) {
                         $str_msg_validacaoCep = "O CEP do Destinatário está com formato formato inválido.\nAltere o Contato do Destinatário para indicar o CEP no formato válido: XXXXX-YYY.";
                         return "<item><flag>false</flag><mensagem>" . $str_msg_validacaoCep . "</mensagem></item>";
                     }
-                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cep, "O CEP do Destinatário é inválido, pois não existe na base de dados de CEPs dos Correios.\nAltere o Contato do Destinatário para indicar um CEP válido.");
+                    $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cep, "O CEP do Destinatário é inválido, pois não existe na base de dados de CEPs dos Correios.\nAltere o Contato do Destinatário para indicar um CEP válido.", null, $id_contrato);
                     if ($str_msg_validacaoCorreios != '') {
                         return "<itens><flag>false</flag><mensagem>" . $str_msg_validacaoCorreios . "</mensagem></itens>";
                     }
                 }
+                    
                 if ($enderecoOrgaoIncompleto) {
 
                     if($bolEntrada){
@@ -546,51 +538,52 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
         }
     }
 
-    public static function validarCepBaseCorreios($cep, $msgErro=null, $opt=null)
+    public static function validarCepBaseCorreios($cep, $msgErro=null, $opt=null, $id_contrato)
     {
         try {
 	        $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 
-	        $objMdCorIntegCEP = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CEP);
+	        $objMdCorIntegCEP = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CEP, $id_contrato);
+            
 	        if ( is_array( $objMdCorIntegCEP ) && isset( $objMdCorIntegCEP['suc'] ) && $objMdCorIntegCEP['suc'] === false )
 	            return 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_CEP .' não existe ou está inativa.';
-
-	        $arrParametro = [
-		        'endpoint'  => $objMdCorIntegCEP->getStrUrlOperacao(),
+            
+            $arrParametro = [
+                'endpoint'  => $objMdCorIntegCEP->getStrUrlOperacao(),
 		        'token'     => $objMdCorIntegCEP->getStrToken(),
 		        'expiraEm'  => $objMdCorIntegCEP->getDthDataExpiraToken(),
 	        ];
-
-            $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegCEP);
-
+            
+            $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegCEP, $id_contrato);
+            
             // recupera algum erro sobre a validacao de token expirado
             if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false )
                 return "Falha na Integração: ". MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN . ".\n". $ret['msg'];
-
-	        $objMdCorWsCEP = new MdCorApiRestRN($arrParametro);
-
+            
+            $objMdCorWsCEP = new MdCorApiRestRN($arrParametro);
+            
 	        $ret = $objMdCorWsCEP->consultarCEP($cep);
-
+            
             // recupera algum erro sobre o retorno do consultar CEP
             if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
                 return "Falha na Integração: ". MdCorAdmIntegracaoRN::$STR_CEP . ".\n". $ret['msg'];
             }
-
+            
             //validacoes de dados do Endereço
 	        if ( !empty( $opt ) ) {
-	            if ( isset($opt['ufDest'] ) ) {
+                if ( isset($opt['ufDest'] ) ) {
 	                if ( $opt['ufDest'] != $ret['uf'] )
                         return "Não foi possível iniciar ou alterar a Solicitação de Expedição, antes é necessário revisar o cadastro do Contato definido como Destinatário, pois a UF dele, \"{$opt['ufDest']}\", não está relacionada ao CEP " . self::criarMascara($cep,'#####-###');
                 }
 
 	            if ( isset($opt['cidadeDest'] ) ) {
-	                $cidadeREST = isset($ret['localidadeSuperior']) ? utf8_decode($ret['localidadeSuperior']) : utf8_decode($ret['localidade']);
+                    $cidadeREST = isset($ret['localidadeSuperior']) ? utf8_decode($ret['localidadeSuperior']) : utf8_decode($ret['localidade']);
 	                if ( strcasecmp( InfraString::excluirAcentos($opt['cidadeDest']) , InfraString::excluirAcentos( $cidadeREST ) ) != 0 )
                         return "Não foi possível iniciar ou alterar a Solicitação de Expedição, antes é necessário revisar o cadastro do Contato definido como Destinatário, pois a Cidade dele, \"{$opt['cidadeDest']}\", não está relacionada ao CEP " . self::criarMascara($cep,'#####-###');
                 }
             }
 
-	        return '';
+            return "<item><flag>true</flag><mensagem>Sucesso na verificação</mensagem></item>";
 
         } catch (Exception $e) {
             return $e->getMessage();

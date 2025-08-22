@@ -32,6 +32,7 @@ try {
     $objExpSolicDTO->retNumIdMdCorExpedicaoSolicitada();
     $objExpSolicDTO->retStrTipoRotuloImpressaoObjeto();
     $objExpSolicDTO->retStrIdPrePostagem();
+    $objExpSolicDTO->retDblIdMdCorContrato();
     $objExpSolicDTO->retStrCodigoRastreamento();
     $objExpSolicDTO->retNumIdMdCorServicoPostal();
     $objExpSolicDTO->setNumIdMdCorPlp($_GET['id_md_cor_plp']);
@@ -48,54 +49,56 @@ try {
     if ( count($arrObjMdCorExpedicaoSolicitadaDTO) == 0 )
         throw new InfraException('Não possui Expedição Solicitada.');
 
-    // retorna dados da integração Emitir Rotulo
-    $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+    foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) {
+        // retorna dados da integração Emitir Rotulo
+        $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 
-    $objMdCorIntegEmitirRotulo = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$EMITIR_ROTULO);
-    if ( is_null( $objMdCorIntegEmitirRotulo ) )
-        throw new InfraException('Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_EMITIR_ROTULO .' não existe ou está inativo.');
+        $objMdCorIntegEmitirRotulo = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$EMITIR_ROTULO, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
+        if ( is_null( $objMdCorIntegEmitirRotulo ) )
+            throw new InfraException('Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_EMITIR_ROTULO .' não existe ou está inativo.');
 
-    $arrParametroRest = [
-        'endpoint' => $objMdCorIntegEmitirRotulo->getStrUrlOperacao(),
-        'token'    => $objMdCorIntegEmitirRotulo->getStrToken(),
-        'expiraEm' => $objMdCorIntegEmitirRotulo->getDthDataExpiraToken(),
-    ];
+        $arrParametroRest = [
+            'endpoint' => $objMdCorIntegEmitirRotulo->getStrUrlOperacao(),
+            'token'    => $objMdCorIntegEmitirRotulo->getStrToken(),
+            'expiraEm' => $objMdCorIntegEmitirRotulo->getDthDataExpiraToken(),
+        ];
 
-    $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegEmitirRotulo);
+        $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegEmitirRotulo, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
 
-    if ( is_array( $ret ) )
-        throw new InfraException('Falha na Integração: '. MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN .'.');
+        if ( is_array( $ret ) )
+            throw new InfraException('Falha na Integração: '. MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN .'.');
 
-    // instancia class ApiRest com os parametros necessarios para uso da API que emiti rotulo
-    $objMdCorApiEmitirRotulo = new MdCorApiRestRN($arrParametroRest);
+        // instancia class ApiRest com os parametros necessarios para uso da API que emiti rotulo
+        $objMdCorApiEmitirRotulo = new MdCorApiRestRN($arrParametroRest);
 
-    // retorna info da integracao Download Rotulo
-    $objMdCorIntegDownRotulo = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$DOWN_ROTULO);
+        // retorna info da integracao Download Rotulo
+        $objMdCorIntegDownRotulo = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$DOWN_ROTULO, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
 
-    $arrParametroRest['endpoint'] = $objMdCorIntegDownRotulo->getStrUrlOperacao();
+        $arrParametroRest['endpoint'] = $objMdCorIntegDownRotulo->getStrUrlOperacao();
 
-    // instancia class ApiRest com os parametros necessarios para uso da API que faz o download do rotulo
-    $objMdCorApiDownRotulo = new MdCorApiRestRN($arrParametroRest);
+        // instancia class ApiRest com os parametros necessarios para uso da API que faz o download do rotulo
+        $objMdCorApiDownRotulo = new MdCorApiRestRN($arrParametroRest);
+
+        //busca o tipo de servico postal cadastrado
+        $idServicoPostal = $objMdCorExpedicaoSolicitadaDTO->getNumIdMdCorServicoPostal();
+        $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
+        $objMdCorServicoPostalDTO->retStrCodigoWsCorreios();
+        $objMdCorServicoPostalDTO->retStrNome();
+        $objMdCorServicoPostalDTO->setNumIdMdCorServicoPostal($idServicoPostal);
+
+        $objMdCorServicoPostalDTO = ( new MdCorServicoPostalRN() )->consultar($objMdCorServicoPostalDTO); 
+    }
 
     // gera um array com os ids das PPN
     $arrIdsPPN = InfraArray::converterArrInfraDTO($arrObjMdCorExpedicaoSolicitadaDTO,'IdPrePostagem');
 
-    //busca o tipo de servico postal cadastrado
-    $idServicoPostal = $arrObjMdCorExpedicaoSolicitadaDTO[0]->getNumIdMdCorServicoPostal();
-    $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
-    $objMdCorServicoPostalDTO->retStrCodigoWsCorreios();
-    $objMdCorServicoPostalDTO->retStrNome();
-    $objMdCorServicoPostalDTO->setNumIdMdCorServicoPostal($idServicoPostal);
-
-    $objMdCorServicoPostalDTO = ( new MdCorServicoPostalRN() )->consultar($objMdCorServicoPostalDTO);
-
     $strLayoutImpressao = $_POST['hdnSelTipoLayout'];
 
     /*
-     * Formulario onde salva o Tipo de Embalagem, os dados estão assim: "C = completo e R = resumido"
-     * Tipos de Rotuto: [P - Padrao , R - Reduzido]
-     * Formato Rotulo:  [ET - Etiqueta , EV - Envelope]
-     */
+    * Formulario onde salva o Tipo de Embalagem, os dados estão assim: "C = completo e R = resumido"
+    * Tipos de Rotuto: [P - Padrao , R - Reduzido]
+    * Formato Rotulo:  [ET - Etiqueta , EV - Envelope]
+    */
     $tpRotulo = $arrObjMdCorExpedicaoSolicitadaDTO[0]->getStrTipoRotuloImpressaoObjeto() == MdCorObjetoRN::$ROTULO_COMPLETO ? 'P' : 'R';
 
     $arrParams = [
@@ -126,7 +129,7 @@ try {
     //header("Content-Disposition: attachment;filename=ImpressaoEnvelope.pdf");
     header("Content-Disposition: inline;");
 
-    echo file_get_contents('data://application/pdf;base64,'. $rotuloBase64);
+    echo file_get_contents('data://application/pdf;base64,'. $rotuloBase64);    
 
 } catch (InfraException $e) {
 

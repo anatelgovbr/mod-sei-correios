@@ -21,6 +21,9 @@ try {
 	// Instancia classes RN e DTO
 	$objMdCorAdmIntegracaoDTO = new MdCorAdmIntegracaoDTO();
 	$objMdCorAdmIntegracaoRN  = new MdCorAdmIntegracaoRN();
+	$objMdCorContratoINT  = new MdCorContratoINT();
+	$objMdCorContratoDTO  = new MdCorContratoDTO();
+  	$objMdCorAdmIntegracaoTokensRN = new MdCorAdmIntegracaoTokensRN();
 
 
 	// Variaveis globais
@@ -29,6 +32,7 @@ try {
 	$arrDados         = [];
 	$tpFuncionalidade = null;
 	$arrFuncionalidadesCadastradas = null;
+	$arrContratosCadastrados = null;
 
 	$arrComandos = array();
 
@@ -90,6 +94,11 @@ try {
 				$objMdCorAdmIntegracaoDTO->setStrToken($_POST['txtToken'] ?? null);
 			}
 
+			$arrFuncionalidadesCadastradas = $objMdCorAdmIntegracaoRN->buscaFuncionalidadesCadastradas();
+
+			$arrDadosTokens    = $objMdCorAdmIntegracaoTokensRN->montarArrTokens();
+        	$strTbTokens       = PaginaSEI::getInstance()->gerarItensTabelaDinamica( $arrDadosTokens['itensTabela'] );
+			$strIdsItensTokens = $arrDadosTokens['strIdsItensTokens'];
 			$arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\''.SessaoSEI::getInstance()->assinarLink('controlador.php?acao='.PaginaSEI::getInstance()->getAcaoRetorno().'&acao_origem='.$_GET['acao'].PaginaSEI::getInstance()->montarAncora($objMdCorAdmIntegracaoDTO->getNumIdMdCorAdmIntegracao())).'\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
 			if (isset($_POST['sbmAlterarMdCorAdmIntegracao'])) {
@@ -114,6 +123,10 @@ try {
 			$objMdCorAdmIntegracaoDTO->retTodos();
 			$objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 			$objMdCorAdmIntegracaoDTO = $objMdCorAdmIntegracaoRN->consultar($objMdCorAdmIntegracaoDTO);
+
+			$arrDadosTokens    = $objMdCorAdmIntegracaoTokensRN->montarArrTokens();
+        	$strTbTokens       = PaginaSEI::getInstance()->gerarItensTabelaDinamica( $arrDadosTokens['itensTabela'] );
+			$strIdsItensTokens = $arrDadosTokens['strIdsItensTokens'];
 
 			if ($objMdCorAdmIntegracaoDTO===null){
 				throw new InfraException("Registro não encontrado.");
@@ -158,14 +171,15 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 				<label id="lblFuncionalidade" for="Funcionalidade"  class="infraLabelObrigatorio">Funcionalidade:</label>
 				<img id="imgDefServico" align="top" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                      class="infraImg" name="ajuda"
-                    <?= PaginaSEI::montarTitleTooltip('Texto a Definir!','Ajuda') ?> />
+                    <?= PaginaSEI::montarTitleTooltip('Selecione a funcionalidade que deseja mapear. \nSão listadas somente as Funcionalidades ainda não mapeadas.','Ajuda') ?> />
 
 				<select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-control"
 				        tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
 					<?= MdCorAdmIntegracaoINT::montarSelectFuncionalidade(
 						$objMdCorAdmIntegracaoDTO->getNumFuncionalidade(),
 						false,
-						$arrFuncionalidadesCadastradas
+						$arrFuncionalidadesCadastradas,
+						$objMdCorAdmIntegracaoDTO->getNumFuncionalidade() ?? null
 					)
 					?>
 				</select>
@@ -187,7 +201,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 			<div class="col-sm-12 col-md-9">
 				<label id="lblUrlServico" for="txtUrlServico" class="infraLabelObrigatorio">URL do Endpoint da Operação:</label>
 				<img id="imgDefServico" align="top" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg" class="infraImg"
-				     name="ajuda" <?= PaginaSEI::montarTitleTooltip('Informar URL que consta o ENDPOINT do serviço a ser solicitado.','Ajuda') ?> />
+				     name="ajuda" <?= PaginaSEI::montarTitleTooltip('Insira a URL do serviço disponibilizado pelos Correios para Integração com a Funcionalidade mapeada.','Ajuda') ?> />
 				<div class="input-group">
 					<input type="text" id="txtUrlServico" name="txtUrlServico" class="infraText form-control"
 					       value="<?= PaginaSEI::tratarHTML($objMdCorAdmIntegracaoDTO->getStrUrlOperacao()) ?>"
@@ -199,6 +213,77 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 		</div>
 
 		<div class="row mb-2" id="divAutenticacao">
+			<div class="col-12">
+			<fieldset class="infraFieldset p-3">
+				<legend class="infraLegend">Autenticação para Obter Token Diário</legend>
+
+				<div class="row">
+					<div class="col-md-3">
+						<label id="lblContrato" for="Contrato"  class="infraLabelObrigatorio">Contrato:</label>
+						<img id="imgDefServico" align="top" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
+							class="infraImg" name="ajuda"
+							<?= PaginaSEI::montarTitleTooltip('Selecione o Contrato que deseja realizar a inserção dos dados de Autenticação para Obter Token Diário.','Ajuda') ?> />
+
+						<select id="selContrato" name="selContrato" class="infraSelect form-control"
+							tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+							<?= $objMdCorContratoINT::montarSelectId_NumeroContrato_MdCorContrato(
+								null, null, null
+							)
+							?>
+						</select>
+					</div>
+					<div class="col-md-3">
+						<label class="infraLabelOpcional">Usuário do Órgão no Fale Conosco Correios:</label>
+						<img id="imgDefServico" align="top" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg" class="infraImg"
+								name="ajuda" <?= PaginaSEI::montarTitleTooltip('Insira o Usuário do Órgão disponibilizado no Fale Conosco Correios.\nCaso não tenha essa informação, verifique com a Unidade responsável pelo Contrato junto aos Correios.','Ajuda') ?> />
+						<input type="text" class="infraText form-control input_header" id="txtUsuario" name="txtUsuario">
+					</div>
+
+					<div class="col-md-3">
+						<label class="infraLabelOpcional">Senha:</label>
+						<img id="imgDefServico" align="top" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg" class="infraImg"
+								name="ajuda" <?= PaginaSEI::montarTitleTooltip('Insira a Senha do Usuário do Órgão disponibilizado pelos Correios.\nCaso não tenha essa informação, verifique com a Unidade responsável pelo Contrato junto aos Correios.','Ajuda') ?> />
+						<input type="text" class="infraText form-control input_header" id="txtSenha" name="txtSenha">
+					</div>
+
+					<div class="col-md-2">
+						<label class="infraLabelOpcional">Token Inicial:</label>
+						<img id="imgDefServico" align="top" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg" class="infraImg"
+								name="ajuda" <?= PaginaSEI::montarTitleTooltip('Insira o Token Inicial disponibilizado pelos Correios.\nCaso não tenha essa informação, verifique com a Unidade responsável pelo Contrato junto aos Correios.','Ajuda') ?> />
+						<input type="text" class="infraText form-control input_header" id="txtToken" name="txtToken" >
+					</div>
+
+					<div class="col-md-1" style="padding-top:2em">
+						<button type="button" class="infraButton btnFormulario" onclick="adicionarHeaderTable()" accesskey="a">
+							<span class="infraTeclaAtalho">A</span>dicionar
+						</button>
+					</div>
+				</div>
+
+				<div class="row">
+				<div class="col-12">
+					<table class="infraTable table" id="tblAutenticacao" summary="Autenticacao">
+					<caption class="infraCaption">&nbsp;</caption>
+					<thead>
+						<th style='display:none;'>#</th>
+                		<th style="display: none;">ID Contrato</th>
+						<th class="infraTh" style="text-align:left;">Contrato</th>
+						<th class="infraTh" style="text-align:left;">Usuário</th>
+						<th style='display:none;'>Senha Real</th>
+						<th style='display:none;'>Token inicial Real</th>
+						<th class="infraTh" style="text-align:left;">Senha</th>
+						<th class="infraTh" style="text-align:left;">Token inicial</th>
+						<th class="infraTh">Ações</th>
+					</thead>
+					<tbody></tbody>
+					</table>
+				</div>
+				</div>
+			</fieldset>
+			</div>
+  		</div>
+
+		<!--<div class="row mb-2" id="divAutenticacao">
 			<div class="col-12">
 				<fieldset class="infraFieldset p-3">
 					<legend class="infraLegend">Autenticação para Obter Token Diário</legend>
@@ -224,7 +309,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 					</div>
 				</fieldset>
 			</div>
-		</div>
+		</div>-->
 
         <input type="hidden" id="hdnIdMdCorAdmInteg" name="hdnIdMdCorAdmInteg" value="<?= $objMdCorAdmIntegracaoDTO->getNumIdMdCorAdmIntegracao() ?>">
         <input type="hidden" id="hdnTipoAcao" name="hdnTipoAcao" value="<?= $strTipoAcao ?>">
@@ -234,6 +319,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 		//PaginaSEI::getInstance()->montarAreaDebug();
 		PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
 		?>
+		
+		<input type="hidden" id="hdnTbTokens" name="hdnTbTokens" value="<?= $strTbTokens ?>">
+		<input type="hidden" id="hdnIdsItensHeader" name="hdnIdsItensHeader" value="<?= $strIdsItensTokens ?>">
 	</form>
 
 <?php

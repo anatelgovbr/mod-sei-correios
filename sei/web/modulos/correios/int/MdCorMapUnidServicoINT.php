@@ -17,8 +17,11 @@ class MdCorMapUnidServicoINT extends InfraINT {
   	$objMdCorMapUnidServicoDTO = new MdCorMapUnidServicoDTO();
     $objMdCorMapUnidServicoDTO->retNumIdMdCorMapUnidServico();
     $objMdCorMapUnidServicoDTO->retNumIdMdCorServicoPostal();
+    $objMdCorMapUnidServicoDTO->retStrIdMdCorContrato();
     $objMdCorMapUnidServicoDTO->retStrNomeServico();
     $objMdCorMapUnidServicoDTO->retStrDescricaoServico();
+    $objMdCorMapUnidServicoDTO->retStrNumeroContrato();
+    $objMdCorMapUnidServicoDTO->retStrNumeroContratoCorreio();
     if(!$consultar){
       $objMdCorMapUnidServicoDTO->setStrSinAtivoContrato('S');
     }
@@ -40,9 +43,15 @@ class MdCorMapUnidServicoINT extends InfraINT {
     $objMdCorMapUnidServicoRN = new MdCorMapUnidServicoRN();
     $arrObjMdCorMapUnidServicoDTO = $objMdCorMapUnidServicoRN->listar($objMdCorMapUnidServicoDTO);
 
+    foreach ($arrObjMdCorMapUnidServicoDTO as $objMdCorMapUnidServicoDTO) {
+      $objMdCorMapUnidServicoDTO->setStrDescricaoServico(
+        $objMdCorMapUnidServicoDTO->getStrDescricaoServico() . ' (Contrato nº ' . $objMdCorMapUnidServicoDTO->getStrNumeroContrato() . ' - ' . $objMdCorMapUnidServicoDTO->getStrNumeroContratoCorreio() . ')'
+      );
+    }
+
     if ( empty($arrObjMdCorMapUnidServicoDTO) ) return null;
 
-    return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorMapUnidServicoDTO, 'IdMdCorServicoPostal', 'DescricaoServico');
+    return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorMapUnidServicoDTO, 'IdMdCorServicoPostal', 'DescricaoServico', false, ["a"=>'IdMdCorContrato']);
   }
 
 }

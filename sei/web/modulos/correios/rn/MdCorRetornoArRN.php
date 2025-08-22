@@ -330,9 +330,13 @@ class MdCorRetornoArRN extends InfraRN
       $im = new Imagick();
       $im->setResolution(380, 380);
       $im->readimage($url . '/' . $file . '[0]');
+      $im->setBackgroundColor('white');
+      $im = $im->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+      $im->setImageColorspace(Imagick::COLORSPACE_RGB);
       $im->setImageFormat("jpg");
       $im->setImageCompressionQuality(100);
       $im->writeImage($noArquivoJpg);
+      $im->clear();
       $im->destroy();
 
       // realiza leitura de qrcode ou barcode

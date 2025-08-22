@@ -700,23 +700,36 @@
         }
     }
 
-    function validarDestinatario(){
+    function validarDestinatario(mostrarBootstrap = false){
         var retorno = true;
         var id_contato = $('#selContato').val();
+        var id_contrato_servico_postal = $('#selServicoPostal option:selected').attr('idmdcorcontrato');
         $.ajax({
             url: '<?= $strLinkValidaoDestinatarioExpedicaoSolicitada ?>',
             type: 'POST',
-            data: {'id_contato': id_contato},
+            data: {'id_contato': id_contato, 'id_contrato_servico_postal': id_contrato_servico_postal},
             async: false,
             // contentType  : "application/json",
             success: function (r) {
                 var flag = $(r).find('flag').text();
                 if(flag == 'false'){
-                    alert($(r).find('mensagem').text());
+                    var erro = $(r).find('mensagem').text();
+                    if (!mostrarBootstrap) {
+                        alert(erro);
+                    }
                     retorno = false;
                 } else if($(r).find('erros').length > 0){
-                    alert($(r).find('erro').attr('descricao'));
+                    var erro = $(r).find('erro').attr('descricao');
+                    if (!mostrarBootstrap) {
+                        alert(erro);
+                    }
                     retorno = false;
+                }
+
+                if (mostrarBootstrap && !retorno) {
+                    $("#btnSolicitarExpedicao").hide();
+                    $(".alert-erro-validacao-dados").show();
+                    $(".alert-erro-validacao-dados").find('#msg').text(erro);
                 }
             },
             error: function (e) {
@@ -727,6 +740,12 @@
                 console.error('Erro ao processar o XML do SEI: ' + e.responseText);
             }
         });
+
+        if(retorno) {
+            $("#btnSolicitarExpedicao").show();
+            $(".alert-erro-validacao-dados").hide();
+        }
+
         return retorno
     }
 

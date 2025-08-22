@@ -24,7 +24,6 @@ try {
 
     $strDesabilitar = '';
     $strProtocoloFormatado = '';
-    $hdnListaContratoServicosIndicados = '';
     $strIdMdCorContrato = '';
 
     $arrComandos = array();
@@ -33,7 +32,7 @@ try {
 
     switch ($_GET['acao']) {
         case 'md_cor_contrato_cadastrar':
-            $strTitulo = 'Contrato e Serviços Postais';
+            $strTitulo = 'Contrato';
             $arrComandos[] = '<button type="submit" accesskey="S" name="sbmCadastrarMdCorContrato" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
             $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href=\'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao']) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
@@ -59,7 +58,7 @@ try {
             break;
 
         case 'md_cor_contrato_alterar':
-            $strTitulo = 'Alterar Contrato e Serviço Postal';
+            $strTitulo = 'Alterar Contrato';
             $arrComandos[] = '<button type="submit" accesskey="S" name="sbmAlterarMdCorContrato" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
             $strDesabilitar = 'disabled="disabled"';
 
@@ -83,7 +82,7 @@ try {
             break;
 
         case 'md_cor_contrato_consultar':
-            $strTitulo = 'Consultar Contrato e Serviço Postal';
+            $strTitulo = 'Consultar Contrato';
             $arrComandos[] = '<button type="button" accesskey="C" name="btnFechar" value="Fechar" onclick="location.href=\'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_GET['id_md_cor_contrato'])) . '\';" class="infraButton">Fe<span class="infraTeclaAtalho">c</span>har</button>';
             $objMdCorContratoDTO->setNumIdMdCorContrato($_GET['id_md_cor_contrato']);
             $objMdCorContratoDTO->setBolExclusaoLogica(false);
@@ -146,89 +145,6 @@ try {
                 $objProtocoloDTO = $objMdCorContratoRN->pesquisarProtocoloFormatado($objProtocoloDTO);
                 $strTipoProtocolo = $objProtocoloDTO->getStrNomeTipoProcedimentoProcedimento();
             }
-
-            $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
-            $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
-            $objMdCorServicoPostalDTO->retTodos(true);
-            $objMdCorServicoPostalDTO->setNumIdMdCorContrato($_GET['id_md_cor_contrato']);
-            $objMdCorServicoPostalDTO->setBolExclusaoLogica(array());
-            $arrObjMdCorServicoPostalDTO = $objMdCorServicoPostalRN->listar($objMdCorServicoPostalDTO);
-
-            $arrItensTabelaContratoServicos = array();
-
-            $sinAtivo = array();
-            foreach ($arrObjMdCorServicoPostalDTO as $i => $objMdCorServicoPostalDTO) {
-                $mdCorTipoCorrespondencia = MdCorTipoCorrespondencINT::montarSelectIdMdCorTipoCorrespondenc('null', '', $objMdCorServicoPostalDTO->getNumIdMdCorTipoCorrespondencia() . '|' . $objMdCorServicoPostalDTO->getStrSinAr());
-
-                $ar = $objMdCorServicoPostalDTO->getStrExpedicaoAvisoRecebimento();
-                $sinAtivo[$i] = $objMdCorServicoPostalDTO->getStrSinAtivo();
-
-                $cobrar = $objMdCorServicoPostalDTO->getStrSinServicoCobrar();
-                $anexarMidia = $objMdCorServicoPostalDTO->getStrSinAnexarMidia();
-                $checked = ' checked="checked"';
-                $readonly = '';
-                if (($_GET['acao'] == 'md_cor_contrato_consultar')) {
-                    $readonly = ' disabled="disabled" readonly onClick="return false;"';
-                }
-                $checkedSim = ($ar == 'S') ? $checked : '';
-                $checkedNao = ($ar == 'N' && $objMdCorServicoPostalDTO->getStrSinAr() != 'N') ? $checked : '';
-                $checkedCobrar = ($cobrar == 'S') ? $checked : '';
-                $checkedAnexarMidia = ($anexarMidia == 'S') ? $checked : '';
-                $disabledSinAr = $objMdCorServicoPostalDTO->getStrSinAr() == 'N' ? 'disabled="disabled"' : null;
-
-                $strRd = '<div id="divRdoAr" class="infraDivRadio" align="center" style="width: 100%">';
-                $strRd .= '    <div class="infraRadioDiv ">';
-                $strRd .= '        <input type="radio" name="ar[' . $i . ']" id="arS[' . $i . ']"';
-                $strRd .= '               value="S"';
-                $strRd .= '               class="infraRadioInput" ' . $checkedSim . $readonly . $disabledSinAr . '>';
-                $strRd .= '            <label class="infraRadioLabel" for="arS[' . $i . ']"></label>';
-                $strRd .= '    </div>';
-                $strRd .= '    <label id="lblArS[' . $i . ']" for="arS[' . $i . ']" class="infraLabelRadio" tabindex="507">Sim</label>';
-                $strRd .= '    <div class="infraRadioDiv ">';
-                $strRd .= '        <input type="radio" name="ar[' . $i . ']" id="arN[' . $i . ']"';
-                $strRd .= '               value="N"';
-                $strRd .= '               class="infraRadioInput" ' . $checkedNao . $readonly . $disabledSinAr . '>';
-                $strRd .= '            <label class="infraRadioLabel" for="arN[' . $i . ']"></label>';
-                $strRd .= '    </div>';
-                $strRd .= '    <label id="lblArN[' . $i . ']" for="arN[' . $i . ']" class="infraLabelRadio" tabindex="507">Não</label>';
-                $strRd .= '</div>';
-
-                $strChk = '<div id="divRdoAr" class="infraDivCheckbox">';
-                $strChk .= '    <div class="infraCheckboxDiv">';
-                $strChk .= '        <input type="checkbox" name="cobrar[' . $i . ']" id="cobrar[' . $i . ']"';
-                $strChk .= '               value="S"';
-                $strChk .= '               class="infraCheckboxInput" ' . $checkedCobrar . $readonly . '>';
-                $strChk .= '            <label class="infraCheckboxLabel " for="cobrar[' . $i . ']"></label>';
-                $strChk .= '    </div>';
-                $strChk .= '</div>';
-
-                $strAnexarMidia = '<div class="infraDivCheckbox" style="text-align: center"> <div class="infraCheckboxDiv"> <input type="checkbox" class="infraCheckboxInput" value="S" name="anexarMidia['.$i.']" id="anexarMidia['.$i.']" '. $checkedAnexarMidia . $readonly .'> <label class="infraCheckboxLabel" for="anexarMidia['.$i.']"></label> </div> </div>';
-
-                $itensTabelaContratoServicos = array(
-                    trim($objMdCorServicoPostalDTO->getStrCodigoWsCorreios()),
-                    $objMdCorServicoPostalDTO->getStrSinAtivo(),
-                    '',
-                    $objMdCorServicoPostalDTO->getStrNome(),
-                    /*5*/'<div style="width:100%;"><select id="slTipo_'. $i .'" class="infraSelect sl_tipo form-control" name="sl_tipo[' . $i . ']" onchange="verificaAr(this)">' . json_encode($mdCorTipoCorrespondencia) . '</select></div>',
-	                /*6*/$strRd,
-	                /*7*/$strChk,
-	                $strAnexarMidia,
-                    '<div><input type="text" id="idDesc_'. $i .'" class="input-desc form-control" style="width: 100%" name="descricao[' . $i . ']" value="' . PaginaSEI::tratarHTML($objMdCorServicoPostalDTO->getStrDescricao()) . '" ' . $readonly . '/> <input type="hidden" name="codigo[' . $i . ']" value="' . trim($objMdCorServicoPostalDTO->getStrCodigoWsCorreios()) . '"> <input type="hidden" name="nome[' . $i . ']" value="' . $objMdCorServicoPostalDTO->getStrNome() . '"></div>',
-                    ''
-                );
-
-                if ($_GET['acao'] == 'md_cor_contrato_consultar') {
-                    $itensTabelaContratoServicos[5] = ($objMdCorServicoPostalDTO->getStrExpedicaoAvisoRecebimento() == 'S') ? 'Sim' : 'Não';
-                    $itensTabelaContratoServicos[6] = ($cobrar == 'S') ? 'Sim' : 'Não';
-                    $itensTabelaContratoServicos[7] = ($anexarMidia == 'S') ? 'Sim' : 'Não';
-                    $itensTabelaContratoServicos[8] = $objMdCorServicoPostalDTO->getStrDescricao();
-                }
-
-                $arrItensTabelaContratoServicos[] = $itensTabelaContratoServicos;
-            }
-
-            $hdnListaContratoServicosIndicados = PaginaSEI::getInstance()->gerarItensTabelaDinamica($arrItensTabelaContratoServicos, false);
-
         }
     }
 
@@ -258,6 +174,9 @@ PaginaSEI::getInstance()->abrirAreaDados();
         ?>
 
         <div class="row mb-3 linha">
+            <input type="hidden" id="id_contrato" name="id_contrato" value="<?= $strIdMdCorContrato; ?>"/>
+            <input type="hidden" id="hdnIdMdCorContrato" name="hdnIdMdCorContrato" value="<?= $strIdMdCorContrato; ?>"/>
+            
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <fieldset id="fieldsetContratoOrgao" class="infraFieldset form-control" style="height: 100%">
                     <legend class="infraLegend">&nbsp;Dados do Contrato no Órgão&nbsp;</legend>
@@ -396,48 +315,69 @@ PaginaSEI::getInstance()->abrirAreaDados();
                             </select>
                         </div>
                     </div>
-                    <div class="row">
-                        <?php if ($_GET['acao'] == 'md_cor_contrato_cadastrar' || $_GET['acao'] == 'md_cor_contrato_alterar') { ?>
-                            <div class="col-sm-11 col-md-11 col-lg-10 col-xl-8 mt-2 mb-2">
-                                <button id="validar-url" onclick="buscarServicosPostais()" class="infraButton btn-outline-info"
-                                        type="button">Buscar Serviços Postais
-                                </button>
-                            </div>
-                        <?php } ?>
+                    <?php 
+                    $numServicosPostais = 0;
+                    $numTokens = 0;
+                    $qtdMapeamentos = 0;
 
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <input type="hidden" id="hdnIdMdCorContrato" name="hdnIdMdCorContrato" value="<?= $strIdMdCorContrato; ?>"/>
-                            
-                            <input type="hidden" name="hdnIdContratoServicosCadastrado" id="hdnIdContratoServicosCadastrado"
-                                    value=""/>
-                            <input type="hidden" name="hdnListaContratoServicosIndicados" id="hdnListaContratoServicosIndicados"
-                                    value=""/>
-                            <input type="hidden" name="hdnListaContratoServicosDesativados[]" id="hdnListaContratoServicosDesativados"
-                                   value=""/>
-                            <input type="hidden" name="hdnListaContratoServicosReativadas[]" id="hdnListaContratoServicosReativadas"
-                                    value=""/>
-                            <table id="tbContratoServicos" class="infraTable table w-100" align="left" summary="Lista de Serviços Postais">
-                                <thead>
-                                <tr>
-                                    <th class="infraTh" style="display: none;">Codigo Servico</th>
-                                    <th class="infraTh" style="display: none;">AR Hidden</th>
-                                    <th class="infraTh" style="display: none;">Descricao Hidden</th>
-                                    <th class="infraTh" width="18%" id="tdDescricaoServicoPostal">Serviço Postal</th>
-                                    <th class="infraTh" width="12%" align="center" id="tdCheckExpedidoAR">Tipo</th>
-                                    <th class="infraTh" width="16%" align="center" id="tdCheckExpedidoAR">Expedido com AR</th>
-                                    <th class="infraTh" width="10%" align="center" id="tdCheckCobrar">Serviço à Cobrar</th>
-                                    <th class="infraTh" width="10%" align="center" id="tdCheckAnexarMidia">Permite Anexar Mídia</th>
-                                    <th class="infraTh" width="22%" id="tdTxtDescricao">Descrição Amigável</th>                                    
-                                    <th class="infraTh" width="7%" align="center">Ações</th>                                    
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
+                    if ($_GET['acao'] == 'md_cor_contrato_alterar' || $_GET['acao'] == 'md_cor_contrato_consultar') {
+                        $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
+                        $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
+                        $objMdCorServicoPostalDTO->setNumIdMdCorContrato($idMdCorContrato);
+                        $objMdCorServicoPostalDTO->retTodos(false);
+                        $numServicosPostais = $objMdCorServicoPostalRN->contar($objMdCorServicoPostalDTO);
+
+                        $objMdCorAdmIntegracaoTokensDTO = new MdCorAdmIntegracaoTokensDTO();
+                        $objMdCorAdmIntegracaoTokensRN = new MdCorAdmIntegracaoTokensRN();
+                        $objMdCorAdmIntegracaoTokensDTO->setNumIdMdCorContrato($idMdCorContrato);
+                        $objMdCorAdmIntegracaoTokensDTO->retNumIdMdCorContrato();
+                        $numTokens = $objMdCorAdmIntegracaoTokensRN->contar($objMdCorAdmIntegracaoTokensDTO);
+
+                        $objMdCorMapUnidServicoDTO = new MdCorMapUnidServicoDTO();
+                        $objMdCorMapUnidServicoRN = new MdCorMapUnidServicoRN();
+                        $objMdCorMapUnidServicoDTO->setStrIdMdCorContrato($idMdCorContrato);
+                        $objMdCorMapUnidServicoDTO->retStrIdMdCorContrato();
+                        $qtdMapeamentos = $objMdCorMapUnidServicoRN->contar($objMdCorMapUnidServicoDTO);
+                    }
+                    
+                    if ($numServicosPostais == 0 || $numTokens == 0 || $qtdMapeamentos == 0) {
+                    ?>
+                        <br>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-warning" role="alert">
+                                    <strong>Atenção!</strong> Após a inclusão deste Contrato, é necessário seguir os seguintes passos:
+                                    <br>
+                                    <?php 
+                                    if($numTokens == 0) {
+                                    ?>
+                                        <br>
+                                        - Inclusão do Token no Mapeamento da Integração em Administração > Correios > Mapeamento das Integrações > Correios::Gerar Token
+                                    <?php 
+                                    }
+                                    ?>
+                                    <?php 
+                                    if($numServicosPostais == 0) {
+                                    ?>
+                                        <br>
+                                        - Configurar Serviços Postais em Administração > Correios > Botão de Serviços Postais no Contrato inserido
+                                    <?php 
+                                    }
+                                    ?>
+                                    <?php 
+                                    if($qtdMapeamentos == 0) {
+                                    ?>
+                                        <br>
+                                        - Configurar Mapeamento das Unidades Solicitantes com os Serviços Postais em Administração > Correios > Mapeamento Unidades e Serviços Postais
+                                    <?php 
+                                    }
+                                    ?>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    <?php 
+                    }
+                    ?>
                 </fieldset>
             </div>
         </div>

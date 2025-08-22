@@ -30,6 +30,7 @@ switch ($_GET['acao']) {
 $objExpSolicDTO = new MdCorExpedicaoSolicitadaDTO();
 
 $objExpSolicDTO->retStrIdPrePostagem();
+$objExpSolicDTO->retDblIdMdCorContrato();
 $objExpSolicDTO->setNumIdMdCorPlp($_GET['id_md_cor_plp']);
 $objExpSolicDTO->setStrSinNecessitaAr('S');
 //$objExpSolicDTO->setDistinct(true);
@@ -47,22 +48,24 @@ if ( count($arrObjMdCorExpedicaoSolicitadaDTO) == 0 ) {
     $msgErro .= "Nenhuma solicitação de expedição possui AR.<br>";
 }
 
+
 $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) {
+    $objMdCorIntegAR = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$AVISO_RECEB, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
 
-$objMdCorIntegAR = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$AVISO_RECEB);
+    if ( is_null( $objMdCorIntegAR ) )
+        $msgErro .= "Mapeamento de Integração ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB ." não existe ou está inativo.<br>";
 
-if ( is_null( $objMdCorIntegAR ) )
-    $msgErro .= "Mapeamento de Integração ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB ." não existe ou está inativo.<br>";
+    $arrParametroRest = [
+        'endpoint' => $objMdCorIntegAR->getStrUrlOperacao(),
+        'token'    => $objMdCorIntegAR->getStrToken(),
+        'expiraEm' => $objMdCorIntegAR->getDthDataExpiraToken(),
+    ];
 
-$arrParametroRest = [
-    'endpoint' => $objMdCorIntegAR->getStrUrlOperacao(),
-    'token'    => $objMdCorIntegAR->getStrToken(),
-    'expiraEm' => $objMdCorIntegAR->getDthDataExpiraToken(),
-];
+    $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegAR, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
 
-$ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegAR);
-
-if ( is_array( $ret ) )	$msgErro .= "Falha na Integração: ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB . ".<br>";
+    if ( is_array( $ret ) )	$msgErro .= "Falha na Integração: ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB . ".<br>";
+}
 
 // instancia class ApiRest com os dados necessarios para uso da API que gera Aviso Recebimento
 $objMdCorApiAR = new MdCorApiRestRN( $arrParametroRest );

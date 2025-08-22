@@ -110,7 +110,8 @@
       //Get Dados - Contrato Correio
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_DBL, 'IdMdCorContrato', 'mdsp.id_md_cor_contrato', 'md_cor_servico_postal mdsp');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_NUM, 'NumeroCnpj', 'contr.numero_cnpj', 'md_cor_contrato contr');
-      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NumeroContratoCorreio', 'contr.numero_contrato_correio', 'md_cor_contrato contr');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NumeroContrato', 'contr.numero_contrato', 'md_cor_contrato contr');
+      $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'NumeroContratoCorreio',  'contr.numero_contrato_correio', 'md_cor_contrato contr');
       $this->adicionarAtributoTabelaRelacionada(InfraDTO::$PREFIXO_STR, 'CartaoPostagem', 'contr.numero_cartao_postagem', 'md_cor_contrato contr');
 
       //Get Dados - PLP

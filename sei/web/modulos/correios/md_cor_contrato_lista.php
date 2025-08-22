@@ -219,7 +219,7 @@ try {
         }
         $strResultado .= '<th class="infraTh text-left" width="250px">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorContratoDTO, 'Número do Contrato no Órgão', 'NumeroContrato', $arrObjMdCorContratoDTO) . '</th>' . "\n";
         $strResultado .= '<th class="infraTh text-center">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorContratoDTO, 'Número do Contrato nos Correios', 'NumeroContratoCorreio', $arrObjMdCorContratoDTO) . '</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="160px">Ações</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="200px">Ações</th>' . "\n";
         $strResultado .= '</tr>' . "\n";
         $strCssTr = '';
         for ($i = 0; $i < $numRegistros; $i++) {
@@ -246,6 +246,19 @@ try {
 
             $objMdCorObjetoRN = new MdCorObjetoRN();
             $objMdCorObjetoDTO = $objMdCorObjetoRN->contar($objMdCorObjetoDTO);
+
+            $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
+            $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
+
+            $objMdCorServicoPostalDTO->setNumIdMdCorContrato($arrObjMdCorContratoDTO[$i]->getNumIdMdCorContrato());
+            $objMdCorServicoPostalDTO->retTodos(false);
+            $numServicosPostais = $objMdCorServicoPostalRN->contar($objMdCorServicoPostalDTO);
+
+            if ($numServicosPostais > 0) {
+                $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_servicos_postais_contrato_alterar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_contrato=' . $arrObjMdCorContratoDTO[$i]->getNumIdMdCorContrato()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/com_servicos_postais.svg?'.Icone::VERSAO.'" style="width: 24px; height: 24px" title="Serviços Postais" alt="Serviços Postais" class="infraImgModulo" /></a>&nbsp;';
+            } else {
+                $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_servicos_postais_contrato_alterar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_contrato=' . $arrObjMdCorContratoDTO[$i]->getNumIdMdCorContrato()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/sem_servicos_postais.svg?'.Icone::VERSAO.'" style="width: 24px; height: 24px" title="Serviços Postais (Não configurado)" alt="Serviços Postais (Não configurado)" class="infraImgModulo" /></a>&nbsp;';
+            }
 
             //if ($objMdCorObjetoDTO > 0) {
                 $strResultado .= '<a href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_objeto_listar&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_cor_contrato=' . $arrObjMdCorContratoDTO[$i]->getNumIdMdCorContrato()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/embalagem.svg?'.Icone::VERSAO.'" style="width: 24px; height: 24px" title="Tipos de Embalagem" alt="Tipos de Embalagem" class="infraImgModulo" /></a>&nbsp;';
@@ -302,6 +315,8 @@ PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
+
+PaginaSEI::getInstance()->montarMensagens();
 ?>
     <form id="frmMdCorContratoLista" method="post"
           action="<?= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao']) ?>">

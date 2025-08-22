@@ -8,13 +8,13 @@
         document.getElementById('frmPlpsGeradas').submit();
     }
 
-    function cancelarPLP(codPlp, idPlp , codRastreamento, linkCancelarPlp){
+    function cancelarPLP(idContrato, codPlp, idPlp , codRastreamento, linkCancelarPlp){
        if ( confirm('Deseja cancelar a PLP de número: '+ codPlp +'?') ) {
             $.ajax({
                 url: linkCancelarPlp,
                 type: 'post',
                 dataType: 'xml',
-                data: { idPlp: idPlp, codRastreamento: codRastreamento },
+                data: { idContrato: idContrato, idPlp: idPlp, codRastreamento: codRastreamento },
                 beforeSend: function(){
                     infraExibirAviso(false);
                 },
@@ -25,7 +25,8 @@
                         exibirMsg(codPlp, $( result ).find('Msg').text() );
                         return false;
                     } else {
-                        location.reload();
+                        //location.reload();
+                        console.log(result);
                     }
                 },
                 error: function (e) {

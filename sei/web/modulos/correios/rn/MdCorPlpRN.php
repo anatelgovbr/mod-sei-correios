@@ -240,8 +240,11 @@
           $objMdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
           $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
           $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorServicoPostal();
+          $objMdCorExpedicaoSolicitadaDTO->retDblIdMdCorContrato();
           $objMdCorExpedicaoSolicitadaDTO->retStrNomeServicoPostal();
           $objMdCorExpedicaoSolicitadaDTO->retStrDescricaoServicoPostal();
+          $objMdCorExpedicaoSolicitadaDTO->retStrNumeroContrato();
+          $objMdCorExpedicaoSolicitadaDTO->retStrNumeroContratoCorreio();
           $objMdCorExpedicaoSolicitadaDTO->retStrFormaExpedicao();
           $objMdCorExpedicaoSolicitadaDTO->retStrCodigoRastreamento();
           $objMdCorExpedicaoSolicitadaDTO->setDblIdUnidadeExpedidora($idUnidadeAtual);
@@ -464,6 +467,7 @@
 
               $idContatoOrgao = $objDto->getDblIdContatoOrgao();
 
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['IdMdCorContrato']                    = $objDto->getDblIdMdCorContrato();
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['coServicoPostagem']                  = trim($objDto->getStrCodigoWsCorreioServico());
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['stExpedicaoAvisoRecebimentoServico'] = $objDto->getStrExpedicaoAvisoRecebimentoServico();
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['noDestinatario']                     = $objDto->getStrNomeDestinatario();
@@ -524,38 +528,36 @@
         // ['idSolicExp' => idMdCorSolicitacaoExpedicao , 'arrJson' => estrutura do Json para a API ]
         $arrParamJson = $this->montarDadosJsonPostagem($arrParametros);
 
-        // retorna dados da integração GERAR PRE POSTAGEM
         $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
-
-        $objMdCorIntegSolicPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$GERAR_PRE_POSTAGEM);
-
-        if ( is_null( $objMdCorIntegSolicPPN ) ) throw new InfraException('Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM .' não existe ou está inativo.');
-
-        $arrParametroRest = [
-            'endpoint' => $objMdCorIntegSolicPPN->getStrUrlOperacao(),
-            'token'    => $objMdCorIntegSolicPPN->getStrToken(),
-            'expiraEm' => $objMdCorIntegSolicPPN->getDthDataExpiraToken(),
-        ];
-
-        $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegSolicPPN);
-
-        if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
-            $strUrlAPIUsada = $ret['url'] ?? $arrParametroRest['endpoint'];
-            throw new InfraException("Falha na Integração: " . MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM . "." . "\n" . $ret['msg'] );
-        }
-
-        // instancia class ApiRest com os dados necessarios para uso da API que gera Pre Postagem
-        $objMdCorApiPPN = new MdCorApiRestRN( $arrParametroRest );
-
         $arrCodigoRastreio = [];
 
         foreach ( $arrParamJson as $arrItens ) {
+          // retorna dados da integração GERAR PRE POSTAGEM
+          $objMdCorIntegSolicPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$GERAR_PRE_POSTAGEM, $arrItens['arrJson']['idMdCorContrato']);
 
-            $rs = $objMdCorApiPPN->gerarPPN( $arrItens['arrJson'] );
+          if ( is_null( $objMdCorIntegSolicPPN ) ) throw new InfraException('Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM .' não existe ou está inativo.');
+
+          $arrParametroRest = [
+              'endpoint' => $objMdCorIntegSolicPPN->getStrUrlOperacao(),
+              'token'    => $objMdCorIntegSolicPPN->getStrToken(),
+              'expiraEm' => $objMdCorIntegSolicPPN->getDthDataExpiraToken(),
+          ];
+          
+          $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegSolicPPN, $arrItens['arrJson']['idMdCorContrato']);
+          
+          if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
+            $strUrlAPIUsada = $ret['url'] ?? $arrParametroRest['endpoint'];
+            throw new InfraException("Falha na Integração: " . MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM . "." . "\n" . $ret['msg'] );
+          }
+          
+          // instancia class ApiRest com os dados necessarios para uso da API que gera Pre Postagem
+          $objMdCorApiPPN = new MdCorApiRestRN( $arrParametroRest );
+          
+          $rs = $objMdCorApiPPN->gerarPPN( $arrItens['arrJson'] );
 
             if ( is_array( $rs ) and $rs['suc'] === false ) {
                 $strUrlAPIUsada = $objMdCorApiPPN->getEndPoint();
-                throw new InfraException("A solicitação de expedição de id {$arrItens['idSolicExp']} não foi inserida na PLP.\n\n {$rs['msg']}");
+                throw new InfraException("A solicitação de expedição de id {$arrItens['idSolicExp']} não foi inserida na Pré-Postagem.\n\n {$rs['msg']}");
             }
 
             $arrCodigoRastreio[$arrItens['idSolicExp']] = [
@@ -855,6 +857,7 @@
 
 		    $arrJson = [
                 "idCorreios"              => "",
+                "idMdCorContrato"         => $arrItens['IdMdCorContrato'], 
                 "remetente"               => $arrRemetente,
                 "destinatario"            => $arrDest,
                 "codigoServico"           => $arrItens['coServicoPostagem'],
@@ -891,22 +894,21 @@
 	}
 
 	protected function cancelarPlpConectado($arrDados){
+    // retorna dados da integração GERAR PRE POSTAGEM
+      $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 
-        // retorna dados da integração GERAR PRE POSTAGEM
-        $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+      $objMdCorIntegCancelarPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CANCELAR_PRE_POSTAGEM, $arrDados['idContrato']);
 
-        $objMdCorIntegCancelarPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CANCELAR_PRE_POSTAGEM);
-
-        if ( empty($objMdCorIntegCancelarPPN) || ( is_array( $objMdCorIntegCancelarPPN ) && isset($objMdCorIntegCancelarPPN['suc'] ) && $objMdCorIntegCancelarPPN['suc'] === false ) )
-            return ['suc' => false , 'msg' => 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' não existe ou está inativo.'];
-
+      if ( empty($objMdCorIntegCancelarPPN) || ( is_array( $objMdCorIntegCancelarPPN ) && isset($objMdCorIntegCancelarPPN['suc'] ) && $objMdCorIntegCancelarPPN['suc'] === false ) )
+        return ['suc' => false , 'msg' => 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' não existe ou está inativo.'];
+        
         $arrParametroRest = [
             'endpoint' => $objMdCorIntegCancelarPPN->getStrUrlOperacao(),
             'token'    => $objMdCorIntegCancelarPPN->getStrToken(),
             'expiraEm' => $objMdCorIntegCancelarPPN->getDthDataExpiraToken(),
         ];
 
-        $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegCancelarPPN);
+        $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegCancelarPPN, $arrDados['idContrato']);
 
         if ( is_array( $ret ) ) return ['suc' => false , 'msg' => $ret['msg']];
 

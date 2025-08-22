@@ -22,7 +22,7 @@ class MdCorAdmIntegracaoINT extends InfraINT {
 	/*
 	 * Funcionalidades
 	 * */
-	public static function montarSelectFuncionalidade($itemSelecionado = null , $retornaItem = false, $arrItensCadastrados = null){
+	public static function montarSelectFuncionalidade($itemSelecionado = null , $retornaItem = false, $arrItensCadastrados = null, $idSelecionado = null) {
 
 		$arrFuncionalidades = self::getDadosFuncionalidade();
 
@@ -34,7 +34,7 @@ class MdCorAdmIntegracaoINT extends InfraINT {
 			$selected = '';
 			// Filtro para retirar a Funcionalidade que já está cadastrada e ativa
 			if ( !empty($arrItensCadastrados) ){
-				if( !in_array($k,$arrItensCadastrados) ) {
+				if( !in_array($k,$arrItensCadastrados) ||  $k == $idSelecionado ) {
 					if ($itemSelecionado && $itemSelecionado == $k) $selected = ' selected';
 					$strOptions .= "<option value='$k'$selected>$v</option>";
 				}
