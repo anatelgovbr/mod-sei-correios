@@ -745,6 +745,9 @@ try {
             $dto->retDblIdProtocolo();
             $dto->retNumIdMdCorServicoPostal();
             $dto->retStrDescricaoServicoPostal();
+            $dto->retStrNumeroContrato();
+            $dto->retDblIdMdCorContrato();
+            $dto->retStrNumeroContratoCorreio();
             $dto->retStrSinDevolvido();
             $dto->retStrJustificativaDevolucao();
             $dto->setNumIdMdCorExpedicaoSolicitada($idExpedicaoSolicitada);
@@ -898,7 +901,7 @@ try {
                     $strLinkPopUpSelecaoProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_cadastro_protocolos_selecionar&tipo_selecao=2&id_procedimento=' . $dto->getDblIdProtocolo() . '&id_doc=' . $_GET['id_doc'] . '&id_object=objLupaProtocoloAnexo');
                     if (SessaoSei::getInstance()->getNumIdUnidadeAtual() == $dto->getNumIdUnidade() && $dto->getNumIdMdCorPlp() == null && $staAberto) {
 
-                        $validaContatoEdicao = MdCorExpedicaoSolicitadaINT::validaContatoPreeenchido($id_destinatario,true);
+                        $validaContatoEdicao = MdCorExpedicaoSolicitadaINT::validaContatoPreeenchido($id_destinatario,true, $dto->getDblIdMdCorContrato());
 
                         if ( !empty($validaContatoEdicao)) array_push($arrMsgValidacao,$validaContatoEdicao);
 
@@ -996,6 +999,16 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
         PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
         PaginaSEI::getInstance()->abrirAreaDados();
         ?>
+        <div class="alert alert-danger alert-dismissible alert-erro-validacao-dados" style="display: none; font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:98%; margin:0 auto;" role="alert">
+            Erro na validação do CEP do Destinatário. Verifique com o Gestor do Módulo dos Correios para confirmar o Token da integração do Contrato selecionado abaixo com os Correios em Administração > Correios > Mapeamento das Integrações > Correios::Gerar Token.
+            <br><br>
+
+            <span id="msg"></span>
+            <button type="button" class="close media h-100" data-dismiss="alert" aria-label="Fechar Mensagem" aria-labelledby="divInfraMsg0" onclick="fecharAba()">
+                <span aria-hidden="true" class="align-self-center"><b>X</b></span>
+            </button>
+        </div>
+
         <?php $idMdCorEexpedicaoSolicitada = isset($_GET['id_md_cor_expedicao_solicitada']) ? $_GET['id_md_cor_expedicao_solicitada'] : ''; ?>
         <input type="hidden" id="hdnIdMdCorExpedicaoSolicitada" name="hdnIdMdCorExpedicaoSolicitada" value="<?= $idMdCorEexpedicaoSolicitada ?>"/>
 
@@ -1026,7 +1039,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
             <div class="col-12 col-sm-12 col-md-6 col-lg-10 col-xl-10">
                 <div class="form-group">
                     <label class="infraLabelObrigatorio">Serviço Postal:</label>
-                    <select class="infraSelect form-control" name="selServicoPostal" id="selServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>" onchange="gerenciarDadosServPostal(this)">
+                    <select class="infraSelect form-control" onchange="validarDestinatario(true)" name="selServicoPostal" id="selServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>" onchange="gerenciarDadosServPostal(this)">
                         <?= $strSelectServicoPostal ?>
                     </select>
                 </div>

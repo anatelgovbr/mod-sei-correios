@@ -58,25 +58,25 @@ class MdCorServicoPostalINT extends InfraINT {
     return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorServicoPostalDTO, 'IdMdCorServicoPostal', 'Descricao');
   }
 
-	public static function retornarServicosPostais($strNumeroContratoCorreio, $strCnpj) {
-		$objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+	public static function retornarServicosPostais($strNumeroContratoCorreio, $strCnpj, $id_contrato) {
+      $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 
-		$objMdCorIntegServPostal = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$SERV_POSTAL);
-		if ( empty( $objMdCorIntegServPostal ) || is_array($objMdCorIntegServPostal) && isset($objMdCorIntegServPostal['suc']) && $objMdCorIntegServPostal['suc'] === false )
-		    return self::retornarXmlServicosPostais(['suc' => false , 'msg' => 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_SERV_POSTAL .' não existe ou está inativo.']);
-
-		$arrParametro = [
-			'endpoint' => $objMdCorIntegServPostal->getStrUrlOperacao(),
-			'token'    => $objMdCorIntegServPostal->getStrToken(),
-			'expiraEm' => $objMdCorIntegServPostal->getDthDataExpiraToken(),
-		];
-
-		$ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegServPostal);
-		if ( is_array( $ret ) && array_key_exists('suc',$ret) && $ret['suc'] === false )  return self::retornarXmlServicosPostais($ret);
-
-		$objMdCorApiServPostal = new MdCorApiRestRN($arrParametro);
-		$xml = self::retornarXmlServicosPostais( $objMdCorApiServPostal->buscarServicosPostais($strNumeroContratoCorreio, $strCnpj) );
-        return $xml;
+      $objMdCorIntegServPostal = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$SERV_POSTAL, $id_contrato);
+      if ( empty( $objMdCorIntegServPostal ) || is_array($objMdCorIntegServPostal) && isset($objMdCorIntegServPostal['suc']) && $objMdCorIntegServPostal['suc'] === false )
+          return self::retornarXmlServicosPostais(['suc' => false , 'msg' => 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_SERV_POSTAL .' não existe ou está inativo.<br>* Pode ser necessário cadastrar dados de autenticação na integração '. MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN .' para o contrato selecionado.']);
+      
+        $arrParametro = [
+          'endpoint' => $objMdCorIntegServPostal->getStrUrlOperacao(),
+          'token'    => $objMdCorIntegServPostal->getStrToken(),
+          'expiraEm' => $objMdCorIntegServPostal->getDthDataExpiraToken(),
+        ];
+        
+        $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegServPostal, $id_contrato);
+        if ( is_array( $ret ) && array_key_exists('suc',$ret) && $ret['suc'] === false )  return self::retornarXmlServicosPostais($ret);
+        
+        $objMdCorApiServPostal = new MdCorApiRestRN($arrParametro);
+        $xml = self::retornarXmlServicosPostais( $objMdCorApiServPostal->buscarServicosPostais($strNumeroContratoCorreio, $strCnpj) );
+            return $xml;
     }
 
     public static function montarSelectIdDescricaoMdCorServicoPostalSolicitacaoExpedicao($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $numIdMdCorContrato='', $campoordenacao='IdMdCorServicoPostal'){

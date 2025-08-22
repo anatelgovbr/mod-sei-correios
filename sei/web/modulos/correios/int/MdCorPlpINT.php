@@ -37,6 +37,8 @@ class MdCorPlpINT extends InfraINT {
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorServicoPostal();
         $objMdCorExpedicaoSolicitadaDTO->retStrNomeServicoPostal();
         $objMdCorExpedicaoSolicitadaDTO->retStrDescricaoServicoPostal();
+        $objMdCorExpedicaoSolicitadaDTO->retStrNumeroContrato();
+        $objMdCorExpedicaoSolicitadaDTO->retStrNumeroContratoCorreio();
         $objMdCorExpedicaoSolicitadaDTO->setNumIdMdCorPlp(null, InfraDTO::$OPER_DIFERENTE);
         $objMdCorExpedicaoSolicitadaDTO->setDistinct(true);
         $objMdCorExpedicaoSolicitadaDTO->setOrdStrDescricaoServicoPostal(InfraDTO::$TIPO_ORDENACAO_ASC);
@@ -44,6 +46,12 @@ class MdCorPlpINT extends InfraINT {
 
         $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
         $arrObjMdCorExpedicaoSolicitadaDTO = $objMdCorExpedicaoSolicitadaRN->listar($objMdCorExpedicaoSolicitadaDTO);
+
+        foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) {
+          $objMdCorExpedicaoSolicitadaDTO->setStrDescricaoServicoPostal(
+            $objMdCorExpedicaoSolicitadaDTO->getStrDescricaoServicoPostal() . ' (Contrato nº ' . $objMdCorExpedicaoSolicitadaDTO->getStrNumeroContrato() . ' - ' . $objMdCorExpedicaoSolicitadaDTO->getStrNumeroContratoCorreio() . ')'
+          );
+        }
 
         return parent::montarSelectArrInfraDTO($strPrimeiroItemValor, $strPrimeiroItemDescricao, $strValorItemSelecionado, $arrObjMdCorExpedicaoSolicitadaDTO, 'IdMdCorServicoPostal','DescricaoServicoPostal');
     }

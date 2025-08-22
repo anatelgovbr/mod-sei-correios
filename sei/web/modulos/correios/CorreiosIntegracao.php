@@ -15,7 +15,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.4.1';
+        return '2.5.0';
     }
 
     public function getInstituicao()
@@ -64,6 +64,11 @@ class CorreiosIntegracao extends SeiIntegracao
             case 'md_cor_contrato_consultar' :
             case 'md_cor_contrato_alterar' :
                 require_once dirname(__FILE__) . '/md_cor_contrato_cadastro.php';
+                return true;
+
+            //Serviços Postais
+            case 'md_cor_servicos_postais_contrato_alterar' :
+                require_once dirname(__FILE__) . '/md_cor_servicos_postais_contrato_cadastro.php';
                 return true;
 
             case 'md_cor_contrato_desativar' :
@@ -566,7 +571,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
             case 'md_cor_servicos_postais_buscar':
 	            $_POST['txtCNPJ'] = InfraUtil::retirarFormatacao($_POST['txtCNPJ']);
-	            $xml = MdCorServicoPostalINT::retornarServicosPostais($_POST['txtNumeroContratoCorreio'], $_POST['txtCNPJ']);
+	            $xml = MdCorServicoPostalINT::retornarServicosPostais($_POST['txtNumeroContratoCorreio'], $_POST['txtCNPJ'], $_POST['id_contrato']);
                 break;
 
             case 'md_cor_numero_processo_validar':
@@ -647,7 +652,7 @@ class CorreiosIntegracao extends SeiIntegracao
                     $xml = MdCorExpedicaoSolicitadaProtocoloAnexoINT::verificarAnexoSomenteMidia($_POST['idProtocolo']);
                 break;
             case 'md_validar_destinatario_solicitacao_expedicao':
-                $xml = MdCorExpedicaoSolicitadaINT::validaContatoPreeenchido($_POST['id_contato']);
+                $xml = MdCorExpedicaoSolicitadaINT::validaContatoPreeenchido($_POST['id_contato'], false, $_POST['id_contrato_servico_postal']);
                 break;
             case 'md_cor_plp_imprimir_ar_verificar':
                 $xml = MdCorPlpINT::verificarImpressaoAR($_GET['id_md_cor_plp'], explode(',', $_POST['hdnInfraItensSelecionados']));
@@ -700,7 +705,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
             case 'md_cor_plp_cancelar_plp':
                 $xml = '<Documento>';
-                $arr = ['idPlp' => $_POST['idPlp']];
+                $arr = ['idPlp' => $_POST['idPlp'], 'idContrato' => $_POST['idContrato']];
                 $rs  = ( new MdCorPlpRN() )->cancelarPlp( $arr );
                 if (is_array($rs)) {
                     $xml .= '<Sucesso>N</Sucesso>';

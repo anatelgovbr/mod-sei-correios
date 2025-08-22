@@ -5,10 +5,10 @@ class MdCorAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.4.0';
+    private $versaoAtualDesteModulo = '2.5.0';
     private $nomeDesteModulo = 'MÓDULO DOS CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0','2.5.0');
 
     public function __construct()
     {
@@ -112,6 +112,8 @@ class MdCorAtualizadorSipRN extends InfraRN
 		            $this->instalarv230();
                 case '2.3.0':
                     $this->instalarv240();
+                case '2.4.0':
+                    $this->instalarv250();
                     break;
 
                 default:
@@ -809,9 +811,45 @@ class MdCorAtualizadorSipRN extends InfraRN
 		$this->atualizarNumeroVersao($nmVersao);
 	}
 
-	protected function instalarv240() {
+    protected function instalarv240() {
         $nmVersao = '2.4.0';
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $nmVersao . ' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+	protected function instalarv250() {
+        $nmVersao = '2.5.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $nmVersao . ' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');
+        
+        $objSistemaRN = new SistemaRN();
+        $objSistemaDTO = new SistemaDTO();
+        $objSistemaDTO->retNumIdSistema();
+        $objSistemaDTO->setStrSigla('SEI');
+
+        $objSistemaDTO = $objSistemaRN->consultar($objSistemaDTO);
+
+        if ($objSistemaDTO == null) {
+            throw new InfraException('Sistema SEI não encontrado.');
+        }
+
+        $numIdSistemaSei = $objSistemaDTO->getNumIdSistema();
+
+        $objPerfilRN = new PerfilRN();
+        $objPerfilDTO = new PerfilDTO();
+        $objPerfilDTO->retNumIdPerfil();
+        $objPerfilDTO->setNumIdSistema($numIdSistemaSei);
+        $objPerfilDTO->setStrNome('Administrador');
+        $objPerfilDTO = $objPerfilRN->consultar($objPerfilDTO);
+
+        if ($objPerfilDTO == null) {
+            throw new InfraException('Perfil Administrador do sistema SEI não encontrado.');
+        }
+
+        $numIdPerfilSeiAdministrador = $objPerfilDTO->getNumIdPerfil();
+        
+        $this->adicionarRecursoPerfil($numIdSistemaSei, $numIdPerfilSeiAdministrador, 'md_cor_servicos_postais_contrato_alterar');
+
         $this->atualizarNumeroVersao($nmVersao);
     }
 

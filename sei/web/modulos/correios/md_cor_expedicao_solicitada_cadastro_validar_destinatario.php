@@ -1,5 +1,4 @@
 <?php
-
 //logica para validar configuracoes do destinatario do doc principal da expediçao
 //obtendo informações sobre o doc principal e seu destinatario
 $objProtocoloDocPrincipalRN = new ProtocoloRN();

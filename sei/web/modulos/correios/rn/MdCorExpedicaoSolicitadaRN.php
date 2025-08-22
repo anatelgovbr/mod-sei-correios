@@ -792,6 +792,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
         $objMdCorExpedicaoSolicitadaDTO->retStrCodigoRastreamento();
         $objMdCorExpedicaoSolicitadaDTO->retDthDataExpedicao();
+        $objMdCorExpedicaoSolicitadaDTO->retDblIdMdCorContrato();
         $objMdCorExpedicaoSolicitadaDTO->retStrSinRecebido();
 
         if ($this->getIsConsultarExpedicaoAndamento()) {
@@ -1077,7 +1078,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
         if ($qtdTipoEmbalagem == 0) {
             echo "<script>";
-            echo "alert('Tipos de Embalagens não Cadastradas.');";
+            echo "alert('Os tipos de embalagens para o Contrato selecionado não foram cadastradas, antes é necessário que verifique com o Gestor do Módulo dos Correios para cadastrar os Tipos de Embalagens em Administração > Correios > Contratos e Serviços Postais > Tipos de Embalagem.');";
             echo "window.close();";
             echo "</script>";
         }

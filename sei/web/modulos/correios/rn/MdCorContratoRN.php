@@ -115,35 +115,6 @@ class MdCorContratoRN extends InfraRN
             $objMdCorContratoBD = new MdCorContratoBD($this->getObjInfraIBanco());
             $ret = $objMdCorContratoBD->cadastrar($objMdCorContratoDTO);
 
-            $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
-            foreach ($arr['codigo'] as $i => $ar) {
-                $cobrar = isset($arr['cobrar'][$i]) ? $arr['cobrar'][$i] : 'N';
-                $anexarMidia = isset($arr['anexarMidia'][$i]) ? $arr['anexarMidia'][$i] : 'N';
-
-                $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
-                $objMdCorServicoPostalDTO->setNumIdMdCorContrato($objMdCorContratoDTO->getNumIdMdCorContrato());
-                $objMdCorServicoPostalDTO->setStrCodigoWsCorreios($arr['codigo'][$i]);
-                $objMdCorServicoPostalDTO->setStrNome($arr['nome'][$i]);
-                $objMdCorServicoPostalDTO->setStrExpedicaoAvisoRecebimento($arr['ar'][$i]);
-                $objMdCorServicoPostalDTO->setStrDescricao($arr['descricao'][$i]);
-                $objMdCorServicoPostalDTO->setStrSinAtivo('S');
-                $objMdCorServicoPostalDTO->setStrSinServicoCobrar($cobrar);
-                $objMdCorServicoPostalDTO->setStrSinAnexarMidia($anexarMidia);
-
-                //trata dados sobre tipoo de correspondencia
-                $arrTipoCorrespondencia = explode('|', $arr['sl_tipo'][$i]);
-                $tipoCorrespondencia = current($arrTipoCorrespondencia);
-                $objMdCorServicoPostalDTO->setNumIdMdCorTipoCorrespondencia($tipoCorrespondencia);
-                $sinAr = end($arrTipoCorrespondencia);
-
-                $objMdCorServicoPostalDTO->setStrExpedicaoAvisoRecebimento($arr['ar'][$i]);
-                if ($sinAr == 'N') {
-                    $objMdCorServicoPostalDTO->setStrExpedicaoAvisoRecebimento('N');
-                }
-
-                $objMdCorServicoPostalRN->cadastrar($objMdCorServicoPostalDTO);
-            }
-
             return $ret;
         } catch (Exception $e) {
             throw new InfraException('Erro cadastrando contrato.', $e);
@@ -164,13 +135,7 @@ class MdCorContratoRN extends InfraRN
             $objMdCorContratoDTO->setNumNumeroCnpj(InfraUtil::retirarFormatacao($arr['txtCNPJ']));
             $objMdCorContratoDTO->setNumIdMdCorDiretoria($arr['slCodigoDiretoria']);
             $objMdCorContratoDTO->setStrSinAtivo('S');
-
-            /*
-             * Trata os id's a serem desativados/reativados vindo do post.
-             */
-            $arr['hdnListaContratoServicosDesativados'] = explode(",", $arr['hdnListaContratoServicosDesativados'][0]);
-            $arr['hdnListaContratoServicosReativadas'] = explode(",", $arr['hdnListaContratoServicosReativadas'][0]);
-
+ 
             //Regras de Negocio
             $objInfraException = new InfraException();
 
@@ -193,7 +158,24 @@ class MdCorContratoRN extends InfraRN
             $objInfraException->lancarValidacoes();
 
             $objMdCorContratoBD = new MdCorContratoBD($this->getObjInfraIBanco());
-            $ret = $objMdCorContratoBD->alterar($objMdCorContratoDTO);
+            return $objMdCorContratoBD->alterar($objMdCorContratoDTO);
+
+            //Auditoria
+        } catch (Exception $e) {
+            throw new InfraException('Erro alterando contrato.', $e);
+        }
+    }
+
+    protected function alterarServicosPostaisControlado($arr)
+    {
+        try {
+            SessaoSEI::getInstance()->validarPermissao('md_cor_servicos_postais_contrato_alterar');
+            /*
+             * Trata os id's a serem desativados/reativados vindo do post.
+             */
+            $arr['hdnListaContratoServicosDesativados'] = explode(",", $arr['hdnListaContratoServicosDesativados'][0]);
+            $arr['hdnListaContratoServicosReativadas'] = explode(",", $arr['hdnListaContratoServicosReativadas'][0]);
+
 
             $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
             $objMdCorMapUnidServicoRN = new MdCorMapUnidServicoRN();
@@ -310,7 +292,7 @@ class MdCorContratoRN extends InfraRN
                 }
             }
 
-            return $ret;
+            return true;
             //Auditoria
         } catch (Exception $e) {
             throw new InfraException('Erro alterando contrato.', $e);
@@ -626,9 +608,11 @@ class MdCorContratoRN extends InfraRN
         return $xml;
     }
 
-    public function getNumeroPostagemContratoAtivo(){
+    public function getNumeroPostagemContratoAtivo($contrato_id){
+        
 		$objMdCorContratoDTO = new MdCorContratoDTO();
 	    $objMdCorContratoDTO->setStrSinAtivo('S');
+        $objMdCorContratoDTO->setNumIdMdCorContrato($contrato_id);
 	    $objMdCorContratoDTO->retStrNumeroCartaoPostagem();
 
 	    $objMdCorContratoDTO = $this->consultar($objMdCorContratoDTO);

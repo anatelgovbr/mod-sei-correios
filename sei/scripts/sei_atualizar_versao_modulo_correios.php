@@ -5,10 +5,10 @@ class MdCorAtualizadorSeiRN extends InfraRN
 {
 
     private $numSeg = 0;
-    private $versaoAtualDesteModulo = '2.4.0';
+    private $versaoAtualDesteModulo = '2.5.0';
     private $nomeDesteModulo = 'MÓDULO CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0', '2.5.0');
 
     public function __construct()
     {
@@ -112,6 +112,8 @@ class MdCorAtualizadorSeiRN extends InfraRN
 	                $this->instalarv230();
                 case '2.3.0':
                     $this->instalarv240();
+                case '2.4.0':
+                    $this->instalarv250();
                     break;
 
                 default:
@@ -502,7 +504,18 @@ class MdCorAtualizadorSeiRN extends InfraRN
             foreach ($dados as $tipo => $dado) {
                 foreach ($dado as $desc => $nomeImagem) {
                     BancoSEI::getInstance()->executarSql("INSERT INTO md_cor_lista_status (id_md_cor_lista_status, status, tipo, nome_imagem, descricao, sin_ativo) VALUES('".$numMdCorListaStatus."', '".$status."', '".$tipo."', '".$nomeImagem."', '".$desc."', 'S')");
-                    BancoSEI::getInstance()->executarSql("INSERT INTO seq_md_cor_lista_status (id, campo) VALUES('".$numMdCorListaStatus."', '0')");
+                    if (BancoSEI::getInstance() instanceof InfraMySql) {
+                        BancoSEI::getInstance()->executarSql(" DELETE FROM seq_md_cor_lista_status");
+                        BancoSEI::getInstance()->executarSql(" INSERT INTO seq_md_cor_lista_status (id) VALUES (" . $numMdCorListaStatus . ") ");
+                    } elseif (BancoSEI::getInstance() instanceof InfraOracle ) {
+                        BancoSEI::getInstance()->executarSql("drop sequence seq_md_cor_lista_status");
+                        BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_md_cor_lista_status START WITH " . $numMdCorListaStatus . " INCREMENT BY 1 NOCACHE NOCYCLE");
+                    } else if (BancoSEI::getInstance() instanceof InfraSqlServer) {
+                        BancoSEI::getInstance()->executarSql("TRUNCATE TABLE seq_md_cor_lista_status; SET IDENTITY_INSERT seq_md_cor_lista_status ON; INSERT INTO seq_md_cor_lista_status (id) VALUES (" . $numMdCorListaStatus . "); SET IDENTITY_INSERT seq_md_cor_lista_status OFF;");
+                    } else if( BancoSEI::getInstance() instanceof InfraPostgreSql ){
+                        BancoSEI::getInstance()->executarSql("drop sequence seq_md_cor_lista_status");
+                        BancoSEI::getInstance()->executarSql("CREATE SEQUENCE seq_md_cor_lista_status START WITH " . $numMdCorListaStatus . " INCREMENT BY 1 NO CYCLE");
+                    }
                     $numMdCorListaStatus++;
                 }
             }
@@ -1489,13 +1502,78 @@ ATENÇÃO: As informações contidas neste e-mail, incluindo seus anexos, podem ser 
 
 		$this->atualizarNumeroVersao($nmVersao);
 	}
-
-	protected function instalarv240() {
+    
+    protected function instalarv240() {
         $nmVersao = '2.4.0';
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
         $this->atualizarNumeroVersao($nmVersao);
     }
 
+	protected function instalarv250() {
+        $nmVersao = '2.5.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $objInfraMetaBD->setBolValidarIdentificador(true);
+
+        $this->logar('CRIANDO A TABELA md_cor_adm_integr_tokens');
+		BancoSEI::getInstance()->executarSql('CREATE TABLE md_cor_adm_integr_tokens ( 
+					id_md_cor_adm_integr_tokens ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL ,
+					id_md_cor_adm_integracao ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL , 
+					id_md_cor_contrato ' . $objInfraMetaBD->tipoNumero() . ' NOT NULL,
+					usuario '. $objInfraMetaBD->tipoTextoVariavel(100) .' NULL,
+					senha '. $objInfraMetaBD->tipoTextoVariavel(1000) .' NULL,
+					token '. $objInfraMetaBD->tipoTextoVariavel(1500) .' NULL,					
+					data_exp_token '. $objInfraMetaBD->tipoDataHora() .' NULL,
+					sin_ativo '. $objInfraMetaBD->tipoTextoFixo(1) .' NOT NULL
+				)'
+		);
+
+        $objInfraMetaBD->adicionarChavePrimaria('md_cor_adm_integr_tokens', 'pk_md_cor_adm_integr_token', array('id_md_cor_adm_integr_tokens'));
+        $this->logar('CRIANDO A SEQUENCE seq_md_cor_adm_integr_tokens');
+	    BancoSEI::getInstance()->criarSequencialNativa('seq_md_cor_adm_integr_tokens', 1);
+
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk1_md_cor_adm_integr_tokens', 'md_cor_adm_integr_tokens',
+		    array('id_md_cor_adm_integracao'), 'md_cor_adm_integracao', array('id_md_cor_adm_integracao'));
+
+        $objInfraMetaBD->adicionarChaveEstrangeira('fk2_md_cor_adm_integr_tokens', 'md_cor_adm_integr_tokens',
+        array('id_md_cor_contrato'), 'md_cor_contrato', array('id_md_cor_contrato'));
+
+        // listar todos os contratos
+        $objMdCorContratoDTO = new MdCorContratoDTO();
+        $objMdCorContratoRN = new MdCorContratoRN();
+        $objMdCorContratoDTO->retNumIdMdCorContrato();
+        $objMdCorContratoDTO = $objMdCorContratoRN->listar($objMdCorContratoDTO);
+        
+        $objMdCorAdmIntegracaoDTO = new MdCorAdmIntegracaoDTO();
+        $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+        $objMdCorAdmIntegracaoDTO->retNumIdMdCorAdmIntegracao();
+        $objMdCorAdmIntegracaoDTO->retStrUsuario();
+        $objMdCorAdmIntegracaoDTO->retStrSenha();
+        $objMdCorAdmIntegracaoDTO->retStrToken();
+        $objMdCorAdmIntegracaoDTO->retDthDataExpiraToken();
+        $objMdCorAdmIntegracaoDTO->retStrSinAtivo();
+        $objMdCorAdmIntegracaoDTO = $objMdCorAdmIntegracaoRN->listar($objMdCorAdmIntegracaoDTO);
+
+        $objMdCorAdmIntegrTokensRN = new MdCorAdmIntegracaoTokensRN();
+        foreach ($objMdCorContratoDTO as $objMdCorContrato) {
+            $id_contrato = $objMdCorContrato->getNumIdMdCorContrato();
+            foreach ($objMdCorAdmIntegracaoDTO as $objMdCorAdmIntegracao) {
+                $objMdCorAdmIntegrTokensDTO = new MdCorAdmIntegracaoTokensDTO();
+                $objMdCorAdmIntegrTokensDTO->setNumIdMdCorAdmIntegracao($objMdCorAdmIntegracao->getNumIdMdCorAdmIntegracao());
+                $objMdCorAdmIntegrTokensDTO->setNumIdMdCorContrato($id_contrato);
+                $objMdCorAdmIntegrTokensDTO->setStrUsuario($objMdCorAdmIntegracao->getStrUsuario());
+                $objMdCorAdmIntegrTokensDTO->setStrSenha($objMdCorAdmIntegracao->getStrSenha());
+                $objMdCorAdmIntegrTokensDTO->setStrToken($objMdCorAdmIntegracao->getStrToken());
+                $objMdCorAdmIntegrTokensDTO->setDthDataExpiraToken($objMdCorAdmIntegracao->getDthDataExpiraToken());
+                $objMdCorAdmIntegrTokensDTO->setStrSinAtivo($objMdCorAdmIntegracao->getStrSinAtivo());
+                $objMdCorAdmIntegrTokensRN->cadastrar($objMdCorAdmIntegrTokensDTO);
+            }
+        }
+        
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+    
     protected function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas)
     {
         InfraDebug::getInstance()->setBolDebugInfra(true);

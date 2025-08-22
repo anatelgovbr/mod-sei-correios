@@ -103,7 +103,23 @@ try {
             $strCssTr = ($strCssTr == '<tr class="infraTrClara">') ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">'; 
             $strResultado .= $strCssTr;
             $strResultado .= '<td valign="middle">' . PaginaSEI::getInstance()->getTrCheck($cContador, $objMdCorPlpDTO->getNumIdMdPlp(), $objMdCorPlpDTO->getNumIdMdPlp()) . '</td>';
-            $arrServico = InfraArray::implodeArrInfraDTO(InfraArray::distinctArrInfraDTO($objMdCorPlpDTO->getArrMdCorExpedicaoSolicitadaDTO(), 'DescricaoServicoPostal'), 'DescricaoServicoPostal', ', ');
+            
+            $arrServico = InfraArray::implodeArrInfraDTO(
+                InfraArray::distinctArrInfraDTO($objMdCorPlpDTO->getArrMdCorExpedicaoSolicitadaDTO(), 'DescricaoServicoPostal'), 
+                'DescricaoServicoPostal', 
+                ', '
+            ) . ' (Contrato nº ' .
+            InfraArray::implodeArrInfraDTO(
+                InfraArray::distinctArrInfraDTO($objMdCorPlpDTO->getArrMdCorExpedicaoSolicitadaDTO(), 'NumeroContrato'), 
+                'NumeroContrato', 
+                ', '
+            ) . ' - ' .
+            InfraArray::implodeArrInfraDTO(
+                InfraArray::distinctArrInfraDTO($objMdCorPlpDTO->getArrMdCorExpedicaoSolicitadaDTO(), 'NumeroContratoCorreio'), 
+                'NumeroContratoCorreio', 
+                ', '
+            ) . ')';
+
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($objMdCorPlpDTO->getDblCodigoPlp()) . '</td>';
 
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($objMdCorPlpDTO->getDthDataCadastro()) . '</td>';
@@ -117,7 +133,7 @@ try {
 
                 $linkCancelarPlp = PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_plp_cancelar_plp'));
                 $codRastreamento = $objMdCorPlpDTO->getArrMdCorExpedicaoSolicitadaDTO()[0]->getStrCodigoRastreamento();
-                $strResultado .= '<a href="#" onclick="cancelarPLP('. $objMdCorPlpDTO->getDblCodigoPlp() .','. $objMdCorPlpDTO->getNumIdMdPlp() .',\''. $codRastreamento .'\',\''. $linkCancelarPlp .'\')" tabindex="'. PaginaSEI::getInstance()->getProxTabTabela() .'">
+                $strResultado .= '<a href="#" onclick="cancelarPLP('. InfraArray::implodeArrInfraDTO(InfraArray::distinctArrInfraDTO($objMdCorPlpDTO->getArrMdCorExpedicaoSolicitadaDTO(), 'IdMdCorContrato'), 'IdMdCorContrato', ', ') .','. $objMdCorPlpDTO->getDblCodigoPlp() .','. $objMdCorPlpDTO->getNumIdMdPlp() .',\''. $codRastreamento .'\',\''. $linkCancelarPlp .'\')" tabindex="'. PaginaSEI::getInstance()->getProxTabTabela() .'">
                                     <img src="'.Icone::DOCUMENTO_CANCELAR.'" style="width: 24px; height: 24px" title="Cancelar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" alt="Cancelar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .'" class="infraImgAcoes" />
                                   </a>&nbsp;';
             } else {

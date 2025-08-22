@@ -1,217 +1,8 @@
 <script type="text/javascript">
-    var comboTipoCorrepondencia = '<?php echo json_encode($mdCorTipoCorrespondencia);?>'
-    var tabelaDinamicaEditar = <?= in_array( $_GET['acao'] , ['md_cor_contrato_alterar','md_cor_contrato_cadastrar'] ) ? 'true' : 'false'?>;
-
-    var tabelaDinamicaRemover = <?= in_array( $_GET['acao'] , ['md_cor_contrato_alterar','md_cor_contrato_cadastrar'] ) ? 'true' : 'false' ?>;
-
-    /* Variáveis usadas para montar o array de servições desativados */
-    var arrLinhasDesativadas = Array();
-    var arrLinhasReativadas = Array();
-    var contadorDesativadas = 0;
-    var contadorReativadas = 0;
+    
+    var acao = '<?= $_GET['acao'] ?>';
 
     <? require_once('md_cor_contrato_cadastro_inicializacao.php');?>
-
-    var objTabelaContratoServicos = null;
-    var row = {};
-
-    function tabelaDinamicaEventos() {
-        $('.input-ar').click(function () {
-            var $this = $(this);
-            var val = $this.val();
-            var $tr = $this.closest('tr');
-            $tr.find('td:eq(2) div').html(val); //index
-            objTabelaContratoServicos.alterarLinha($tr.index());
-            objTabelaContratoServicos.atualizaHdn();
-        });
-
-        $('.input-desc').blur(function () {
-            var $this = $(this);
-            var val = $this.val();
-            var $tr = $this.closest('tr');
-            $tr.find('td:eq(2) div').html(val); //index
-            objTabelaContratoServicos.alterarLinha($tr.index());
-            objTabelaContratoServicos.atualizaHdn();
-        });
-
-    }
-
-    function adicionarContratoServicos(xml) {
-        var linhasTabela = objTabelaContratoServicos.tbl.rows.length;
-        var rowRdS = rowRdN = '';
-        var divIniRadio = '<div id="divRdoAr" class="infraDivRadio" align="center" style="width: 100%">';
-        var divIniCheck = '<div id="divRdoAr" class="infraDivCheckbox checkCobrar"><div class="infraCheckboxDiv">';
-
-        $(xml).find('ServicoPostal').each(function (index, val) {
-            var indice = (linhasTabela - 1) + index;
-
-            row = {};
-            row.codigo = $(val).find('Codigo').text().trim();
-            row.ar = '';
-            row.desc = '';
-            row.tipo = '<div style="width:100%;"><select id="slTipo_'+ indice +'" class="infraSelect form-control sl_tipo" name="sl_tipo[' + indice + ']" onchange="verificaAr(this)">' + comboTipoCorrepondencia + '</select></div>';
-            row.nome = $(val).find('Descricao').text();
-            rowRdS = '<div class="infraRadioDiv"><input class="infraRadioInput input-ar" type="radio" value="S" name="ar[' + indice + ']" id="arS[' + indice + ']"><label class="infraRadioLabel" for="arS['+ indice +']"></label></div><label id="lblArS['+ indice +']" for="arS['+ indice +']" class="infraLabelRadio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Sim</label>';
-            rowRdN = '<div class="infraRadioDiv"><input class="infraRadioInput input-ar" type="radio" value="N" name="ar[' + indice + ']" id="arN[' + indice + ']" checked="checked"><label class="infraRadioLabel" for="arN['+ indice +']"></label></div><label id="lblArN['+ indice +']" for="arN['+ indice +']" class="infraLabelRadio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">Não</label>';
-            row.check = divIniRadio + rowRdS + rowRdN + '</div>';
-            row.cobrar = divIniCheck + '<input class="input-cobrar infraCheckboxInput" type="checkbox" value="S" name="cobrar[' + indice + ']" id="cobrar[' + indice + ']"><label class="infraCheckboxLabel " for="cobrar['+ indice +']"></label></div></div>';
-            row.anexarMidia = '<div class="infraDivCheckbox" style="text-align: center"> <div class="infraCheckboxDiv"> <input type="checkbox" class="infraCheckboxInput" value="S" name="anexarMidia['+indice+']" id="anexarMidia['+indice+']"> <label class="infraCheckboxLabel" for="anexarMidia['+indice+']"></label> </div> </div>';
-            row.txt = '<div><input type="text" id="idDesc_'+ indice +'" class="input-desc form-control" style="width: 100%" name="descricao[' + indice + ']" value=""><input type="hidden" name="codigo[' + indice + ']" value="' + $(val).find('Codigo').text() + '"><input type="hidden" name="nome[' + indice + ']" value="' + $(val).find('Descricao').text() + '"></div>';
-            row.acoes = 'Ações';
-            var bolContratoServicosCustomizado = 'hdnCustomizado';
-
-            receberContratoServicos(row, bolContratoServicosCustomizado);
-        });
-    }
-
-    function receberContratoServicos(row, ContratoServicosCustomizado) {
-        var qtdContratoServicosIndicados = objTabelaContratoServicos.tbl.rows.length;
-        objTabelaContratoServicos.exibirMensagens = false;
-        objTabelaContratoServicos.adicionar([row.codigo, row.ar, row.desc, row.nome, row.tipo, row.check, row.cobrar, row.anexarMidia, row.txt, ''], false);
-        infraEfeitoTabelas();
-    }
-
-    function inicializar() {
-
-        $('#hdnListaContratoServicosIndicados').val('<?= $hdnListaContratoServicosIndicados;?>');
-
-        objTabelaContratoServicos = new infraTabelaDinamica('tbContratoServicos', 'hdnListaContratoServicosIndicados', false, tabelaDinamicaRemover, false);
-
-        objTabelaContratoServicos.gerarEfeitoTabela = true;
-        objTabelaContratoServicos.inserirNoInicio = false;
-        objTabelaContratoServicos.exibirMensagens = true;
-
-        // Sobrescrevendo o método para remover corretamente a linha com os itens de formulario
-        objTabelaContratoServicos.removerLinhaCustom = objTabelaContratoServicos.removerLinha;
-        objTabelaContratoServicos.removerLinha = function (rowIndex) {
-            var tabela = document.getElementById('tbContratoServicos');
-
-            // caso não seja um elemento incluido na tela verifica se pode ser excluido
-            if (tabela.rows[rowIndex].cells[7].querySelector('#idMdCorServicoPostal')) {
-                var idMdCorServicoPostal = tabela.rows[rowIndex].cells[7].querySelector('#idMdCorServicoPostal').value;
-                var paramsAjax = {
-                    idMdCorServicoPostal,
-                };
-
-                $.ajax({
-                    url: '<?=$strUrlAjaxVerificaServicoMapeado?>',
-                    type: 'POST',
-                    dataType: 'XML',
-                    data: paramsAjax,
-                    beforeSend: function () {
-                        processando();
-                    },
-                    complete: function () {
-                        infraAvisoCancelar();
-                    },
-                    success: function (r) {
-                        var response = $(r).find('ServicoMapeado').text();
-                        if(response == 'false'){
-                            objTabelaContratoServicos.removerLinhaCustom(rowIndex);
-                            objTabelaContratoServicos.atualizaHdn();
-                        } else {
-                            alert($(r).find('Msg').text());
-                        }
-                    },
-                    error: function (e) {
-                        console.log('Não foi possível validar');
-                    }
-                });
-            } else {
-                objTabelaContratoServicos.removerLinhaCustom(rowIndex);
-                objTabelaContratoServicos.atualizaHdn();
-            }
-        };
-
-
-        /*
-         Sobrescrevendo o método  alterar para fazer o desativar
-         */
-
-        var tabela = document.getElementById('tbContratoServicos');
-        var arrAux = Array();
-
-        for (let i = 1; i < tabela.rows.length; i++) {
-
-            var linha = tabela.rows[i];
-
-            var coluna = tabela.rows[i].cells[9];
-
-            var dirImg = '<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>';
-
-
-            if (lerCelula(tabela.rows[i].cells[1]) == 'S') {
-
-                var imgDesativar = document.createElement('img');
-                imgDesativar.src = dirImg + '/desativar.svg';
-                imgDesativar.title = 'Desativar Item';
-                imgDesativar.caption = 'Desativar Item';
-                imgDesativar.className = 'infraImg';
-
-                imgDesativar.onclick = function () {
-                    objTabelaContratoServicos.alterarLinha(this.parentNode.parentNode.rowIndex, 'desativar');
-
-                };
-
-                coluna.appendChild(imgDesativar);
-            } else {
-                linha.style.backgroundColor = "#F39D9D";
-                var imgAtivar = document.createElement('img');
-                imgAtivar.src = dirImg + '/reativar.svg';
-                imgAtivar.title = 'Reativar Item';
-                imgAtivar.caption = 'Reativar Item';
-                imgAtivar.className = 'infraImg';
-
-                imgAtivar.onclick = function () {
-                    objTabelaContratoServicos.alterarLinha(this.parentNode.parentNode.rowIndex, 'reativar');
-                };
-                coluna.appendChild(imgAtivar);
-            }
-        }
-
-        objTabelaContratoServicos.alterarLinha = function (rowIndex, flag) {
-
-            var i;
-            var arrLinha = Array();
-            var numColunas = tabela.rows[rowIndex].cells.length - 1;
-            for (i = 0; i < numColunas; i++) {
-                arrLinha[i] = infraRemoverFormatacaoXML(this.lerCelula(tabela.rows[rowIndex].cells[i]));
-            }
-
-            /*
-              Solução paliativa afim de agrupar todos os id's a serem desativados dentro de um array. Tratar o mesmo em MdCorContratoRn
-            */
-
-            if (flag == "desativar") {
-                tabela.rows[rowIndex].style.backgroundColor = "#F39D9D";
-                arrLinhasDesativadas[contadorDesativadas] = arrLinha[0];
-                $('#hdnListaContratoServicosDesativados').val(arrLinhasDesativadas);
-                contadorDesativadas = contadorDesativadas + 1;
-            } else if (flag == "reativar") {
-                tabela.rows[rowIndex].style.backgroundColor = "#E4E4E4";
-                arrLinhasReativadas[contadorReativadas] = arrLinha[0];
-                $('#hdnListaContratoServicosReativadas').val(arrLinhasReativadas);
-                contadorReativadas = contadorReativadas + 1;
-            }
-        };
-
-        objTabelaContratoServicos.atualizaHdn();
-
-        if ('<?=$_GET['acao']?>' == 'md_cor_contrato_cadastrar') {
-            document.getElementById('txtNumeroContrato').focus();
-        } else if ('<?=$_GET['acao']?>' == 'md_cor_contrato_consultar') {
-            infraDesabilitarCamposAreaDados();
-        } else {
-            document.getElementById('btnCancelar').focus();
-        }
-        infraEfeitoTabelas();
-        tabelaDinamicaEventos();
-        
-        <?php if($_GET['acao'] == 'md_cor_contrato_consultar'): ?>
-            let tb = document.querySelector('#tbContratoServicos');
-            [tb.rows].map( row => $( row ).find('th:last , td:last').css('display','none') );
-        <?php endif; ?>
-    }
 
     function limparNumeroProcedimento() {
         document.getElementById('hdnIdProcedimento').value = '';
@@ -219,6 +10,16 @@
 
     function desativar() {
         document.getElementById('hdnIdProcedimento').value = '';
+    }
+
+    function inicializar() {
+        if ('<?=$_GET['acao']?>' == 'md_cor_contrato_cadastrar') {
+            document.getElementById('txtNumeroContrato').focus();
+        } else if ('<?=$_GET['acao']?>' == 'md_cor_contrato_consultar') {
+            infraDesabilitarCamposAreaDados();
+        } else {
+            document.getElementById('btnCancelar').focus();
+        }
     }
 
     /**
@@ -267,47 +68,6 @@
         });
     }
 
-    function buscarServicosPostais() {
-
-        if ( infraTrim( $('#txtNumeroContratoCorreio').val() ) == '' ) {
-            exibirAlert('Informe o Número do Contrato nos Correios.','txtNumeroContratoCorreio');
-            return false;
-        }
-
-        if ( infraTrim( $('#txtCNPJ').val() ) == '' ) {
-            exibirAlert('Informe o CNPJ do Orgão do Contrato.','txtCNPJ');
-            return false;
-        }
-
-        $.ajax({
-            url: '<?=$strLinkAjaxBuscarServicosPostais?>',
-            type: 'POST',
-            dataType: 'XML',
-            cache: false,
-            data: $('form#frmMdCorContratoCadastro').serialize(),
-            beforeSend: function () {
-                processando();
-            },
-            complete: function () {
-                infraAvisoCancelar();
-            },
-            success: function (xml) {
-                if ($(xml).find("Erros").length > 0) {
-                    exibirAlert( $(xml).find("Msg").text() );
-                    return false;
-                }
-                else {
-                    adicionarContratoServicos(xml);
-                    objTabelaContratoServicos.atualizaHdn();
-                    tabelaDinamicaEventos();
-                }
-            },
-            error: function (e) {
-                console.error('Erro ao processar o XML do SEI: ' + e.responseText);
-            }
-        });
-    }
-
     function existeContrato() {
         var flag = true;
 
@@ -344,34 +104,6 @@
             return false;
         }
 
-        if (document.getElementById('hdnListaContratoServicosIndicados').value == '' ) {
-            exibirAlert('A lista de Serviços Postais está vazia. Os Serviços Postais serão carregados abaixo após o fechamento desta mensagem.<br>Por favor, informar os dados necessários.','grid-validar-url');
-            return false;
-        }
-
-        // validando a descricao do servico postal
-        var erroDescricao = false;
-        $('.input-desc').each(function (i, val) {
-            if ($(val).val() == '') {
-                erroDescricao = true;
-                exibirAlert('Informe a Descrição.', $(val).attr('id'));
-                return false;
-            }
-        })
-
-        if (erroDescricao) return false;
-
-        var erroDescricao = false;
-        $('.sl_tipo').each(function (i, val) {
-            if ($(val).find(':selected').val() == 'null') {
-                erroDescricao = true;
-                exibirAlert('Informe um Tipo.', $(val).attr('id'));
-                return false;
-            }
-        });
-
-        if (erroDescricao) return false;
-
         var flag = false;
         $.ajax({
             url: '<?=$strUrlAjaxVerificaContrato?>',
@@ -396,10 +128,6 @@
         });
 
         if (flag) {
-            return false;
-        }
-
-        if (erroDescricao) {
             return false;
         }
 

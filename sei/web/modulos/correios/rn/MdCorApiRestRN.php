@@ -34,7 +34,7 @@ class MdCorApiRestRN
 
         $nr_postagem = isset( $_POST['txtNumeroCartaoPostagem'] )
                         ? $_POST['txtNumeroCartaoPostagem']
-                        : ( new MdCorContratoRN() )->getNumeroPostagemContratoAtivo();
+                        : ( new MdCorContratoRN() )->getNumeroPostagemContratoAtivo($objMdCorIntegToken->getNumIdMdCorContrato()); //COM O ID DO CONTRATO PEGAR O NUMERO CORRETO (ARRUMAR AQUI)
 
         if ( $nr_postagem === false ) return ['suc' => false ,'msg' => 'Número de postagem inexistente ou inválido.'];
 
@@ -46,6 +46,7 @@ class MdCorApiRestRN
             'paramsCorpo'    => ['numero'  => $nr_postagem],
             'paramsUserPass' => ['usuario' => $objMdCorIntegToken->getStrUsuario() , 'senha' => $objMdCorIntegToken->getStrSenha()]
         ];
+        
         $rs = $this->executaRequisicaoAPI($arrParams);
         return $rs['suc'] === false ? $rs : $rs['dados'];
     }
@@ -209,29 +210,30 @@ class MdCorApiRestRN
 
             if (!isset($arrParams['naoContentType'])) $headers[] = 'Content-Type: application/json';
 
+            
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-
+            
             // monta credenciais usuario e senha
             if (key_exists('paramsUserPass', $arrParams)) {
                 $senha = MdCorAdmIntegracaoINT::gerenciaDadosRestritos($arrParams['paramsUserPass']['senha'],'D');
                 $strUserPass = "{$arrParams['paramsUserPass']['usuario']}:$senha";
                 curl_setopt($curl, CURLOPT_USERPWD, $strUserPass);
             }
-
+            
             // executa requisicao no webservice
             $rs      = curl_exec($curl);
             sleep(1);
             $info    = curl_getinfo($curl);
             $rs      = $this->trataRetornoCurl($info, $rs, $arrParams);
             $strErro = '';
-
+            
             // se ocorreu alguma falha
             if ( $info['http_code'] == 0 ) {
                 $strErro = curl_error($curl);
             } else if ( $rs['suc'] === false ) {
                 $strErro = $rs['msg'];
             }
-
+            
             curl_close($curl);
 
             if ( !empty( $strErro) ) throw new InfraException( $strErro );
@@ -247,7 +249,7 @@ class MdCorApiRestRN
         $strCodInfo = isset($info['http_code']) ? "Código: {$info['http_code']} - " : "";
         $arrRet  = ['suc' => false , 'msg' => $strCodInfo , 'dados' => null , 'code' => $info['http_code'] ?? ''];
 
-        if ( $arrRet['code'] == 200 && ( isset( $arrOpcoes['retornaString'] ) && $arrOpcoes['retornaString'] === true ) ) {
+        if ( ($arrRet['code'] == 200 || $arrRet['code'] == 201) && ( isset( $arrOpcoes['retornaString'] ) && $arrOpcoes['retornaString'] === true ) ) {
             $arrRet['suc']   = true;
             $arrRet['dados'] = $ret;
 
@@ -266,6 +268,10 @@ class MdCorApiRestRN
                     $arrRet['dados'] = $rs;
                     $arrRet['msg']   = null;
                 }
+            break;
+
+            case 401:
+                $arrRet['msg'] = 'Acesso não autorizado. Verifique as credenciais informadas.';
             break;
 
             case 400:

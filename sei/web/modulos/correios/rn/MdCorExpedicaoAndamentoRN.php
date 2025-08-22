@@ -389,33 +389,7 @@ class MdCorExpedicaoAndamentoRN extends InfraRN
     protected function salvarAndamentoConectado($idProcedimento = null)
     {
 	    $arrFalha = [];
-	    $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
-
-	    $objMdCorIntegRastreio = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$RASTREAR);
-
-        if ( empty( $objMdCorIntegRastreio ) || ( is_array($objMdCorIntegRastreio) && isset($objMdCorIntegRastreio['suc']) && $objMdCorIntegRastreio['suc'] === false ) ) {
-            $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao(' Parâmetros de Rastreio e/ou Token não cadastrados.');
-            $objInfraException->lancarValidacoes();
-        }
-
-        $arrParametro = [
-            'resultado' => 'T',
-            'endpoint'  => $objMdCorIntegRastreio->getStrUrlOperacao(),
-	        'token'     => $objMdCorIntegRastreio->getStrToken(),
-	        'expiraEm'  => $objMdCorIntegRastreio->getDthDataExpiraToken(),
-        ];
-
-        // Verifica a data que expira o token para usar nas API
-	    // se retornar um array, teve falha
-	    $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegRastreio);
-	    if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
-	    	$arrFalha[] = ['erro' => $ret['msg'] , 'numero' => '000000'];
-	    	return $arrFalha;
-	    }
-
         $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
-        $objMdCorWsRastreio            = new MdCorApiRestRN($arrParametro);
 
 	    if ( $_GET['acao'] == 'md_cor_expedicao_unidade_listar' ) {
             $objMdCorExpedicaoSolicitadaRN->setIsConsultarExpedicaoAndamento(true);
@@ -427,6 +401,33 @@ class MdCorExpedicaoAndamentoRN extends InfraRN
             $mdCorListaStatusRN = new MdCorListaStatusRN();
 
             foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) {
+                $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+
+                $objMdCorIntegRastreio = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$RASTREAR, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
+
+                if ( empty( $objMdCorIntegRastreio ) || ( is_array($objMdCorIntegRastreio) && isset($objMdCorIntegRastreio['suc']) && $objMdCorIntegRastreio['suc'] === false ) ) {
+                    $objInfraException = new InfraException();
+                    $objInfraException->adicionarValidacao(' Parâmetros de Rastreio e/ou Token não cadastrados.');
+                    $objInfraException->lancarValidacoes();
+                }
+
+                $arrParametro = [
+                    'resultado' => 'T',
+                    'endpoint'  => $objMdCorIntegRastreio->getStrUrlOperacao(),
+                    'token'     => $objMdCorIntegRastreio->getStrToken(),
+                    'expiraEm'  => $objMdCorIntegRastreio->getDthDataExpiraToken(),
+                ];
+
+                // Verifica a data que expira o token para usar nas API
+                // se retornar um array, teve falha
+                $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametro, $objMdCorIntegRastreio, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
+                if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
+                    $arrFalha[] = ['erro' => $ret['msg'] , 'numero' => '000000'];
+                    return $arrFalha;
+                }
+
+                $objMdCorWsRastreio            = new MdCorApiRestRN($arrParametro);
+
                 $idMdCorExpedicaoSolicitada = $objMdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada();
                 $codigoRastreamento         = trim($objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento());
 
@@ -445,7 +446,7 @@ class MdCorExpedicaoAndamentoRN extends InfraRN
                 } else {
                     $staRastreioModulo = $mdCorListaStatusRN->getStaRastreioModuloAndamento($objMdCorExpedicaoAndamentoDTO);
 
-                    if ( $staRastreioModulo == 'P' || $staRastreioModulo == 'T' ) {
+                    if ( $staRastreioModulo == 'P' || $staRastreioModulo == 'T'|| $staRastreioModulo == 'W') {
                         $dadosRastreio = $objMdCorWsRastreio->rastrearObjeto($codigoRastreamento);
 
                         //Se não deu erro no rastreio
