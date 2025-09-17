@@ -194,7 +194,7 @@ function AtivarDesativarContratoServico( id , acao ){
 }
 
 function gerenciaAcoesGrid(){
-	hdnListaContrato = objTabelaContratoServicos.hdn.value;console.log(hdnListaContrato);
+	hdnListaContrato = objTabelaContratoServicos.hdn.value;
     arrListaContrato = hdnListaContrato.split('¥'); //equivalente as linhas da grid
 	var icoExc = "<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/remover.svg' ?>";
 	var icoDes = "<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() . '/desativar.svg' ?>";
@@ -228,7 +228,7 @@ function gerenciaAcoesGrid(){
 		arrLinhasDesativadas.forEach( function( el , idx ){
 			let linha = objTabelaContratoServicos.procuraLinha( el );
 			let objRow = document.getElementById('tbContratoServicos').rows[linha];
-			$( objRow ).removeClass('infraTrClara infraTrEscura').addClass('trVermelha');
+			$( objRow ).removeClass('infraTrClara infraTrEscura').addClass('infraTrVermelha');
 		});
 	}
 }

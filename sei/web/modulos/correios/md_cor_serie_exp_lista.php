@@ -122,28 +122,11 @@ try {
         $arrComandos[] = '<button type="button" accesskey="T" id="btnTransportarSelecao" value="Transportar" onclick="infraTransportarSelecao();" class="infraButton"><span class="infraTeclaAtalho">T</span>ransportar</button>';
     }
 
-    if ($_GET['acao'] == 'md_cor_serie_exp_listar' || $_GET['acao'] == 'md_cor_serie_exp_selecionar') {
-        //$bolAcaoCadastrar = SessaoSEI::getInstance()->verificarPermissao('md_cor_serie_exp_cadastrar');
-        //if ($bolAcaoCadastrar){
-        //  $arrComandos[] = '<button type="button" accesskey="N" id="btnNova" value="Nova" onclick="location.href=\''.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_serie_exp_cadastrar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao']).'\'" class="infraButton"><span class="infraTeclaAtalho">N</span>ovo Tipo de Documento</button>';
-        //}
-        //$bolAcaoCadastrarGrupoSerie = SessaoSEI::getInstance()->verificarPermissao('grupo_md_cor_serie_exp_cadastrar');
-        //if ($bolAcaoCadastrarGrupoSerie){
-        //  $arrComandos[] = '<button type="button" accesskey="N" id="btnNovo" value="Novo" onclick="location.href=\''.SessaoSEI::getInstance()->assinarLink('controlador.php?acao=grupo_serie_cadastrar&acao_origem='.$_GET['acao'].'&acao_retorno='.$_GET['acao']).'\'" class="infraButton">Novo <span class="infraTeclaAtalho">G</span>rupo</button>';
-        //}
-    }
-
     $objSerieDTO = new SerieDTO(true);
     $objSerieDTO->retNumIdSerie();
     $objSerieDTO->retStrNome();
     //$objSerieDTO->retStrDescricao();
     $objSerieDTO->retStrNomeGrupoSerie();
-
-    //Permiti destinatário
-//    $objSerieDTO->setStrSinDestinatario('S');
-
-    // Aplicabilidade	
-
 
     if (isset($_GET['cobranca'])) {
         $strAplicabilidadeTipoDocumento = SerieRN::$TA_EXTERNO;
@@ -325,6 +308,7 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
+include_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
@@ -430,14 +414,14 @@ $cobranca = isset($_GET['cobranca']) ? '&cobranca='.$_GET['cobranca'] : '';
         <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
             <div class="form-group">
                 <label id="lblGrupoSerie" for="selGrupoSerie" accesskey="" class="infraLabelOpcional">Grupo:</label>
-                <select id="selGrupoSerie" name="selGrupoSerie" onchange="this.form.submit();" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" >
+                <select id="selGrupoSerie" name="selGrupoSerie" onchange="this.form.submit();" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" >
                     <?= $strItensSelGrupoSerie ?>
                 </select>
             </div>
         </div>
         <div class="col-12 col-sm-12 col-md-10 col-lg-4 col-xl-4">
             <label id="lblModeloPesquisa" for="selModeloPesquisa" accesskey="" class="infraLabelOpcional">Modelo:</label>
-            <select id="selModeloPesquisa" name="selModeloPesquisa" onchange="this.form.submit();" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" >
+            <select id="selModeloPesquisa" name="selModeloPesquisa" onchange="this.form.submit();" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" >
                 <?= $strItensSelModelo ?>
             </select>
         </div>

@@ -92,7 +92,7 @@ try {
         $objContatoDTO = new ContatoDTO();
         $objContatoDTO->retNumIdContato();
         $objContatoDTO->retStrNome();
-        $objContatoDTO->retDblCnpj();
+        $objContatoDTO->retStrCnpj();
         $objContatoDTO->retStrSigla();
         $objContatoDTO->retStrEmail();
         $objContatoDTO->retStrTelefoneCelular();
@@ -102,7 +102,7 @@ try {
         $objContatoDTO = $objContatoRN->consultarRN0324($objContatoDTO);
 
         if (!is_null($objContatoDTO)) {
-            $strCliente = $objContatoDTO ? $objContatoDTO->getStrNome().' ('.$objContatoDTO->getStrSigla().') - CNPJ: '. InfraUtil::formatarCnpj($objContatoDTO->getDblCnpj()): null;
+            $strCliente = $objContatoDTO ? $objContatoDTO->getStrNome().' ('.$objContatoDTO->getStrSigla().') - CNPJ: '. InfraUtil::formatarCnpj($objContatoDTO->getStrCnpj()): null;
 
             $strTelefoneContato = $contatoUnidadeExpedidora->getStrTelefoneComercial();
 

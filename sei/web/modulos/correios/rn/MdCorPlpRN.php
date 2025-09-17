@@ -739,7 +739,7 @@
       $objContatoDTO->retStrCep();
       $objContatoDTO->retStrNomeCidade();
       $objContatoDTO->retStrSiglaUf();
-      $objContatoDTO->retDblCnpj();
+      $objContatoDTO->retStrCnpj();
       $objContatoDTO->retStrSigla();
       $objContatoDTO->retStrEmail();
       $objContatoDTO->retStrTelefoneComercial();
@@ -770,7 +770,7 @@
 		    "dddCelular"  => "",
 		    "celular"     => "",
 		    "email"       => "",
-		    "cpfCnpj"     => InfraUtil::retirarFormatacao(InfraUtil::formatarCnpj($objContatoDTO->getDblCnpj())),
+		    "cpfCnpj"     => InfraUtil::retirarFormatacao(InfraUtil::formatarCnpj($objContatoDTO->getStrCnpj())),
 		    "obs"         => "",
 		    "endereco"    => [
 			    "cep"         => InfraUtil::retirarFormatacao($objContatoDTO->getStrCep()),

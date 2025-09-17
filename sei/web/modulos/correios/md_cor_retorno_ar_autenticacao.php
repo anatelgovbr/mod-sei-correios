@@ -573,7 +573,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 
           <div id="divOrgao" class="infraAreaDados" style="height:4.5em;">
               <label id="lblOrgao" for="selOrgao" accesskey="r" class="infraLabelObrigatorio">Ó<span class="infraTeclaAtalho">r</span>gão do Assinante:</label>
-              <select id="selOrgao" name="selOrgao" onchange="trocarOrgaoUsuario();" class="infraSelect" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+              <select id="selOrgao" name="selOrgao" onchange="trocarOrgaoUsuario();" class="infraSelect form-select" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
                 <?=$strItensSelOrgaos?>
               </select>
           </div>
@@ -585,7 +585,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
 
           <div id="divCargoFuncao" class="infraAreaDados" style="height:4.5em;">
               <label id="lblCargoFuncao" for="selCargoFuncao" accesskey="F" class="infraLabelObrigatorio">Cargo / <span class="infraTeclaAtalho">F</span>unção:</label>
-              <select id="selCargoFuncao" name="selCargoFuncao" class="infraSelect" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
+              <select id="selCargoFuncao" name="selCargoFuncao" class="infraSelect form-select" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
                 <?=$strItensSelCargoFuncao?>
               </select>
           </div>

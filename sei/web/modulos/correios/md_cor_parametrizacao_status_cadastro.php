@@ -172,7 +172,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="<?= $col_def ?>">
                 <label id="lblSituacaoRastreio" for="selSituacaoRastreio" class="infraLabelObrigatorio">
                     Situação no Rastreio do Módulo:</label></br>
-                <select id="selSituacaoRastreio" name="selSituacaoRastreio" class="infraSelect form-control"
+                <select id="selSituacaoRastreio" name="selSituacaoRastreio" class="infraSelect form-select"
                         tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                     <?= $strItensSelRastreioModulo ?>
                 </select>

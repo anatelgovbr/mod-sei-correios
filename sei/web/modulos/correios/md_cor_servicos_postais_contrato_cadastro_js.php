@@ -178,13 +178,46 @@
               Solução paliativa afim de agrupar todos os id's a serem desativados dentro de um array. Tratar o mesmo em MdCorContratoRn
             */
 
+              
+            arrLinhasReativadas.forEach(function(item, index){
+                if(item == arrLinha[0]){
+                    arrLinhasReativadas.splice(index, 1);
+                    contadorReativadas = contadorReativadas - 1;
+                }
+            });
+
+            arrLinhasDesativadas.forEach(function(item, index){
+                if(item == arrLinha[0]){
+                    arrLinhasDesativadas.splice(index, 1);
+                    contadorDesativadas = contadorDesativadas - 1;
+                }
+            });
+            $('#hdnListaContratoServicosDesativados').val(arrLinhasDesativadas);
+            $('#hdnListaContratoServicosReativadas').val(arrLinhasReativadas);
+
             if (flag == "desativar") {
                 tabela.rows[rowIndex].style.backgroundColor = "#F39D9D";
+                tabela.rows[rowIndex].cells[9].getElementsByTagName('img')[1].src = dirImg+'/reativar.svg';
+                tabela.rows[rowIndex].cells[9].getElementsByTagName('img')[1].title = 'Reativar Item';
+
+                var imgAtivar = tabela.rows[rowIndex].cells[9].getElementsByTagName('img')[1];
+                imgAtivar.onclick = function () {
+                    objTabelaContratoServicos.alterarLinha(this.parentNode.parentNode.rowIndex, 'reativar');
+                };
+
                 arrLinhasDesativadas[contadorDesativadas] = arrLinha[0];
                 $('#hdnListaContratoServicosDesativados').val(arrLinhasDesativadas);
                 contadorDesativadas = contadorDesativadas + 1;
             } else if (flag == "reativar") {
                 tabela.rows[rowIndex].style.backgroundColor = "#E4E4E4";
+                tabela.rows[rowIndex].cells[9].getElementsByTagName('img')[1].src = dirImg+'/desativar.svg';
+                tabela.rows[rowIndex].cells[9].getElementsByTagName('img')[1].title = 'Desativar Item';
+                
+                var imgAtivar = tabela.rows[rowIndex].cells[9].getElementsByTagName('img')[1];
+                imgAtivar.onclick = function () {
+                    objTabelaContratoServicos.alterarLinha(this.parentNode.parentNode.rowIndex, 'desativar');
+                };
+
                 arrLinhasReativadas[contadorReativadas] = arrLinha[0];
                 $('#hdnListaContratoServicosReativadas').val(arrLinhasReativadas);
                 contadorReativadas = contadorReativadas + 1;

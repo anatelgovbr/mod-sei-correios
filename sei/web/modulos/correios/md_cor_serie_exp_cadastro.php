@@ -150,7 +150,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-sm-8 col-md-8 col-lg-7 col-xl-7">
                 <div class="form-group">
                     <div class="input-group mb-3">
-                        <select id="selDescricao" name="selDescricao" size="8" multiple="multiple" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                        <select id="selDescricao" name="selDescricao" size="8" multiple="multiple" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                             <?= $strItensSel ?>
                         </select>
                         <div class="divIcones">

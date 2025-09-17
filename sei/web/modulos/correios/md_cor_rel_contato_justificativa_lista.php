@@ -60,9 +60,8 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
+include('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
-require_once 'md_cor_rel_contato_justificativa_css.php';
-
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
 PaginaSEI::getInstance()->fecharJavaScript();
@@ -85,7 +84,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
                 <div class="form-group">
                     <label id="lblNatureza" for="selNatureza" accesskey="" class="infraLabelOpicional">Natureza:</label>
-                    <select onchange="this.form.submit()" id="selNatureza" name="selNatureza" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                    <select onchange="this.form.submit()" id="selNatureza" name="selNatureza" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                         <option value=""></option>
                         <option value="J" <?= $selNatureza == 'J' ? 'selected' : '' ?> >Pessoa Jurídica</option>
                         <option value="F" <?= $selNatureza == 'F' ? 'selected' : '' ?> > Pessoa Física</option>
@@ -101,7 +100,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-12 col-sm-8 col-md-8 col-lg-6 col-xl-6">
                 <div class="form-group">
                     <label id="lblJustificativa" for="selJustificativa" accesskey="" class="infraLabelOpicional">Justifivativa:</label>
-                    <select onchange="this.form.submit()" id="selJustificativa" name="selJustificativa" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                    <select onchange="this.form.submit()" id="selJustificativa" name="selJustificativa" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                         <?= $strItensSelJustificativa ?>
                     </select>
                 </div>

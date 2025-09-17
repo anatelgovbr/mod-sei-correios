@@ -16,7 +16,7 @@ class MdCorRelContatoJustificativaINT extends InfraINT
             $objContatoDTO->retStrNome();
             $objContatoDTO->retStrStaNatureza();
             $objContatoDTO->retDblCpf();
-            $objContatoDTO->retDblCnpj();
+            $objContatoDTO->retStrCnpj();
             $objContatoDTO->setOrdStrNome(InfraDTO::$TIPO_ORDENACAO_ASC);
             $objContatoDTO->setNumIdContato($arr, InfraDTO::$OPER_IN);
 

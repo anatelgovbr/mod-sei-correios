@@ -24,7 +24,7 @@ try {
     PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
     PaginaSEI::getInstance()->montarStyle();
     PaginaSEI::getInstance()->abrirStyle();
-    require_once('md_cor_expedicao_solicitada_cadastro_css.php');
+    require_once('md_cor_estilos_css.php');
     PaginaSEI::getInstance()->fecharStyle();
     PaginaSEI::getInstance()->montarJavaScript();
     PaginaSEI::getInstance()->fecharHead();
@@ -197,7 +197,7 @@ try {
                 <div class="form-group">
                     <?php if ($unidade_sol != '') { ?>
                         <label>Unidade Solicitante:</label>
-                        <select name="selUnidadeSolicitante" id="selUnidadeSolicitante" class="infraSelect form-control" readonly>
+                        <select name="selUnidadeSolicitante" id="selUnidadeSolicitante" class="infraSelect form-select" readonly>
                             <option value="<?= $unidade_sol ?>" selected><?= $unidade_sol ?></option>
                         </select>
                     <?php } ?>

@@ -106,7 +106,7 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-//include_once('md_cor_mapeamento_uni_exp_sol_cadastro_css.php');
+include_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
@@ -115,7 +115,7 @@ PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 PaginaSEI::getInstance()->abrirAreaDados();
 ?>
-<form id="frmMdCorUnidadeExpCadastro" method="post" onsubmit="return OnSubmitForm();" action="<? //= SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao']) ?>">
+<form id="frmMdCorUnidadeExpCadastro" method="post" onsubmit="return OnSubmitForm();">
     <?php PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
     <div class="row">
         <div class="col-sm-8 col-md-8 col-lg-6">
@@ -123,7 +123,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
                 <label id="lblUnidadeExpedidora" for="selUnidadeExpedidora" class="infraLabelObrigatorio">
                     Unidades Expedidoras:
                 </label>
-                <select id="selUnidadeExpedidora" name="selUnidadeExpedidora" class="infraSelect form-control"
+                <select id="selUnidadeExpedidora" name="selUnidadeExpedidora" class="infraSelect form-select"
                         tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" <?= $booDesabilitar ? 'disabled="disabled"' : ''; ?>>
                     <?= $strItensSelUnidadeExpedidora ?>
                 </select>
@@ -142,7 +142,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
     <div class="row">
         <div class="col-sm-10 col-md-10 col-lg-9">            
             <div class="input-group">
-                <select id="selUnidadeSolicitante" name="selUnidadeSolicitante" size="10" multiple="multiple" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados ?>">
+                <select id="selUnidadeSolicitante" name="selUnidadeSolicitante" size="10" multiple="multiple" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados ?>">
                     <?= $strItensUnidadesMapeadas ?>
                 </select>
                 <div class="botoes ml-1">

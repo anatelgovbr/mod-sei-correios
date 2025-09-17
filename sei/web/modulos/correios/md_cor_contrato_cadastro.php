@@ -160,7 +160,8 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-include_once('md_cor_contrato_cadastro_css.php');
+//include_once('md_cor_contrato_cadastro_css.php');
+include_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->fecharHead();
@@ -185,11 +186,11 @@ PaginaSEI::getInstance()->abrirAreaDados();
                             <label id="lblNumeroContrato" for="txtNumeroContrato" accesskey="o"
                                    class="infraLabelObrigatorio">Númer<span class="infraTeclaAtalho">o</span> do
                                 Contrato:
-                                <img align="top" id="imgAjuda"
+                                <img id="imgAjuda"
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                      onmouseover="return infraTooltipMostrar('Informar o Número de identificação do Contrato no Órgão.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
-                                     alt="Ajuda" class="infraImgModulo"/>
+                                     alt="Ajuda" class="infraImg"/>
                             </label>
                             <input type="text" id="txtNumeroContrato" name="txtNumeroContrato"
                                    class="infraText form-control"
@@ -202,12 +203,12 @@ PaginaSEI::getInstance()->abrirAreaDados();
                         <div class="col-sm-7 col-md-7 col-lg-6">
                             <label id="lblNumeroProcessoContratacao" for="txtNumeroProcessoContratacao" accesskey="t"
                                    class="infraLabelOpcional">Número do Processo de Con<span class="infraTeclaAtalho">t</span>ratação:
-                                <img align="top" id="imgAjuda"
+                                <img id="imgAjuda"
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                      name="ajuda"
                                      onmouseover="return infraTooltipMostrar('Informar o Número do Processo no SEI por meio do qual os Correios foi Contratado.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
-                                     alt="Ajuda" class="infraImgModulo"/>
+                                     alt="Ajuda" class="infraImg"/>
                             </label>
                             <div class="input-group mb-3">
                                 <input type="text" id="txtNumeroProcessoContratacao" name="txtNumeroProcessoContratacao"
@@ -221,7 +222,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                        onkeypress="return infraMascaraTexto(this,event,50);" maxlength="50"
                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                                 <? if ($_GET['acao'] == 'md_cor_contrato_cadastrar' || $_GET['acao'] == 'md_cor_contrato_alterar') { ?>
-                                    <button id="validar-processo-contratacao" class="infraButton" onclick="validarNumeroProcesso()"
+                                    <button id="validar-processo-contratacao" class="infraButton ms-1 rounded-1" onclick="validarNumeroProcesso()" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
                                             type="button">Validar
                                     </button>
                                 <? } ?>
@@ -251,12 +252,11 @@ PaginaSEI::getInstance()->abrirAreaDados();
                             <label id="lblNumeroContratoCorreio" for="txtNumeroContratoCorreio" accesskey="n"
                                    class="infraLabelObrigatorio"><span class="infraTeclaAtalho">N</span>úmero do
                                 Contrato:
-                                <img
-                                        align="top" id="imgAjuda"
-                                        src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                        onmouseover="return infraTooltipMostrar('Código interno dos Correios de identificação do Contrato, utilizado na integração com o Web Service do SIGEP WEB. \n \n Se for informado número incorreto não vai validar o Endereço WSDL do Web Service do SIGEP WEB.', 'Ajuda');"
-                                        onmouseout="return infraTooltipOcultar();"
-                                        alt="Ajuda" class="infraImgModulo"/>
+                                <img id="imgAjuda"
+                                     src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
+                                     onmouseover="return infraTooltipMostrar('Código interno dos Correios de identificação do Contrato, utilizado na integração com o Web Service do SIGEP WEB. \n \n Se for informado número incorreto não vai validar o Endereço WSDL do Web Service do SIGEP WEB.', 'Ajuda');"
+                                     onmouseout="return infraTooltipOcultar();"
+                                     alt="Ajuda" class="infraImg"/>
                             </label>
                             <input type="text" id="txtNumeroContratoCorreio" name="txtNumeroContratoCorreio"
                                    class="infraText form-control"
@@ -270,12 +270,11 @@ PaginaSEI::getInstance()->abrirAreaDados();
                             <label id="lblNumeroCartaoPostagem" for="txtNumeroCartaoPostagem" accesskey="p"
                                    class="infraLabelObrigatorio">Cartão
                                 de <span class="infraTeclaAtalho">P</span>ostagem:
-                                <img align="top"
-                                     id="imgAjuda"
+                                <img id="imgAjuda"
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                      onmouseover="return infraTooltipMostrar('Informar o Cartão de Postagem correspondente ao Contrato do Órgão.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
-                                     alt="Ajuda" class="infraImgModulo"/>
+                                     alt="Ajuda" class="infraImg"/>
                             </label>
                             <input type="text" id="txtNumeroCartaoPostagem" name="txtNumeroCartaoPostagem"
                                    class="infraText form-control"
@@ -286,13 +285,12 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     </div>
                     <div class="row">
                         <div class="<?= $cls_def ?>">
-                            <label id="lblCNPJ" for="txtCNPJ" class="infraLabelObrigatorio">CNPJ do Órgão: <img
-                                        align="top"
-                                        id="imgAjuda"
-                                        src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                        onmouseover="return infraTooltipMostrar('Informar o CNPJ do Órgão correspondente ao Contrato.', 'Ajuda');"
-                                        onmouseout="return infraTooltipOcultar();"
-                                        alt="Ajuda" class="infraImgModulo"/>
+                            <label id="lblCNPJ" for="txtCNPJ" class="infraLabelObrigatorio">CNPJ do Órgão:
+                                <img id="imgAjuda"
+                                     src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
+                                     onmouseover="return infraTooltipMostrar('Informar o CNPJ do Órgão correspondente ao Contrato.', 'Ajuda');"
+                                     onmouseout="return infraTooltipOcultar();"
+                                     alt="Ajuda" class="infraImg"/>
                             </label>
                             <input type="text" id="txtCNPJ" name="txtCNPJ" class="infraText form-control"
                                    value="<?= PaginaSEI::tratarHTML(InfraUtil::formatarCnpj($objMdCorContratoDTO->getNumNumeroCnpj())); ?>"
@@ -303,13 +301,13 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     <div class="row">
                         <div class="<?= $cls_def ?>">
                             <label id="lblCodigoDiretoria" for="slCodigoDiretoria" class="infraLabelOpcional">Código da Diretoria:
-                                <img align="top" id="imgAjuda"
+                                <img id="imgAjuda"
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                      onmouseover="return infraTooltipMostrar('Diretoria Regional dos Correios correspondente ao Contrato do Órgão.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
-                                     alt="Ajuda" class="infraImgModulo"/>
+                                     alt="Ajuda" class="infraImg"/>
                             </label>
-                            <select class="infraSelect form-control" name="slCodigoDiretoria" id="slCodigoDiretoria"
+                            <select class="infraSelect form-select" name="slCodigoDiretoria" id="slCodigoDiretoria"
                                     tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                                 <?php echo $mdCorDiretorioInt; ?>
                             </select>
