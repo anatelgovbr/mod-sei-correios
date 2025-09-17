@@ -111,9 +111,10 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			$objInfraException = new InfraException();
 
 			// Processa os tokens
-			$this->processaCadastroAlteracaoTokens($_POST['hdnTbTokens'] ?? null, $objMdCorAdmIntegracaoDTO->getNumIdMdCorAdmIntegracao());
-			$arrTbTokens = PaginaSEI::getInstance()->getArrItensTabelaDinamica( $_POST['hdnTbTokens'] );
-
+			if ($objMdCorAdmIntegracaoDTO->getNumFuncionalidade() == self::$GERAR_TOKEN && isset($_POST['hdnTbTokens'])) {
+				$this->processaCadastroAlteracaoTokens($objMdCorAdmIntegracaoDTO->getNumIdMdCorAdmIntegracao());
+			}
+			
 			$this->validarStrNome($objMdCorAdmIntegracaoDTO, $objInfraException);
 			$this->validarNumFuncionalidade($objMdCorAdmIntegracaoDTO, $objInfraException);
 			$objInfraException->lancarValidacoes();
@@ -126,7 +127,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 		}
 	}
 
-	protected function processaCadastroAlteracaoTokens($hdnTbTokens, $idMdCorAdmIntegracao) {
+	protected function processaCadastroAlteracaoTokens($idMdCorAdmIntegracao) {
 		$arrTbTokens = PaginaSEI::getInstance()->getArrItensTabelaDinamica( $_POST['hdnTbTokens'] );
 		if ( !empty( $arrTbTokens ) ) {
 			$objMdCorAdmIntegracaoTokensRN  = new MdCorAdmIntegracaoTokensRN();
@@ -327,6 +328,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 		$objMdCorAdmIntegracaoTokensDTO->retTodos();
 
 		$ret = $objMdCorAdmIntegracaoTokensRN->consultar( $objMdCorAdmIntegracaoTokensDTO );
+		//$ret = $ret[0] ?? null;
 
 		// caso não exista integração cadastrada, realiza a inserção com os campos token, usuario e senha como null
 		if ( $ret == null ) {
@@ -422,5 +424,17 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 		}
 		
 		return true;
+	}
+
+	public function validaStatusCanceladoPlp($idPPN, $arrParametroRest) {
+		$arrParametroRest['endpoint'] = 'https://api.correios.com.br/prepostagem/v2/prepostagens?id=' . $idPPN;
+		$objMdCorApiValidaRotulo = new MdCorApiRestRN($arrParametroRest);
+		$statusRotulo = $objMdCorApiValidaRotulo->validaStatusRotulo( $idPPN, $arrParametroRest['endpoint'] );
+
+		if ( !isset( $arrStatusRotulo['suc'] ) && $statusRotulo == 'Cancelado' ) {
+			return true;
+		}
+
+		return false;
 	}
 }

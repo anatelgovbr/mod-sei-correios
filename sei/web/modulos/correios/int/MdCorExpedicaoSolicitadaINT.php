@@ -430,12 +430,10 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 $enderecoOrgaoIncompleto = true;
             } else {
                     if(!$bolEntrada){
-                        
                         $str_msg_validacaoCorreios = self::validarCepBaseCorreios($cepOrgao, "O CEP do cadastro do órgão desta Unidade é inválido.\nFaça contato com a Gestão do SEI do seu órgão para corrigir o CEP do órgão.", null, $id_contrato);
-                        return "<itens><flag>false</flag><mensagem>$str_msg_validacaoCorreios</mensagem></itens>";
-                    if ($str_msg_validacaoCorreios != '') {
-                        return "<itens><flag>false</flag><mensagem>" . $str_msg_validacaoCorreios . "</mensagem></itens>";
-                    }
+                        if ($str_msg_validacaoCorreios != '') {
+                            return "<itens><flag>false</flag><mensagem>" . $str_msg_validacaoCorreios . "</mensagem></itens>";
+                        }
                 }
             }
 
@@ -583,7 +581,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                 }
             }
 
-            return "<item><flag>true</flag><mensagem>Sucesso na verificação</mensagem></item>";
+            return "";
 
         } catch (Exception $e) {
             return $e->getMessage();
