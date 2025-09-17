@@ -85,7 +85,7 @@ try {
 
         $strResultado .= '<th class="infraTh" width="17%">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Data de Geração', 'DataCadastro', $arrObjMdCorPlpDTO) . '</th>' . "\n";
 
-        $strResultado .= '<th class="infraTh" width="45%">' . 'Serviço Postal' . '</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="35%">' . 'Serviço Postal' . '</th>' . "\n";
         $strResultado .= '<th class="infraTh text-center">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Objetos', 'Contagem', $arrObjMdCorPlpDTO) . '</th>' . "\n";
         $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Situação', 'StaPlp', $arrObjMdCorPlpDTO) . '</th>' . "\n";
         $strResultado .= '<th class="infraTh" width="8%">Ações</th>' . "\n";
@@ -119,7 +119,6 @@ try {
                 'NumeroContratoCorreio', 
                 ', '
             ) . ')';
-
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($objMdCorPlpDTO->getDblCodigoPlp()) . '</td>';
 
             $strResultado .= '<td style="word-break:break-all">' . PaginaSEI::tratarHTML($objMdCorPlpDTO->getDthDataCadastro()) . '</td>';
@@ -159,7 +158,7 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-include_once("md_cor_plps_geradas_lista_css.php");
+include_once("md_cor_estilos_css.php");
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
@@ -179,7 +178,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="col-xl-6 col-lg-9 col-md-8 col-sm-8 col-12">
             <div class="form-group">
                 <label id="lblServicoPostal" for="selServicoPostal" class="infraLabelOpcional">Serviços Postais:</label>
-                <select id="selServicoPostal" name="selServicoPostal" class="infraSelect form-control" maxlength="250"  tabindex="503">
+                <select id="selServicoPostal" name="selServicoPostal" class="infraSelect form-select" maxlength="250"  tabindex="503">
                     <?= $strComboServicoPostal ?>
                 </select>
             </div>
@@ -205,7 +204,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <?php if ($_GET['acao'] != 'md_cor_expedicao_plp_listar'): ?> 
         <div class="col-xl-6 col-lg-7 col-md-8 col-sm-8 col-12">
             <label id="lblStatus" for="lblStatus" class="infraLabelOpcional">Situação da PLP:</label>
-            <select id="txtStatus" name="txtStatus" class="infraSelect form-control" maxlength="250" tabindex="503">
+            <select id="txtStatus" name="txtStatus" class="infraSelect form-select" maxlength="250" tabindex="503">
                 <?= $strComboStatus ?>
             </select>
         </div>

@@ -236,8 +236,8 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
+include_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
-include_once('md_cor_retorno_ar_cadastro_css.php');
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
@@ -248,7 +248,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-justify">
             <fieldset class="infraFieldset form-control mb-3 py-3" style="height: auto">
-                <legend class="infraLegend">Requistos para Carregamento de Arquivo</legend>
+                <legend class="infraLegend ">Requistos para Carregamento de Arquivo</legend>
                 <ol class="m-0 pl-4">
                     <li class="requisito">O arquivo a ser carregado tem que ser do tipo ZIP.</li>
                     <li class="requisito">Dentro do ZIP somente deve constar arquivos PDFs, sendo um PDF por AR (Aviso
@@ -288,7 +288,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
         <?php if (empty($arquivoLido)) { ?>
             <div class="row">
                 <div class="col-10">
-                    <label class="infraLabelObrigatorio">Arquivo ZIP para Processamento:</label>
+                    <label class="infraLabelObrigatorio">Selecionar Arquivo ZIP:</label>
                     <input type="file"
                         id="fileArquivo"
                         name="fileArquivo"
@@ -323,7 +323,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
 <?php } ?>
 
 <?
-PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos, true);
+// PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos, true);
 PaginaSEI::getInstance()->fecharAreaDados();
 require_once('md_cor_retorno_ar_cadastro_js.php');
 PaginaSEI::getInstance()->fecharBody();

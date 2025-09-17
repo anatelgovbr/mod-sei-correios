@@ -61,9 +61,11 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
+require_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
-require_once('md_cor_retorno_ar_lista_css.php');
+PaginaSEI::getInstance()->abrirJavaScript();
+PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 ?>
@@ -98,32 +100,27 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="form-group">
                     <label id="lblPeriodoProcessamento" for="txtPeriodoProcessamentoInicio" accesskey="o" class="infraLabelOpcional">Período do Processamento:</label><br/>
                     <div class="input-group input-group-sm mb-3 pt-0">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">De</span>
-                        </div>
+
+                        <span class="input-group-text group input-group-sm" id="basic-addon1">De</span>
+
                         <input type="text" name="txtPeriodoProcessamentoInicio" id="txtPeriodoProcessamentoInicio" class="infraText form-control" 
-                                onkeypress="return infraMascara(this, event,'##/##/####')" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" />                        
-                        <div class="input-group-append">
-                            <img src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/calendario.svg"
-                                id="imgCalDthPeriodoInicio"
-                                title="Selecionar Data de Início do Período" alt="Selecionar Data de Início do Período"
-                                class="infraImg"
-                                onclick="infraCalendario('txtPeriodoProcessamentoInicio',this,false,'');">
-                            <span class="input-group-text" id="basic-addon1">Até</span>
-                        </div>
-                        <input
-                                type="text"
-                                onkeypress="return infraMascara(this, event,'##/##/####')"
-                                id="txtPeriodoProcessamentoFim"
-                                name="txtPeriodoProcessamentoFim"
-                                class="infraText form-control"
-                                tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                        />
+                               onkeypress="return infraMascara(this, event,'##/##/####')" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" />
+
                         <img src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/calendario.svg"
-                                id="imgCalDthPeriodoFim"
-                                title="Selecionar Data de Fim do Período" alt="Selecionar Data de Fim do Período"
-                                class="infraImg mt-1"
-                                onclick="infraCalendario('txtPeriodoProcessamentoFim',this,false,'');">
+                            id="imgCalDthPeriodoInicio" class="infraImg"
+                            title="Selecionar Data de Início do Período" alt="Selecionar Data de Início do Período"
+                            onclick="infraCalendario('txtPeriodoProcessamentoInicio',this,false,'');">
+
+                        <span class="input-group-text" id="basic-addon1">Até</span>
+
+                        <input type="text" onkeypress="return infraMascara(this, event,'##/##/####')" id="txtPeriodoProcessamentoFim"
+                            name="txtPeriodoProcessamentoFim" class="infraText form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" />
+
+                        <img src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/calendario.svg"
+                            id="imgCalDthPeriodoFim" class="infraImg mt-1"
+                            title="Selecionar Data de Fim do Período" alt="Selecionar Data de Fim do Período"
+                            onclick="infraCalendario('txtPeriodoProcessamentoFim',this,false,'');">
+
                     </div>
                 </div>
             </div>

@@ -302,7 +302,7 @@ try {
 
             if ( $qtdRegInativos == $numRegistrosServico ) {
                 $todosRegUnidInativo = true;
-                $strCssTr = '<tr class="trVermelha">';
+                $strCssTr = '<tr class="infraTrVermelha">';
             } else {
                 $strCssTr = ($strCssTr == '<tr class="infraTrClara">') ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">';
             }
@@ -386,13 +386,13 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="row ">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">                
                 <label class="infraLabelOpcional">Unidade Solicitante:</label>
-                <select class="infraSelect form-control" tabindex="504" name="selUnidade" onchange="enviarFormPesquisa()" id="selUnidade"<?= $strDesabilitarConsultar ?>>
+                <select class="infraSelect form-select" tabindex="504" name="selUnidade" onchange="enviarFormPesquisa()" id="selUnidade"<?= $strDesabilitarConsultar ?>>
                     <?= $strItensSelUnidade ?>
                 </select>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                 <label class="infraLabelOpcional">Serviço Postal:</label>
-                <select class="infraSelect form-control" tabindex="504" name="selServico" onchange="enviarFormPesquisa()" id="selServico"<?= $strDesabilitarConsultar ?>>
+                <select class="infraSelect form-select" tabindex="504" name="selServico" onchange="enviarFormPesquisa()" id="selServico"<?= $strDesabilitarConsultar ?>>
                     <?= $strItensSelServico ?>
                 </select>
             </div>

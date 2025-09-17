@@ -173,7 +173,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
                      class="infraImg" name="ajuda"
                     <?= PaginaSEI::montarTitleTooltip('Selecione a funcionalidade que deseja mapear. \nSão listadas somente as Funcionalidades ainda não mapeadas.','Ajuda') ?> />
 
-				<select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-control"
+				<select id="selFuncionalidade" name="selFuncionalidade" class="infraSelect form-select"
 				        tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>">
 					<?= MdCorAdmIntegracaoINT::montarSelectFuncionalidade(
 						$objMdCorAdmIntegracaoDTO->getNumFuncionalidade(),
@@ -315,9 +315,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
         <input type="hidden" id="hdnTipoAcao" name="hdnTipoAcao" value="<?= $strTipoAcao ?>">
 
 		<?php
-		PaginaSEI::getInstance()->fecharAreaDados();
-		//PaginaSEI::getInstance()->montarAreaDebug();
-		PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos);
+		    PaginaSEI::getInstance()->fecharAreaDados();
 		?>
 		
 		<input type="hidden" id="hdnTbTokens" name="hdnTbTokens" value="<?= $strTbTokens ?>">

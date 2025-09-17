@@ -699,7 +699,7 @@ try {
                         PaginaSEI::getInstance()->adicionarMensagem( $msg , InfraPagina::$TIPO_MSG_AVISO );
                     }
 
-                    $strTitulo = 'Cadastrar Solicitção de Expedição pelos Correios';
+                    $strTitulo = 'Cadastrar Solicitação de Expedição pelos Correios';
 
                     $arrComandos[] = '<button type="button" onclick="validarFormulario()" accesskey="S" id="btnSolicitarExpedicao" value="SolicitarExpedicao" class="infraButton">
 	                              <span class="infraTeclaAtalho">S</span>olicitar Expedição</button>';
@@ -985,14 +985,15 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-require_once('md_cor_expedicao_solicitada_cadastro_css.php');
+//require_once('md_cor_expedicao_solicitada_cadastro_css.php');
+require_once 'md_cor_estilos_css.php';
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 
 if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($_POST['txaJustificativa']) && $arrComandos ) {
-    ?>
+?>
 
     <form id="frmSolicitarExpedicao" method="post" action="<?= $strAcaoForm ?>">
         <?php
@@ -1017,7 +1018,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                 <div class="form-group">
                     <?php if ($unidade_sol != '') { ?>
                         <label>Unidade Solicitante:</label>
-                        <select name="" id="" class="infraSelect form-control" disabled>
+                        <select name="" id="" class="infraSelect form-select" disabled>
                             <option value=""><?= $unidade_sol ?></option>
                         </select>
                     <?php } ?>
@@ -1027,7 +1028,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                 <div class="form-group">
                     <?php if ($_GET['acao'] == 'md_cor_expedicao_solicitada_consultar') { ?>
                         <label>Unidade Expedidora:</label>
-                        <select name="" id="" class="infraSelect form-control" disabled>
+                        <select name="" id="" class="infraSelect form-select" disabled>
                             <option value=""><?= $unidade_exp ?></option>
                         </select>
                     <?php } ?>
@@ -1052,7 +1053,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-8 col-xl-6">
                         <label class="infraLabelCheck" for="chkAvisoRecebimento" style="font-size: .9rem">
-                            <input type="checkbox" class="infraCheckbox form-control" id="chkAvisoRecebimento" name="chkAvisoRecebimento" <?= $chkNecessitaRecebimentoAR ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                            <input type="checkbox" class="infraCheckbox form-check-input" id="chkAvisoRecebimento" name="chkAvisoRecebimento" <?= $chkNecessitaRecebimentoAR ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                             Necessita de Aviso de Recebimento (AR)
                         </label>
                     </div>
@@ -1074,7 +1075,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                             </div>
 
                             <div class="row">
-                                <div class="col" style="border-left: 6px solid red; margin: 15px;">
+                                <div class="col" style="border-left: 6px solid #ff0000; margin: 15px;">
                                     <label class="infraLabelOpcional">
                                         <span style="color: red; font-weight: bold;"> ATENÇÃO: </span>
                                         A expedição é realizada de forma integrada com APIs dos Correios. <br>
@@ -1151,7 +1152,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                                     <input type="hidden" id="hdnContatoIdentificador" onchange="alert(this.value);"
                                            name="hdnContatoIdentificador" value="<?= $id_destinatario_aux ?>"/>
                                     <select id="selContato" name="selContato" style="display: none !important"
-                                            class="form-control"
+                                            class="form-select"
                                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                         <option onclick="alert('');" onchange="alert(this.value);"
                                                 onbeforeupdate="alert(this.value);"
@@ -1164,13 +1165,13 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
 
                             <div class="row" id="divSelContato">
                                 <div class="col-sm-12 col-md-12 col-lg-8 col-xl-6">
-                                    <label class="infraLabelCheck" for="chkDocumentoPossuiAnexo">
-                                        <input type="checkbox" class="infraCheckbox form-control"
-                                               id="chkDocumentoPossuiAnexo" onchange="marcarChkDocumentoPossuiAnexo()"
-                                            <?php echo $chkPossuiAnexo; ?>
-                                               name="chkDocumentoPossuiAnexo"
-                                               tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>" <?= $chkPossuiAnexoDisable ?> >
-                                        O Documento a ser expedido possui Anexos
+                                    <label class="infraLabelCheck" for="chkDocumentoPossuiAnexo" style="font-size: .9rem">
+                                        <input type="checkbox" class="infraCheckbox"
+                                           id="chkDocumentoPossuiAnexo" name="chkDocumentoPossuiAnexo" onchange="marcarChkDocumentoPossuiAnexo()"
+                                           <?= $chkPossuiAnexo ?>
+                                           tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
+                                           />
+                                           O Documento a ser expedido possui Anexos
                                     </label>
                                 </div>
                             </div>
@@ -1188,7 +1189,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
 
                                         <select id="selProtocoloAnexo" name="selProtocoloAnexo" size="6"
                                                 multiple="multiple"
-                                                class="infraSelect"
+                                                class="infraSelect form-select"
                                                 tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                             <?php if (isset($arrProtocoloAnexo) && is_array($arrProtocoloAnexo) && count($arrProtocoloAnexo) > 0) { ?>
                                                 <?php foreach ($arrProtocoloAnexo as $protAnexo) { ?>
@@ -1261,7 +1262,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                             if ($dto) {
                                 $bolExistePLP = $dto->getNumIdMdCorPlp() != null ? true : false;
                             }
-                            if (isset($_GET['visualizar']) || $bolExistePLP ) {
+                            if (isset($_GET['visualizar']) || $bolExistePLP) {
                                 if (isset($arrFormatos) && is_array($arrFormatos) && count($arrFormatos) > 0) {
                                     ?>
                                     <?php foreach ($arrFormatos as $formatoDTO) { ?>

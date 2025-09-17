@@ -110,7 +110,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
             <div class="form-group">
                 <label id="lblSituacaoRastreio" for="txtSituacaoRastreio" accesskey="o" class="infraLabelOpcional">Situação no Módulo:</label>
-                <select class="infraSelect form-control" name="txtSituacaoRastreio" id="txtSituacaoRastreio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                <select class="infraSelect form-select" name="txtSituacaoRastreio" id="txtSituacaoRastreio" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                     <option value=""></option>
                     <option value="P">Postado</option>
                     <option value="T">Em Trânsito</option>

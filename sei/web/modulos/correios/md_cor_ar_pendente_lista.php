@@ -58,7 +58,7 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-include_once('md_cor_ar_pendente_lista_css.php');
+include_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->fecharHead();
@@ -107,7 +107,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="form-group">
                     <label id="lblDiasAtraso" for="txtDiasAtraso" accesskey="a" class="infraLabelOpcional">
                         Dias em Atraso:
-                        <img id="ancAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg" class="infraImgModulo mt-n1" style="vertical-align: middle" <?= PaginaSEI::montarTitleTooltip('Quantidade de dias que o objeto foi enviado e não retornado após o Prazo Padrão para Retorno de AR, informado na parametrização.', 'Ajuda') ?>/>
+                        <img id="ancAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg" class="infraImg imgIconeMenor" style="vertical-align: top;" <?= PaginaSEI::montarTitleTooltip('Quantidade de dias que o objeto foi enviado e não retornado após o Prazo Padrão para Retorno de AR, informado na parametrização.', 'Ajuda') ?>/>
                     </label>
                     <input type="text"
                             id="txtDiasAtraso"
@@ -132,7 +132,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4">
                 <div class="form-group">
                     <label id="lblStatus" for="selStatus" accesskey="o" class="infraLabelOpcional">Tipo de Atraso:</label>
-                    <select class="infraSelect form-control" name="slServicoPostal" id="slServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                    <select class="infraSelect form-select" name="slServicoPostal" id="slServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                         <?php echo $mdCorRetornoArINT; ?>
                     </select>
                 </div>

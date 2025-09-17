@@ -30,6 +30,9 @@ PaginaSEI::getInstance()->abrirHead();
 PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(':: ' . PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo . ' ::');
 PaginaSEI::getInstance()->montarStyle();
+PaginaSEI::getInstance()->abrirStyle();
+include_once("md_cor_estilos_css.php");
+PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
 ?>
@@ -86,7 +89,7 @@ $arrObjMdCorExpedicaoSolicitadaDTO->retTodos();
         </div>
         <div style="float: right; padding-left: 15px">
             <label>Serviço Postal:</label>
-            </br><select tabindex="504" class="infraSelect"  name="selServicoPostal" id="selServicoPostal" onchange="pesquisar()">
+            </br><select tabindex="504" class="infraSelect form-select" name="selServicoPostal" id="selServicoPostal" onchange="pesquisar()">
                 <?= $strServicoPostal?>
             </select>
         </div>
@@ -98,7 +101,7 @@ $arrObjMdCorExpedicaoSolicitadaDTO->retTodos();
         </div>
         <div style="float: right; padding-left: 15px">
             <label>Situação da PLP:</label>
-            </br><select tabindex="504" class="infraSelect" name="selSituacaoPlp" id="selSituacaoPlp" onchange="pesquisar()">
+            </br><select tabindex="504" class="infraSelect form-select" name="selSituacaoPlp" id="selSituacaoPlp" onchange="pesquisar()">
                 <?=$strSituacaoPlp?>
             </select>
         </div>
