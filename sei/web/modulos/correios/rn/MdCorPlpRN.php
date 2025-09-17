@@ -489,31 +489,9 @@
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idPrePostagem']                      = null;
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idUnidadeExpedidora'] = $arrIdUnidade[] = $objDto->getDblIdUnidadeExpedidora();
 
-              $objMdCorExpedicaoFormatoDTO = new MdCorExpedicaoFormatoDTO();
-              $objMdCorExpedicaoFormatoDTO->retStrProtocoloFormatado();
-              $objMdCorExpedicaoFormatoDTO->retStrNomeSerie();
-              $objMdCorExpedicaoFormatoDTO->retStrNumeroDocumento();
-              $objMdCorExpedicaoFormatoDTO->setNumIdMdCorExpedicaoSolicitada($objDto->getNumIdMdCorExpedicaoSolicitada());
-              $objMdCorExpedicaoFormatoDTO->setStrProtocoloFormatado($objDto->getStrProtocoloFormatadoDocumento(), INFRADTO::$OPER_DIFERENTE);
-
-              $arrObjMdCorExpedicaoFormatoDTO = ( new MdCorExpedicaoFormatoRN() )->listar($objMdCorExpedicaoFormatoDTO);
-
-              if ( !empty($arrObjMdCorExpedicaoFormatoDTO) ) {
-                  $arrAnexos = [];
-                  $numLimiteCaracteres = 30;
-                  foreach ( $arrObjMdCorExpedicaoFormatoDTO as $item ) {
-                      $codNumformat = trim( $item->getStrProtocoloFormatado() );
-                      $numLimiteCaracteres -= ( strlen( $codNumformat ) + 1 );
-                      if ( $numLimiteCaracteres > 0 ) {
-                          $arrAnexos[] = $codNumformat;
-                      } else {
-                          break;
-                      }
-                  }
-                  $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = implode( ',' , $arrAnexos );
-              } else {
-                  $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = null;
-              }
+              $numDoc = $objDto->isSetStrNumeroDocumento() ? " " . $objDto->getStrNumeroDocumento() : "";
+              $tipo = $objDto->getStrNomeSerie() . $numDoc;
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = "Documento Principal: " . $tipo . " (" . $objDto->getStrProtocoloFormatadoDocumento() . ")";
         }
 
         $objMDCorUnidadeExpRN = new MdCorUnidadeExpRN();
@@ -852,9 +830,6 @@
 
             if ( $arrItens['stExpedicaoAvisoRecebimentoServico'] == 'S' ) array_push( $arrServAdd , ['codigoServicoAdicional' => '001', 'valorDeclarado' => '0'] );
 
-            // declaracao de conteudo
-            // $arrDecConteudo = [['conteudo'   => 'Nº Processo: 56.000011/2021-58','quantidade' => 1,'valor' => 0.1]],
-
 		    $arrJson = [
                 "idCorreios"              => "",
                 "idMdCorContrato"         => $arrItens['IdMdCorContrato'], 
@@ -862,7 +837,6 @@
                 "destinatario"            => $arrDest,
                 "codigoServico"           => $arrItens['coServicoPostagem'],
                 "listaServicoAdicional"   => $arrServAdd,
-                #"itensDeclaracaoConteudo" => $arrDecConteudo,
                 "pesoInformado"                => "10",
                 "codigoFormatoObjetoInformado" => "1",
                 "alturaInformada"              => "0",
@@ -872,7 +846,8 @@
                 "cienteObjetoNaoProibido"      => "1",
                 "solicitarColeta"              => "N",
                 "observacao"                   => $arrItens['infoAnexos'],
-                "modalidadePagamento"          => "2"
+                "modalidadePagamento"          => "2",
+                "itensDeclaracaoConteudo"      => [[ 'conteudo'   => 'Documentos', 'quantidade' => 1, 'valor' => 0.1]]
 	        ];
 
             //CARTA RG AR CONV: Correspondência Registrada com AR

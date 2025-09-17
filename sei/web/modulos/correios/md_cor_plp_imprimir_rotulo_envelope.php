@@ -31,10 +31,17 @@ try {
 
     $objExpSolicDTO->retNumIdMdCorExpedicaoSolicitada();
     $objExpSolicDTO->retStrTipoRotuloImpressaoObjeto();
-    $objExpSolicDTO->retStrIdPrePostagem();
     $objExpSolicDTO->retDblIdMdCorContrato();
-    $objExpSolicDTO->retStrCodigoRastreamento();
     $objExpSolicDTO->retNumIdMdCorServicoPostal();
+    $objExpSolicDTO->retNumCodigoPlp();
+    
+    $objExpSolicDTO->retStrCodigoRastreamento();
+    $objExpSolicDTO->retDthDataExpedicao();
+    $objExpSolicDTO->retStrSinObjetoAcessado();
+    $objExpSolicDTO->retNumIdMdCorPlp();
+    $objExpSolicDTO->retNumIdMdCorObjeto();
+    $objExpSolicDTO->retStrIdPrePostagem();
+
     $objExpSolicDTO->setNumIdMdCorPlp($_GET['id_md_cor_plp']);
     //$objExpSolicDTO->setDistinct(true);
     $objExpSolicDTO->setOrd('IdMdCorExpedicaoSolicitada', InfraDTO::$TIPO_ORDENACAO_ASC);
@@ -81,12 +88,55 @@ try {
 
         //busca o tipo de servico postal cadastrado
         $idServicoPostal = $objMdCorExpedicaoSolicitadaDTO->getNumIdMdCorServicoPostal();
+        $codigoPlp = $objMdCorExpedicaoSolicitadaDTO->getNumCodigoPlp();
         $objMdCorServicoPostalDTO = new MdCorServicoPostalDTO();
         $objMdCorServicoPostalDTO->retStrCodigoWsCorreios();
         $objMdCorServicoPostalDTO->retStrNome();
         $objMdCorServicoPostalDTO->setNumIdMdCorServicoPostal($idServicoPostal);
 
         $objMdCorServicoPostalDTO = ( new MdCorServicoPostalRN() )->consultar($objMdCorServicoPostalDTO); 
+
+        $statusCanceladoPlp = (new MdCorAdmIntegracaoRN())->validaStatusCanceladoPlp($objMdCorExpedicaoSolicitadaDTO->getStrIdPrePostagem(), $arrParametroRest);
+        // Valida se o status retornou cancelado
+        if ($statusCanceladoPlp) {
+            $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
+
+            $objMdCorIntegCancelarPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CANCELAR_PRE_POSTAGEM, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
+            if ( empty($objMdCorIntegCancelarPPN) || ( is_array( $objMdCorIntegCancelarPPN ) && isset($objMdCorIntegCancelarPPN['suc'] ) && $objMdCorIntegCancelarPPN['suc'] === false ) )
+               throw new InfraException( 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' não existe ou está inativo.' );
+                
+            $arrParametroRest = [
+                'endpoint' => $objMdCorIntegCancelarPPN->getStrUrlOperacao(),
+                'token'    => $objMdCorIntegCancelarPPN->getStrToken(),
+                'expiraEm' => $objMdCorIntegCancelarPPN->getDthDataExpiraToken(),
+            ];
+
+            $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegCancelarPPN, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
+
+            if ( is_array( $ret ) ) 
+                throw new InfraException( $ret['msg'] );
+
+            // instancia class ApiRest com os dados necessarios para uso da API que gera Pre Postagem
+            $objMdCorApiCancelarPPN = new MdCorApiRestRN( $arrParametroRest );
+
+            $rs = $objMdCorApiCancelarPPN->cancelarPPN([$objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento()]);
+
+            //if ( is_array($rs) ){
+            //    $msgErroCompl = "Operação: {$objMdCorApiCancelarPPN->getEndPoint()}.#Retorno: {$rs['msg']}";
+            //    throw new InfraException( $msgErroCompl );
+            //}
+
+            $objMdCorExpedicaoSolicitadaDTO->setStrCodigoRastreamento(null);
+            $objMdCorExpedicaoSolicitadaDTO->setDthDataExpedicao(null);
+            $objMdCorExpedicaoSolicitadaDTO->setStrSinObjetoAcessado(null);
+            $objMdCorExpedicaoSolicitadaDTO->setNumIdMdCorPlp(null);
+            $objMdCorExpedicaoSolicitadaDTO->setNumIdMdCorObjeto(null);
+            $objMdCorExpedicaoSolicitadaDTO->setStrIdPrePostagem(null);
+            ( new MdCorExpedicaoSolicitadaRN() )->alterar($objMdCorExpedicaoSolicitadaDTO);
+            
+            throw new InfraException( "Os Correios impediu seguir com a Impressão dos Documentos pois identificou que a situação da Pré Postagem do objeto cujo o código de rastreio é " . $objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento() . " é Cancelado.<br>
+            Com isso, a Pré Postagem do Objeto foi Cancelada no SEI Módulo Correios, sendo necessário iniciar novamente o fluxo de Expedição utilizando a funcionalidade Gerar Pré Postagem." );
+        }
     }
 
     // gera um array com os ids das PPN
@@ -115,7 +165,7 @@ try {
         $msgErroCompl = "Operação: {$objMdCorApiEmitirRotulo->getEndPoint()} <br><br>";
         throw new InfraException( $arrEmissaoRot['msg'] );
     }
-
+    
     // Executa download da Etiqueta passando como parametro o Id Recibo
     $rotuloBase64 = $objMdCorApiDownRotulo->downloadRotulo( $arrEmissaoRot['idRecibo'] );
 

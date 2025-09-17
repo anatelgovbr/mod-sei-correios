@@ -138,6 +138,7 @@ class MdCorContatoINT extends InfraINT
         $objContatoRN = new ContatoRN();
 
         $objContatoDTO->setNumIdContato($idContato);
+        $objContatoDTO->setBolExclusaoLogica(false);
         $objContatoDTO->retTodos(true);
 
         return $objContatoRN->consultarRN0324($objContatoDTO);

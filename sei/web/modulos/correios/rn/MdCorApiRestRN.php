@@ -113,6 +113,15 @@ class MdCorApiRestRN
 	    return $rs['suc'] === false ? $rs : $rs['dados']['dados'];
     }
 
+    public function validaStatusRotulo($idRecibo, $endpoint){
+        $this->_endpoint = $endpoint;
+	    $arrParams = [
+	        'tipoReq'        => MdCorAdmIntegracaoRN::$STR_GET
+        ];
+	    $rs = $this->executaRequisicaoAPI($arrParams);
+	    return $rs['suc'] === false ? $rs : $rs['dados']['itens'][0]['descStatusAtual'];
+    }
+
     public function avisoRecebimento($idPrePostagem){
         $arrParams = [
             'tipoReq'        => MdCorAdmIntegracaoRN::$STR_GET,
