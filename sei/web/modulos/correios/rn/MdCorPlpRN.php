@@ -489,9 +489,8 @@
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idPrePostagem']                      = null;
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idUnidadeExpedidora'] = $arrIdUnidade[] = $objDto->getDblIdUnidadeExpedidora();
 
-              $numDoc = $objDto->isSetStrNumeroDocumento() ? " " . $objDto->getStrNumeroDocumento() : "";
-              $tipo = explode(" ", $objDto->getStrNomeSerie())[0] . $numDoc;
-              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = $tipo . " (" . $objDto->getStrProtocoloFormatadoDocumento() . ")";
+              $tipo = explode(" ", $objDto->getStrNomeSerie())[0];
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = $tipo . " SEI nº " . $objDto->getStrProtocoloFormatadoDocumento();
         }
 
         $objMDCorUnidadeExpRN = new MdCorUnidadeExpRN();
