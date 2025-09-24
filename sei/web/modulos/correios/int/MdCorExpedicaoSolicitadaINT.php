@@ -300,6 +300,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             $contatoDTO = new ContatoDTO();
             $contatoDTO->retTodos();
             $contatoDTO->retNumIdTipoContato();
+            $contatoDTO->retStrCep();
             $contatoDTO->setNumIdContato($id_contato);
             $contatoDTO = $contatoRN->consultarRN0324($contatoDTO);
 

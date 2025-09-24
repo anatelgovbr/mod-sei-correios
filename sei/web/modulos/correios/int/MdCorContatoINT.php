@@ -133,7 +133,7 @@ class MdCorContatoINT extends InfraINT
         }
     }
 
-    private static function getInfoContato( $idContato ){
+    public static function getInfoContato( $idContato ){
         $objContatoDTO = new ContatoDTO();
         $objContatoRN = new ContatoRN();
 

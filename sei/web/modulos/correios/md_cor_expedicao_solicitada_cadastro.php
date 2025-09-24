@@ -35,6 +35,8 @@ try {
     $arrMsgValidacao = [];
     $strIsConsultar  = false;
     $strNmBtnExibirMsg = null;
+    $recarregarContato = false;
+
     switch ($_GET['acao']) {
 
         case 'md_cor_expedicao_solicitada_excluir':
@@ -349,7 +351,7 @@ try {
                         $documentoDTO->setStrSinBloqueado('S');
                         $documentoBD->alterar($documentoDTO);
 
-                        $dto = $rn->cadastrarDocumentos($dto);
+                        $rn->cadastrarDocumentos($dto);
 
                         $documentoRN = new DocumentoRN();
                         $objDocumentoDTO = new DocumentoDTO();
@@ -389,6 +391,12 @@ try {
                         if ( $_POST['hdnContatoIdentificador'] == "" && $arrObjMdCorContato['isRegAlterado'] ) $_POST['hdnContatoIdentificador'] = $idMdCorContatoDest;
 
                         if ( $_POST['hdnContatoIdentificador'] != "" ) {
+
+                            if ($_POST['hdnRecarregarContato'] == "1") {
+                                $dto->setNumIdContatoDestinatario($_POST['hdnContatoIdentificador']);
+                                $rn->alterar($dto);
+                            }
+
                             $contatoRN = new ContatoRN();
                             $objContatoDTO = new ContatoDTO();
                             $objContatoDTO->retTodos(true);
@@ -844,6 +852,7 @@ try {
             $objProtocoloDocPrincipalDTO = new ProtocoloDTO();
             $objProtocoloDocPrincipalDTO->retTodos();
             $objProtocoloDocPrincipalDTO->retStrNomeSerieDocumento();
+            $objProtocoloDocPrincipalDTO->retNumIdSerieDocumento();
             $objProtocoloDocPrincipalDTO->retStrNumeroDocumento();
             $objProtocoloDocPrincipalDTO->setDblIdProtocolo($dto->getDblIdDocumentoPrincipal());
 
@@ -859,6 +868,23 @@ try {
             $isPodeComparar = isset($_GET['isConsultar']) ? false : true;
 
             $arrObjMdCorContato = MdCorContatoINT::_isDadoAlterado( $dto->getNumIdContatoDestinatario() , $dto->getNumIdMdCorExpedicaoSolicitada(), $isPodeComparar );
+
+            // VALIDA SE O ID DO CONTATO CONSTA NA SOLICITACAO DE EXPEDICAO
+
+            $objParticipanteRN = new ParticipanteRN();
+            $objParticipanteDTO = new ParticipanteDTO();
+            $objParticipanteDTO->setDblIdProtocolo($dto->getDblIdDocumentoPrincipal());
+            $objParticipanteDTO->setNumMaxRegistrosRetorno(1);
+            $objParticipanteDTO->setStrStaParticipacao(ParticipanteRN::$TP_INTERESSADO);
+            $objParticipanteDTO->retTodos();
+            $objParticipanteDTO = $objParticipanteRN->consultarRN1008($objParticipanteDTO);
+
+            if ($objParticipanteDTO->getNumIdContato() != $dto->getNumIdContatoDestinatario()) {
+                $objNovoContato = MdCorContatoINT::getInfoContato($objParticipanteDTO->getNumIdContato());
+                $arrObjMdCorContato['objMdCorContato'] = $objNovoContato;
+                $arrObjMdCorContato['isRegAlterado'] = true;
+                $recarregarContato = true;
+            }
 
             $arrObjMdCorContatoDTO = $arrObjMdCorContato['objMdCorContato'];
 
@@ -1151,6 +1177,8 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                                            value=""/>
                                     <input type="hidden" id="hdnContatoIdentificador" onchange="alert(this.value);"
                                            name="hdnContatoIdentificador" value="<?= $id_destinatario_aux ?>"/>
+                                    <input type="hidden" id="hdnRecarregarContato" onchange="alert(this.value);"
+                                           name="hdnRecarregarContato" value="<?= $recarregarContato ?>"/>
                                     <select id="selContato" name="selContato" style="display: none !important"
                                             class="form-select"
                                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">

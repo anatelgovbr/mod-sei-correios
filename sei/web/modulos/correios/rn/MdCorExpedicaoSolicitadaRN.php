@@ -1304,6 +1304,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
                             $newMdCorContatoDTO->setNumIdTipoContato($objContato->getNumIdTipoContato());
                             $newMdCorContatoDTO->setStrExpressaoCargo($objContato->getStrExpressaoCargo());
                             $newMdCorContatoDTO->setStrExpressaoTratamentoCargo($objContato->getStrExpressaoTratamentoCargo());
+                            $newMdCorContatoDTO->setNumIdContato($objContato->getNumIdContato());
 
                             $mdCorContatoRN->alterar($newMdCorContatoDTO);
                         }
