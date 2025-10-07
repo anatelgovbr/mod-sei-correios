@@ -404,13 +404,17 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
 
             $objInfraParametroDTO = new InfraParametroDTO();
             $objInfraParametroDTO->retStrValor();
-            $objInfraParametroDTO->setStrNome('%ID_TIPO_CONTATO%', InfraDTO::$OPER_LIKE);
-            $objInfraParametroDTO->adicionarCriterio(array('Nome'), array(InfraDTO::$OPER_NOT_LIKE), array('%ID_TIPO_CONTATO_USUARIOS_EXTERNOS'));
+            $objInfraParametroDTO->adicionarCriterio(array('Nome'), array(InfraDTO::$OPER_LIKE), array('%ID_TIPO_CONTATO_USUARIOS_EXTERNOS'), NULL, 'criterio1');
+            $objInfraParametroDTO->adicionarCriterio(array('Nome'), array(InfraDTO::$OPER_LIKE), array('%ID_TIPO_CONTATO_TEMPORARIO'), NULL, 'criterio2');
+            $objInfraParametroDTO->adicionarCriterio(array('Nome'), array(InfraDTO::$OPER_LIKE), array('%ID_TIPO_CONTATO_UNIDADES'), NULL, 'criterio3');
+            $objInfraParametroDTO->adicionarCriterio(array('Nome'), array(InfraDTO::$OPER_LIKE), array('%ID_TIPO_CONTATO_USUARIOS'), NULL, 'criterio4');
+            $objInfraParametroDTO->adicionarCriterio(array('Nome'), array(InfraDTO::$OPER_LIKE), array('%ID_TIPO_CONTATO_SISTEMAS'), NULL, 'criterio5');
 
+            $objInfraParametroDTO->agruparCriterios(array('criterio1', 'criterio2', 'criterio3', 'criterio4', 'criterio5'), array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR));
+            
             $objInfraParametroRN = new InfraParametroRN();
             $arrObjInfraParametroDTO = $objInfraParametroRN->listar($objInfraParametroDTO);
             $arrIdTipoContato = InfraArray::converterArrInfraDTO($arrObjInfraParametroDTO, 'Valor');
-
             if (in_array($contatoDTO->getNumIdTipoContato(), $arrIdTipoContato)) {
 
                 if($bolEntrada){
