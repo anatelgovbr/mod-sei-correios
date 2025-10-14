@@ -27,17 +27,12 @@ try {
     SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
 
     $arrComandos = array();
+    $staTipoEditor= EditorRN::obterTipoEditorSimples();
     $mdCorTipoCorrespondencia = MdCorTipoCorrespondencINT::montarSelectIdMdCorTipoCorrespondenc('null', '', 'null');
 
     switch ($_GET['acao']) {
         case 'md_cor_parametro_ar_cadastrar':
             $arrComboUnidade = null;
-            $objEditorRN = new EditorRN();
-            $objEditorDTO = new EditorDTO();
-            $objEditorDTO->setNumTamanhoEditor(220);
-            $objEditorDTO->setStrNomeCampo('txaConteudo');
-            $objEditorDTO->setStrSinSomenteLeitura('N');
-            $retEditor = $objEditorRN->montarSimples($objEditorDTO);
 
             $strLinkTipoDocumentoSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_serie_exp_selecionar&tipo_selecao=1&id_object=objLupaTipoDocumento&cobranca=true');
             $strLinkTipoDocumentoObjetoDevolvidoSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_serie_exp_selecionar&tipo_selecao=1&id_object=objLupaTipoDocumentoObjetoDevolvido&cobranca=true');
@@ -205,6 +200,22 @@ try {
             throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
     }
 
+    $objEditorDTO = new EditorDTO();
+    $objEditorRN = new EditorRN();
+
+    if($staTipoEditor==EditorRN::$VE_CK5){
+        $objEditorDTO=new EditorDTO();
+        $objEditorDTO->setNumTamanhoEditor(220);
+        $objEditorDTO->setStrNomeCampo('txaConteudo');
+        $objEditorDTO->setStrSinSomenteLeitura('N');
+        $objEditorDTO->setStrConteudoInicial(!is_null($arrObjMdCorParametroArDTO) ? $arrObjMdCorParametroArDTO->getStrModeloCobranca() : '');
+        EditorCk5RN::montarSimples($objEditorDTO);
+    } else {
+        $objEditorDTO->setNumTamanhoEditor(220);
+        $objEditorDTO->setStrNomeCampo('txaConteudo');
+        $objEditorDTO->setStrSinSomenteLeitura('N');
+        $objEditorDTO = $objEditorRN->montarSimples($objEditorDTO);
+    }
 
 } catch (Exception $e) {
     PaginaSEI::getInstance()->processarExcecao($e);
@@ -220,7 +231,14 @@ PaginaSEI::getInstance()->abrirStyle();
 include_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
-echo $retEditor->getStrInicializacao();
+
+if($staTipoEditor==EditorRN::$VE_CK5){
+    echo $objEditorDTO->getStrCss();
+    echo $objEditorDTO->getStrJs();
+} else {
+    echo $objEditorDTO->getStrInicializacao();
+}
+
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 ?>
@@ -491,9 +509,24 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                                 <label id="lblModelo" for="txaConteudo" class="infraLabelObrigatorio lblCampo">Modelo:
                                     <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg" onmouseover="return infraTooltipMostrar('Lembrando que o Tipo de Documento geralmente é um Ofício, formate o modelo do Documento por meio do qual ocorrerão cada cobrança das pendências de retorno de ARs. \n \n Utilize a variável @tabela_cobranca@ no modelo para que o Módulo gera a tabela com a lista completa de Códigos de Rastreio de Objetos que estão com pendência de retorno de AR.', 'Ajuda');">
                                 </label>
-                                <textarea id="txaConteudo" name="txaConteudo" rows="1" class="infraTextarea form-control"  tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
-                                    <?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrModeloCobranca()) : null; ?>
-                                </textarea>
+
+                                <?php
+                            if($staTipoEditor==EditorRN::$VE_CK5){
+                                ?>
+                                    <div id="divEditores" class="infra-editor" style="visibility: visible;">
+                                        <?= $objEditorDTO->getStrHtml(); ?>
+                                    </div>
+                                    <?php
+                            } else {
+                                ?>
+                                    <div id="divEditores" class="mb-0">
+                                        <textarea id="txaConteudo" name="txaConteudo" rows="1" class="infraTextarea" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"><?= !is_null($arrObjMdCorParametroArDTO) ? $arrObjMdCorParametroArDTO->getStrModeloCobranca() : '' ?></textarea>
+                                        <script type="text/javascript"> <?= $objEditorDTO->getStrEditores(); ?> </script>
+                                    </div>
+                                <?php
+                            }
+                            ?>
+
                             </div>
                         </div>
                     </div>
