@@ -846,11 +846,9 @@
                 "solicitarColeta"              => "N",
                 "observacao"                   => $arrItens['infoAnexos'],
                 "modalidadePagamento"          => "2",
-                "itensDeclaracaoConteudo"      => [[ 'conteudo'   => 'Documentos', 'quantidade' => 1, 'valor' => 0.1]]
+                "itensDeclaracaoConteudo"      => [[ 'conteudo'   => 'Documentos', 'quantidade' => 1, 'valor' => 0.1]],
+                "dataPrevistaPostagem"        => InfraData::getStrDataAtual()
 	        ];
-
-            //CARTA RG AR CONV: Correspondência Registrada com AR
-		    if ( $arrItens['coServicoPostagem'] == 80810 ) $arrJson['dataPrevistaPostagem'] = InfraData::getStrDataAtual();
 
 		    $arrRetorno[] = ['idSolicExp' => $idSolic , 'arrJson' => $arrJson];
 	    }
