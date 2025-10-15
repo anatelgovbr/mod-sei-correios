@@ -142,7 +142,6 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-include_once('md_cor_estilos_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->abrirJavaScript();
@@ -217,7 +216,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
                 <div class="form-group">
                     <label id="lblMdCorTipoObjeto" for="selMdCorTipoObjeto" accesskey="" class="infraLabelObrigatorio">Tipo
                         de Embalagem:</label>
-                    <select id="selMdCorTipoObjeto" name="selMdCorTipoObjeto" class="infraSelect form-select"
+                    <select id="selMdCorTipoObjeto" name="selMdCorTipoObjeto" class="infraSelect form-control"
                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                         <?= $strItensSelMdCorTipoObjeto ?>
                     </select>

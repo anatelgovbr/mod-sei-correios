@@ -1,9 +1,9 @@
 <script type="text/javascript">
     function exibirAlert(msg,elem,tipoMsg='danger'){
         if ( elem == null || elem == undefined ) elem = 'sem-valor';
-        let divMsg = '<div id="divInfraMsg0" class="alert alert-'+ tipoMsg +' alert-dismissible fade show" style="font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:100%; margin:0 auto;" role="alert">'
+        let divMsg = '<div class="alert alert-'+ tipoMsg +' alert-dismissible fade show" style="font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:100%; margin:0 auto;" role="alert">'
                         + msg +
-                        '<button type="button" class="close media h-100" data-bs-dismiss="alert" aria-label="Fechar Mensagem" aria-labelledby="divInfraMsg0" onclick="execFocus(\''+ elem +'\')">'+
+                        '<button type="button" class="close media h-100" data-dismiss="alert" aria-label="Fechar Mensagem" aria-labelledby="divInfraMsg0" onclick="execFocus(\''+ elem +'\')">'+
                             '<span aria-hidden="true" class="align-self-center"><b>X</b></span>'+
                         '</button>'+
                     '</div>';

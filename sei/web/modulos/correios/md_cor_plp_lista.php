@@ -384,7 +384,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'onload="inicializar();"');
    PaginaSEI::getInstance()->abrirAreaDados('4.5em');
     ?>
     <label id="lblStaPlp" for="selStaPlp" accesskey="" class="infraLabelOpcional">sta_plp:</label>
-    <select id="selStaPlp" name="selStaPlp" onchange="this.form.submit();" class="infraSelect form-select" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" >
+    <select id="selStaPlp" name="selStaPlp" onchange="this.form.submit();" class="infraSelect" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" >
       <?=$strItensSelStaPlp?>
     </select>
 

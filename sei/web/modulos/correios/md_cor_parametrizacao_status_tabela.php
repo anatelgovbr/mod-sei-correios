@@ -88,7 +88,7 @@ if ($numRegistros > 0) {
             if ($arrObjMdCorListaStatusDTO[$i]->getStrSinAtivo() == 'S') {
                 $strCssTr = ($strCssTr == '<tr class="infraTrClara">') ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">';
             } else {
-                $strCssTr = '<tr class="infraTrVermelha">';
+                $strCssTr = '<tr class="trVermelha">';
             }
         }
 

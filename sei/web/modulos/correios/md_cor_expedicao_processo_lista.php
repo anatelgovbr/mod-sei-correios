@@ -208,7 +208,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'); ?>
                     <label class="infraLabelOpcional" for="selDocumentoPrincipal">
                         Documento Principal:
                     </label>
-                    <select id="selDocumentoPrincipal" name="selDocumentoPrincipal" class="infraSelect form-select"
+                    <select id="selDocumentoPrincipal" name="selDocumentoPrincipal" class="infraSelect form-control"
                             onchange="pesquisar()" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                         <option value=""></option>
                         <?php echo $selItensDocPrincipal; ?>
@@ -221,7 +221,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'); ?>
                         Serviço Postal:
                     </label>
 
-                    <select id="selServicoPostal" name="selServicoPostal" class="infraSelect form-select"
+                    <select id="selServicoPostal" name="selServicoPostal" class="infraSelect form-control"
                             onchange="pesquisar()" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                         <option value=""></option>
                         <?php echo $selItensServicoPostal; ?>

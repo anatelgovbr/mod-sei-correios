@@ -34,7 +34,7 @@
         if (strUrlUnidade != null) {
             urlUnidade = strUrlUnidade;
         }
-
+        console.log(urlUnidade);
         objLupaUnidade = new infraLupaSelect('selUnidadeSolicitante', 'hdnIdUnidades', urlUnidade);
 
         objAutoCompletarUnidade = new infraAjaxAutoCompletar('hdnIdUnidade', 'txtUnidadeSolicitante', '<?= $strLinkAjaxAutocompletarUnidade ?>');

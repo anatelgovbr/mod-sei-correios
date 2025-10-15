@@ -367,7 +367,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <div class="col-3">
             <div class="form-group">
                 <label id="lblOrgao" for="selOrgao" accesskey="o" class="infraLabelOpcional">Órgã<span class="infraTeclaAtalho">o</span>:</label>
-                <select id="selOrgao" name="selOrgao" onchange="this.form.submit();" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                <select id="selOrgao" name="selOrgao" onchange="this.form.submit();" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                     <?= $strItensSelOrgao ?>
                 </select>
             </div>

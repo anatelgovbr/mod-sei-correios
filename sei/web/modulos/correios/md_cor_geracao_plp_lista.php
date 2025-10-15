@@ -100,7 +100,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
             <div class="col-xl-6 col-lg-7 col-md-8 col-sm-12 col-12">
                 <div class="form-group">
                     <label id="lblServicoPostal" for="slServicoPostal" accesskey="o" class="infraLabelOpcional">Serviço Postal:</label>
-                    <select class="infraSelect form-select" name="slServicoPostal" id="slServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                    <select class="infraSelect form-control" name="slServicoPostal" id="slServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                         <?php echo $strItensSelServicoPostal; ?>
                     </select>
                 </div>
@@ -108,7 +108,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
             <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12">
                 <div class="form-group">
                     <label id="lblUnidadeSolicitante" for="slUnidadeSolicitante" accesskey="o" class="infraLabelOpcional">Unidade Solicitante:</label>
-                    <select class="infraSelect form-select" name="slUnidadeSolicitante" id="slUnidadeSolicitante" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                    <select class="infraSelect form-control" name="slUnidadeSolicitante" id="slUnidadeSolicitante" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                         <?php echo $strItensUnidadeSolicitante; ?>
                     </select>
                 </div>
@@ -170,7 +170,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
                                         $cLinha = 0;
                                         foreach ($tabela as $dadosTabela) {
                                             $strPlpTr .= '<tr class="infraTrClara">';
-                                            $strPlpTr .= '<td><input type="checkbox" class="servico' . $cServico . ' infraCheckbox form-check-input" name="chkSelecionado[]" id="solicitacao' . $dadosTabela['IdMdCorExpedicaoSolicitada'] . '" value="' . $dadosTabela['IdMdCorExpedicaoSolicitada'] . '" title=""><label for="solicitacao' . $dadosTabela['IdMdCorExpedicaoSolicitada'] . '"></label> </td>';
+                                            $strPlpTr .= '<td><input type="checkbox" class="servico' . $cServico . ' infraCheckbox" name="chkSelecionado[]" id="solicitacao' . $dadosTabela['IdMdCorExpedicaoSolicitada'] . '" value="' . $dadosTabela['IdMdCorExpedicaoSolicitada'] . '" title=""><label for="solicitacao' . $dadosTabela['IdMdCorExpedicaoSolicitada'] . '"></label> </td>';
                                             $strPlpTr .= '<td>' . $dadosTabela['unidade'] . '</td>';
                                             $strPlpTr .= '<td>' . $dadosTabela['dtSolicitacao'] . '</td>';
                                             $strPlpTr .= '<td style="text-align: center;">';

@@ -178,7 +178,7 @@ if ($numRegistros > 0) {
         $strNomeUnidadeExpedidora = $arrObjMdCorSerieExpDTO[$i]->getStrSiglaUnidadeExpedidora() . ' - ' . $arrObjMdCorSerieExpDTO[$i]->getStrDescricaoUnidadeExpedidora();
         $strNomeUnidadeSolicitante = $arrObjMdCorSerieExpDTO[$i]->getStrSiglaUnidadeSolicitante();
         $bolRegistroAtivo = $arrObjMdCorSerieExpDTO[$i]->getStrSinAtivo() == 'S';
-        $strCssTr = !$bolRegistroAtivo ? '<tr class="infraTrVermelha">' : ($strCssTr == '<tr class="infraTrClara">' ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">');
+        $strCssTr = !$bolRegistroAtivo ? '<tr class="trVermelha">' : ($strCssTr == '<tr class="infraTrClara">' ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">');
         $strResultado .= $strCssTr;
         #Linha Checkbox
         $strResultado .= '<td align="center" valign="top">';
@@ -239,7 +239,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
                 <div class="form-group">
                     <label id="lblUnidadeExpedidora" for="selUnidadeExpedidora" class="infraLabelOpcional">Unidades Expedidoras:</label>
-                    <select onchange="pesquisar()" id="selUnidadeExpedidora" name="selUnidadeExpedidora" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" <?= $strDesabilitar; ?>>
+                    <select onchange="pesquisar()" id="selUnidadeExpedidora" name="selUnidadeExpedidora" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" <?= $strDesabilitar; ?>>
                         <?= $strItensSelUnidade ?>
                     </select>
                 </div>
@@ -247,7 +247,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
                 <div class="form-group">
                     <label id="lblUnidadeSolicitante" for="selUnidadeSolicitante" class="infraLabelOpcional">Unidades Solicitantes:</label>
-                    <select onchange="pesquisar()" id="selUnidadeSolicitante" name="selUnidadeSolicitante" class="infraSelect form-select" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" <?= $strDesabilitar; ?>>
+                    <select onchange="pesquisar()" id="selUnidadeSolicitante" name="selUnidadeSolicitante" class="infraSelect form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" <?= $strDesabilitar; ?>>
                         <?= $strItensSelUnidadeSolicitante ?>
                     </select>
                 </div>

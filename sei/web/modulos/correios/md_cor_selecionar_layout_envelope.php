@@ -39,7 +39,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo,'');
 <div class="row">
     <div class="col-sm-6 col-md-4">
         <label class="infraLabelOpcional">Tipo de Layout</label>
-        <select class="infraSelect form-select" id="selTpLayout" name="selTpLayout" tabindex="<?= PaginaSEI::getInstance()->getProxTabTabela() ?>" onchange="fecharModal(this)">
+        <select class="infraSelect form-control" id="selTpLayout" name="selTpLayout" tabindex="<?= PaginaSEI::getInstance()->getProxTabTabela() ?>" onchange="fecharModal(this)">
             <option value="PADRAO" selected> PADRAO </option>
             <option value="LINEAR_100_150"> LINEAR_100_150 </option>
             <option value="LINEAR_100_80"> LINEAR_100_80 </option>

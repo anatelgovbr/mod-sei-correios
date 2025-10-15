@@ -181,7 +181,7 @@ if ($status != MdCorRetornoArRN::$STA_RETORNO_AR_NAO_PROCESSADO) {
                     <label id="lblslTipoRetorno" for="slTipoRetorno" accesskey="o" class="infraLabelOpcional">
                         Tipo de Retorno:
                     </label>
-                    <select id="slTipoRetorno" name="slTipoRetorno" class="infraSelect form-select">
+                    <select id="slTipoRetorno" name="slTipoRetorno" class="infraSelect form-control">
                         <option value="T" <?php echo $slRetorno == 'T' ? 'selected="selected"' : null ?>>TODOS</option>
                         <option value="A" <?php echo $slRetorno == 'A' ? 'selected="selected"' : null ?>>AR RETORNADO</option>
                         <option value="O" <?php echo $slRetorno == 'O' ? 'selected="selected"' : null ?>>OBJETOS RETORNADOS</option>

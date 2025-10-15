@@ -8,6 +8,7 @@
     var objLupaTipoDocumentoCobranca = null;
     var objTabelaDinamicaMotivo = null;
     var objAutoCompletarDestinatario = null;
+    <?php echo $retEditor->getStrEditores(); ?>
     function inicializar() {
         objLupaTipoDocumento = new infraLupaSelect('slTipoDocumento', 'hdnTipoDocumento', '<?= $strLinkTipoDocumentoSelecao ?>');
         objLupaTipoDocumentoObjetoDevolvido = new infraLupaSelect('slTipoDocumentoObjetoDevolvido', 'hdnTipoDocumentoObjetoDevolvido', '<?= $strLinkTipoDocumentoObjetoDevolvidoSelecao ?>');

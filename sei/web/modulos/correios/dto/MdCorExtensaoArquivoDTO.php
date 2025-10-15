@@ -13,7 +13,7 @@ require_once dirname(__FILE__).'/../../../SEI.php';
 
 class MdCorExtensaoArquivoDTO extends ArquivoExtensaoDTO {
 
-  public function montar(): void{
+  public function montar(){
     parent::montar();
     $this->adicionarAtributo(InfraDTO::$PREFIXO_STR, 'PalavrasPesquisa');
   }	

@@ -218,13 +218,9 @@ try {
 		$strCssTr='';
 		for($i = 0;$i < $numRegistros; $i++){
 
-			if ( $arrObjMdCorAdmIntegracaoDTO[$i]->getStrSinAtivo() == 'S' ) {
-                $qtdCadastradosAtivos++;
-                $strCssTr = ( $strCssTr == '<tr class="infraTrClara">' ) ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">';
-            } else {
-                $strCssTr = '<tr class="infraTrVermelha">';
-            }
+			if ($arrObjMdCorAdmIntegracaoDTO[$i]->getStrSinAtivo() == 'S' ) $qtdCadastradosAtivos++;
 
+			$strCssTr = ($strCssTr=='<tr class="infraTrClara">')?'<tr class="infraTrEscura">':'<tr class="infraTrClara">';
 			$strResultado .= $strCssTr;
 
 			if ($bolCheck){

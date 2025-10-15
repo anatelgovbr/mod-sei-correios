@@ -27,12 +27,17 @@ try {
     SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
 
     $arrComandos = array();
-    $staTipoEditor= EditorRN::obterTipoEditorSimples();
     $mdCorTipoCorrespondencia = MdCorTipoCorrespondencINT::montarSelectIdMdCorTipoCorrespondenc('null', '', 'null');
 
     switch ($_GET['acao']) {
         case 'md_cor_parametro_ar_cadastrar':
             $arrComboUnidade = null;
+            $objEditorRN = new EditorRN();
+            $objEditorDTO = new EditorDTO();
+            $objEditorDTO->setNumTamanhoEditor(220);
+            $objEditorDTO->setStrNomeCampo('txaConteudo');
+            $objEditorDTO->setStrSinSomenteLeitura('N');
+            $retEditor = $objEditorRN->montarSimples($objEditorDTO);
 
             $strLinkTipoDocumentoSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_serie_exp_selecionar&tipo_selecao=1&id_object=objLupaTipoDocumento&cobranca=true');
             $strLinkTipoDocumentoObjetoDevolvidoSelecao = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_serie_exp_selecionar&tipo_selecao=1&id_object=objLupaTipoDocumentoObjetoDevolvido&cobranca=true');
@@ -168,11 +173,12 @@ try {
                             $objMdCorParamArInfrigenDTO->setStrMotivoInfrigencia($motivo[0]);
                             $objMdCorParamArInfrigenRN->alterar($objMdCorParamArInfrigenDTO);
                         }
+
                     }
+
 
                     PaginaSEI::getInstance()->adicionarMensagem('Parâmetros salvos com sucesso.', InfraPagina::$TIPO_MSG_AVISO);
                     header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao']));
-                    die;
                 } catch (Exception $e) {
                     PaginaSEI::getInstance()->processarExcecao($e);
                 }
@@ -200,22 +206,6 @@ try {
             throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
     }
 
-    $objEditorDTO = new EditorDTO();
-    $objEditorRN = new EditorRN();
-
-    if($staTipoEditor==EditorRN::$VE_CK5){
-        $objEditorDTO=new EditorDTO();
-        $objEditorDTO->setNumTamanhoEditor(220);
-        $objEditorDTO->setStrNomeCampo('txaConteudo');
-        $objEditorDTO->setStrSinSomenteLeitura('N');
-        $objEditorDTO->setStrConteudoInicial(!is_null($arrObjMdCorParametroArDTO) ? $arrObjMdCorParametroArDTO->getStrModeloCobranca() : '');
-        EditorCk5RN::montarSimples($objEditorDTO);
-    } else {
-        $objEditorDTO->setNumTamanhoEditor(220);
-        $objEditorDTO->setStrNomeCampo('txaConteudo');
-        $objEditorDTO->setStrSinSomenteLeitura('N');
-        $objEditorDTO = $objEditorRN->montarSimples($objEditorDTO);
-    }
 
 } catch (Exception $e) {
     PaginaSEI::getInstance()->processarExcecao($e);
@@ -228,17 +218,10 @@ PaginaSEI::getInstance()->montarMeta();
 PaginaSEI::getInstance()->montarTitle(PaginaSEI::getInstance()->getStrNomeSistema() . ' - ' . $strTitulo);
 PaginaSEI::getInstance()->montarStyle();
 PaginaSEI::getInstance()->abrirStyle();
-include_once('md_cor_estilos_css.php');
+include_once('md_cor_parametro_ar_cadastro_css.php');
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
-
-if($staTipoEditor==EditorRN::$VE_CK5){
-    echo $objEditorDTO->getStrCss();
-    echo $objEditorDTO->getStrJs();
-} else {
-    echo $objEditorDTO->getStrInicializacao();
-}
-
+echo $retEditor->getStrInicializacao();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
 ?>
@@ -246,11 +229,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         <? PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>
 
         <div class="row">
-            <div class="col-sm-8 col-md-8 col-lg-7 col-xl-6">
+            <div class="col-sm-7 col-md-6 col-lg-5 col-xl-4">
                 <div class="form-group">
                     <label id="lblNuDiasRetorno" for="txtNuDiaRetorno" class="infraLabelObrigatorio lblCampo">
                         Prazo em dias para Retorno de AR:
-                        <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Prazo Contratual para que o retorno do AR, em dias, seja considerado atrazado e a partir daí ser listado na página de ARs Pendentes de Retorno.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                        <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Prazo Contratual para que o retorno do AR, em dias, seja considerado atrazado e a partir daí ser listado na página de ARs Pendentes de Retorno.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                     </label>
                     <input type="text" id="txtNuDiaRetorno" name="txtNuDiaRetorno" class="infraText form-control" value="<?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrNuDiasRetornoAr()) : null; ?>" onkeypress="return infraMascaraNumero(this,event,4);" maxlength="4" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" autofocus/>
                 </div>
@@ -258,11 +241,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         </div>
 
         <div class="row">
-            <div class="col-sm-8 col-md-8 col-lg-7 col-xl-6">
+            <div class="col-sm-7 col-md-6 col-lg-5 col-xl-4">
                 <div class="form-group">
                     <label id="lblNuDiasRetorno" for="txtNuDiaRetorno" class="infraLabelObrigatorio lblCampo">
                         Prazo em dias para Cobrança:
-                        <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Prazo Contratual de AR, em dias,  não retornado e que ainda será possível a realização de uma cobrança.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                        <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Prazo Contratual de AR, em dias,  não retornado e que ainda será possível a realização de uma cobrança.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                     </label>
                     <input type="text" id="txtNuDiaRetorno" name="txtNuDiCobranca" class="infraText form-control" value="<?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrNuDiasCobrancaAr()) : null; ?>" onkeypress="return infraMascaraNumero(this,event,4);" maxlength="4" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                 </div>
@@ -270,11 +253,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
         </div>
 
         <div class="row">
-            <div class="col-sm-8 col-md-8 col-lg-7 col-xl-6">
+            <div class="col-sm-7 col-md-6 col-lg-5 col-xl-4">
                 <div class="form-group">
                     <label id="lblNuLimiteDiasRetorno" for="lblNuLimiteDiasRetorno" class="infraLabelObrigatorio lblCampo">
                         Prazo em dias para Limite de Retorno do AR:
-                        <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Prazo para Finalizar Fluxo do AR quando não retornado no prazo determinado, em Dias.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                        <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Prazo para Finalizar Fluxo do AR quando não retornado no prazo determinado, em Dias.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                     </label>
                     <input type="text" id="txtNuLimiteDiaRetorno" name="txtNuLimiteDiaRetorno" class="infraText form-control" value="<?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrNuDiasPrazoExpRetAr()) : null; ?>" onkeypress="return infraMascaraNumero(this,event,4);" maxlength="3" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                 </div>
@@ -290,10 +273,10 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <label id="lblTipoDocumento" for="slTipoDocumento" class="infraLabelObrigatorio lblCampo">
                                     Tipo de Documento:
-                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Documento Padrão que será utilizado quando o AR for retornado.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Documento Padrão que será utilizado quando o AR for retornado.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
-                                <div class="input-group">
-                                    <select class="infraSelect form-select rounded" name="slTipoDocumento" id="slTipoDocumento" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                                <div class="input-group mb-3">
+                                    <select class="infraSelect form-control rounded" name="slTipoDocumento" id="slTipoDocumento" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                                         <?php foreach ($arrTipoDocumento as $chave => $tipoDocumento): ?>
                                             <?php echo '<option selected="selected" value="' . $chave . '">' . $tipoDocumento . '</option>' ?>
                                         <?php endforeach ?>
@@ -309,7 +292,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <label id="lblNoArvore" for="txtNoArvore" class="infraLabelObrigatorio lblCampo">
                                     Número/Nome na Árvore: 
-                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Complemento do Documento Padrão que será utilizado quando o AR for retornado. \n \n Utilize a variável @tipo_doc_principal_expedido@ para apresentar o Tipo do Documento Principal e @numero@ para apresentar o Número SEI desse Documento Principal.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Complemento do Documento Padrão que será utilizado quando o AR for retornado. \n \n Utilize a variável @tipo_doc_principal_expedido@ para apresentar o Tipo do Documento Principal e @numero@ para apresentar o Número SEI desse Documento Principal.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
                                 <input type="text" id="txtNoArvore" name="txtNoArvore" class="infraText form-control" value="<?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrNomeArvore()) : null; ?>" onkeypress="return infraMascaraTexto(this,event,60);" maxlength="60" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                             </div>
@@ -318,11 +301,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="row">
                         <div class="col-sm-12 col-md-8 col-lg-6 col-xl-6">
                             <div class="form-group">
-                                <label id="lblslTipoConferencia" for="slTipoConferencia" class="infraLabelObrigatorio">
+                                <label id="lblTipoDocumento" for="slTipoConferencia" class="infraLabelObrigatorio">
                                     Tipo de Conferência: 
-                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Conferência Padrão que será utilizado quando o AR for retornado.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Conferência Padrão que será utilizado quando o AR for retornado.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
-                                <select class="infraSelect form-select" name="slTipoConferencia" id="slTipoConferencia" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                                <select class="infraSelect form-control" name="slTipoConferencia" id="slTipoConferencia" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                                     <?= $tipoConferenciaInt ?>
                                 </select>
                             </div>
@@ -340,7 +323,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <label id="lblNoArvore" for="txtMotivo" class="infraLabelObrigatorio lblCampo">
                                     Motivo de Devolução:
-                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Inserir texto do Motivo de Devolução de Objeto que deseja Adicionar.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Inserir texto do Motivo de Devolução de Objeto que deseja Adicionar.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
                                 <input type="text" id="txtMotivo" name="txtMotivo" class="infraText form-control" value="" onkeypress="return infraMascaraTexto(this,event,50);" maxlength="50" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                             </div>
@@ -349,7 +332,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="row">
                         <div class="col-sm-6 col-md-5 col-lg-4 col-xl-3">
                             <div class="form-group">
-                                <input type="checkbox" id="checkInfrigencia" name="checkInfrigencia" class="infraCheckbox form-check-input" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                                <input type="checkbox" id="checkInfrigencia" name="checkInfrigencia" class="infraCheckbox" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                                 <label id="lblCheckInfrigencia" for="checkInfrigencia" class="infraLabelObrigatorio lblCampo">
                                     Infrigência Contratual
                                 </label>
@@ -400,12 +383,12 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="row">
                         <div class="col-sm-10 col-md-8 col-lg-6 col-xl-6">
                             <div class="form-group">
-                                <label id="lblslTipoDocumentoObjetoDevolvido" for="slTipoDocumentoObjetoDevolvido" class="infraLabelObrigatorio lblCampo">
+                                <label id="lblTipoDocumento" for="slTipoDocumento" class="infraLabelObrigatorio lblCampo">
                                     Tipo de Documento:
-                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Documento Padrão que será utilizado quando o Objeto for devolvido.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Documento Padrão que será utilizado quando o Objeto for devolvido.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
-                                <div class="input-group">
-                                    <select class="infraSelect form-select rounded-1" name="slTipoDocumentoObjetoDevolvido" id="slTipoDocumentoObjetoDevolvido" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                                <div class="input-group mb-3">
+                                    <select class="infraSelect form-control rounded" name="slTipoDocumentoObjetoDevolvido" id="slTipoDocumentoObjetoDevolvido" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                                         <?php foreach ($arrTipoDocumentoObjetoDevolvido as $chave => $tipoDocumento): ?>
                                             <?php echo '<option selected="selected" value="' . $chave . '">' . $tipoDocumento . '</option>' ?>
                                         <?php endforeach ?>
@@ -419,9 +402,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="row">
                         <div class="col-sm-12 col-md-8 col-lg-6 col-xl-6">
                             <div class="form-group">
-                                <label id="lblNoArvore" for="txtNoArvoreDevolvido" class="infraLabelObrigatorio lblCampo">
+                                <label id="lblNoArvore" for="txtNoArvoreDevolvido"class="infraLabelObrigatorio lblCampo">
                                     Número/Nome na Árvore: 
-                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Complemento do Documento Padrão que será utilizado quando o Objeto for devolvido. \n \n Utilize a variável @tipo_doc_principal_expedido@ para apresentar o Tipo do Documento Principal e @numero@ para apresentar o Número SEI desse Documento Principal.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Complemento do Documento Padrão que será utilizado quando o Objeto for devolvido. \n \n Utilize a variável @tipo_doc_principal_expedido@ para apresentar o Tipo do Documento Principal e @numero@ para apresentar o Número SEI desse Documento Principal.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
                                 <input type="text" id="txtNoArvoreDevolvido" name="txtNoArvoreObjetoDevolvido" class="infraText form-control" value="<?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrNomeArvoreDevolvido()) : null; ?>" onkeypress="return infraMascaraTexto(this,event,60);" maxlength="60" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                             </div>
@@ -430,11 +413,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="row">
                         <div class="col-sm-12 col-md-8 col-lg-6 col-xl-6">
                             <div class="form-group">
-                                <label id="lblslTipoConferencia" for="slTipoConferencia" class="infraLabelObrigatorio">
+                                <label id="lblTipoDocumento" for="slTipoConferencia" class="infraLabelObrigatorio">
                                     Tipo de Conferência: 
-                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Conferência Padrão que será utilizado quando o Objeto for devolvido.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Conferência Padrão que será utilizado quando o Objeto for devolvido.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
-                                <select class="infraSelect form-select" name="slTipoConferenciaObjetoDevolvido" id="slTipoConferenciaObjetoDevolvido" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                                <select class="infraSelect form-control" name="slTipoConferenciaObjetoDevolvido" id="slTipoConferenciaObjetoDevolvido" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                                     <?= $tipoConferenciaObjetoDevolvidoInt ?>
                                 </select>
                             </div>
@@ -450,12 +433,12 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     <div class="row">
                         <div class="col-sm-10 col-md-8 col-lg-6 col-xl-6">
                             <div class="form-group">
-                                <label id="lblslTipoDocumentoCobranca" for="slTipoDocumentoCobranca" class="infraLabelObrigatorio lblCampo">
+                                <label id="lblTipoDocumento" for="slTipoDocumento" class="infraLabelObrigatorio lblCampo">
                                     Tipo de Documento:
-                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Documento Padrão que será utilizado quando for gerado Documento de Cobrança. Este Tipo de Documento geralmente é um Ofício, com o fim de cobrar dos Correios as pendências de retorno de ARs, conforme estipulado em Contrato.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Tipo de Documento Padrão que será utilizado quando for gerado Documento de Cobrança. Este Tipo de Documento geralmente é um Ofício, com o fim de cobrar dos Correios as pendências de retorno de ARs, conforme estipulado em Contrato.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
-                                <div class="input-group">
-                                    <select class="infraSelect form-select rounded-1" name="slTipoDocumentoCobranca" id="slTipoDocumentoCobranca" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
+                                <div class="input-group mb-3">
+                                    <select class="infraSelect form-control rounded" name="slTipoDocumentoCobranca" id="slTipoDocumentoCobranca" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>">
                                         <?php foreach ($arrTipoDocumentoCobranca as $chave => $tipoDocumento) { ?>
                                             <?php echo '<option selected="selected" value="' . $chave . '">' . $tipoDocumento . '</option>' ?>
                                         <?php } ?>
@@ -471,7 +454,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <label id="lblProcessoCobranca" for="txtProcessoCobranca" class="infraLabelObrigatorio lblCampo">
                                     Processo de Cobrança: 
-                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Indique o Processo no qual cada Documento de Cobrança será gerado. Este Processo geralmente é o de acompanhamento da execução do Contrato correspondente com os Correios.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Indique o Processo no qual cada Documento de Cobrança será gerado. Este Processo geralmente é o de acompanhamento da execução do Contrato correspondente com os Correios.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
                                 <input onblur="buscarProcessoUnidadeGeradora(this)" type="text" id="txtProcessoCobranca" name="txtProcessoCobranca" class="infraText form-control" value="<?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrProtocoloFormatadoCobranca()) : null; ?>" onkeypress="return infraMascaraTexto(this,event,60);" maxlength="60" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                                 <input type="hidden" name="hdnIdProcedimento" id="hdnIdProcedimento" value="<?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getNumIdProcedimentoCobranca()) : null; ?>"/>
@@ -483,9 +466,9 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <label id="lblUnidadeGeradora" for="txtUnidadeGeradora" class="infraLabelObrigatorio lblCampo">
                                     Unidade Geradora do Documento: 
-                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Dentre as Unidades pelas quais o Processo de Cobrança tenha tramitado, indique a Unidade na qual cada Documento de Cobrança será gerado.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Dentre as Unidades pelas quais o Processo de Cobrança tenha tramitado, indique a Unidade na qual cada Documento de Cobrança será gerado.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
-                                <select class="infraSelect form-select" name="txtUnidadeGeradora" id="txtUnidadeGeradora" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                <select class="infraSelect form-control" name="txtUnidadeGeradora" id="txtUnidadeGeradora" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                     <?= $arrComboUnidade ?>
                                 </select>
                             </div>
@@ -496,7 +479,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <label id="lblDestinatarios" for="txtDestinatario"
                                         class="infraLabelObrigatorio infraLabelOpcional">Destinatário:
-                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Indique o Destinatário Padrão do Documento de Cobrança.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg">
+                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseover="return infraTooltipMostrar('Indique o Destinatário Padrão do Documento de Cobrança.', 'Ajuda');" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo">
                                 </label>
                                 <input type="text" id="txtDestinatario" name="txtDestinatario" class="infraText form-control infraAutoCompletar" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" value="<?php echo $arrObjMdCorParametroArDTO->getStrNomeContato(); ?>" autocomplete="off">
                                 <input type="hidden" id="hdnIdDestinatario" name="hdnIdDestinatario" class="infraText" value="<?php echo $arrObjMdCorParametroArDTO->getNumIdContato(); ?>">
@@ -507,26 +490,11 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <div class="col-12">
                             <div class="form-group">
                                 <label id="lblModelo" for="txaConteudo" class="infraLabelObrigatorio lblCampo">Modelo:
-                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImg" onmouseover="return infraTooltipMostrar('Lembrando que o Tipo de Documento geralmente é um Ofício, formate o modelo do Documento por meio do qual ocorrerão cada cobrança das pendências de retorno de ARs. \n \n Utilize a variável @tabela_cobranca@ no modelo para que o Módulo gera a tabela com a lista completa de Códigos de Rastreio de Objetos que estão com pendência de retorno de AR.', 'Ajuda');">
+                                    <img align="top" id="imgAjuda" src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/ajuda.svg" name="ajuda" onmouseout="return infraTooltipOcultar();" alt="Ajuda" class="infraImgModulo" onmouseover="return infraTooltipMostrar('Lembrando que o Tipo de Documento geralmente é um Ofício, formate o modelo do Documento por meio do qual ocorrerão cada cobrança das pendências de retorno de ARs. \n \n Utilize a variável @tabela_cobranca@ no modelo para que o Módulo gera a tabela com a lista completa de Códigos de Rastreio de Objetos que estão com pendência de retorno de AR.', 'Ajuda');">
                                 </label>
-
-                                <?php
-                            if($staTipoEditor==EditorRN::$VE_CK5){
-                                ?>
-                                    <div id="divEditores" class="infra-editor" style="visibility: visible;">
-                                        <?= $objEditorDTO->getStrHtml(); ?>
-                                    </div>
-                                    <?php
-                            } else {
-                                ?>
-                                    <div id="divEditores" class="mb-0">
-                                        <textarea id="txaConteudo" name="txaConteudo" rows="1" class="infraTextarea" tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>"><?= !is_null($arrObjMdCorParametroArDTO) ? $arrObjMdCorParametroArDTO->getStrModeloCobranca() : '' ?></textarea>
-                                        <script type="text/javascript"> <?= $objEditorDTO->getStrEditores(); ?> </script>
-                                    </div>
-                                <?php
-                            }
-                            ?>
-
+                                <textarea id="txaConteudo" name="txaConteudo" rows="1" class="infraTextarea form-control"  tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                    <?= !is_null($arrObjMdCorParametroArDTO) ? PaginaSEI::tratarHTML($arrObjMdCorParametroArDTO->getStrModeloCobranca()) : null; ?>
+                                </textarea>
                             </div>
                         </div>
                     </div>

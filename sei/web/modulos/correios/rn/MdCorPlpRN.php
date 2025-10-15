@@ -738,7 +738,7 @@
       $objContatoDTO->retStrCep();
       $objContatoDTO->retStrNomeCidade();
       $objContatoDTO->retStrSiglaUf();
-      $objContatoDTO->retStrCnpj();
+      $objContatoDTO->retDblCnpj();
       $objContatoDTO->retStrSigla();
       $objContatoDTO->retStrEmail();
       $objContatoDTO->retStrTelefoneComercial();
@@ -769,7 +769,7 @@
 		    "dddCelular"  => "",
 		    "celular"     => "",
 		    "email"       => "",
-		    "cpfCnpj"     => InfraUtil::retirarFormatacao(InfraUtil::formatarCnpj($objContatoDTO->getStrCnpj())),
+		    "cpfCnpj"     => InfraUtil::retirarFormatacao(InfraUtil::formatarCnpj($objContatoDTO->getDblCnpj())),
 		    "obs"         => "",
 		    "endereco"    => [
 			    "cep"         => InfraUtil::retirarFormatacao($objContatoDTO->getStrCep()),
@@ -846,11 +846,9 @@
                 "solicitarColeta"              => "N",
                 "observacao"                   => $arrItens['infoAnexos'],
                 "modalidadePagamento"          => "2",
-                "itensDeclaracaoConteudo"      => [[ 'conteudo'   => 'Documentos', 'quantidade' => 1, 'valor' => 0.1]]
+                "itensDeclaracaoConteudo"      => [[ 'conteudo'   => 'Documentos', 'quantidade' => 1, 'valor' => 0.1]],
+                "dataPrevistaPostagem"        => InfraData::getStrDataAtual()
 	        ];
-
-            //CARTA RG AR CONV: Correspondência Registrada com AR
-		    if ( $arrItens['coServicoPostagem'] == 80810 ) $arrJson['dataPrevistaPostagem'] = InfraData::getStrDataAtual();
 
 		    $arrRetorno[] = ['idSolicExp' => $idSolic , 'arrJson' => $arrJson];
 	    }

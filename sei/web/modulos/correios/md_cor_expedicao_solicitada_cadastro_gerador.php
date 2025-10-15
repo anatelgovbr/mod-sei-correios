@@ -232,7 +232,7 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
 PaginaSEI::getInstance()->abrirAreaDados('4.5em');
 ?>
   <div id="divSinNecessitaAr" class="infraDivCheckbox">
-    <input type="checkbox" id="chkSinNecessitaAr" name="chkSinNecessitaAr" class="infraCheckbox form-check-input" <?=PaginaSEI::getInstance()->setCheckbox($objMdCorExpedicaoSolicitadaDTO->getStrSinNecessitaAr())?>  tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
+    <input type="checkbox" id="chkSinNecessitaAr" name="chkSinNecessitaAr" class="infraCheckbox" <?=PaginaSEI::getInstance()->setCheckbox($objMdCorExpedicaoSolicitadaDTO->getStrSinNecessitaAr())?>  tabindex="<?=PaginaSEI::getInstance()->getProxTabDados()?>" />
     <label id="lblSinNecessitaAr" for="chkSinNecessitaAr" accesskey="" class="infraLabelCheckbox">sin_necessita_ar</label>
   </div>
 <?

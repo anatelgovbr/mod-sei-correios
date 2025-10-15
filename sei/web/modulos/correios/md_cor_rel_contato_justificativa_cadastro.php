@@ -154,7 +154,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <tr class="infraTrClara" style="width: 30px;">
                             <td align="center" style="width: 50%; color: #212529"><?= $objContato->getStrNome(); ?></td>
                             <td align="center">
-                                <select id="selContatoJustificativa" name="selContatoJustificativa" class="infraSelect form-select" style="width: 100%">
+                                <select id="selContatoJustificativa" name="selContatoJustificativa" class="infraSelect" style="width: 100%">
                                     <?= $strItensSelJustificativa ?>
                                 </select>
                             </td>
@@ -184,7 +184,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <div class="col-11 col-sm-11 col-md-9 col-lg-7 col-xl-7">
                             <div class="form-group">
                                 <div class="input-group mb-3">
-                                    <select id="selDestinatarioNaoHabilitado" name="selDestinatarioNaoHabilitado" class="infraSelect form-select" multiple="multiple" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                    <select id="selDestinatarioNaoHabilitado" name="selDestinatarioNaoHabilitado" class="infraSelect form-control" multiple="multiple" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                         <?= $strItensSelDestinatario ?>
                                     </select>
                                     <div id="divOpcoesDestinatarios">
@@ -200,7 +200,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             <div class="form-group">
                                 <label id="lblDestinatarioJustificativa" for="selDestinatarioJustificativa" accesskey="" class="infraLabelObrigatorio">Justifivativa:</label>
                                 <div class="input-group mb-3">
-                                    <select id="selContatoJustificativa" name="selContatoJustificativa" class="infraSelect form-select">
+                                    <select id="selContatoJustificativa" name="selContatoJustificativa" class="infraSelect form-control">
                                         <?= $strItensSelJustificativa ?>
                                     </select>
                                     <input type="hidden" id="hdnDestinatarios" name="hdnDestinatarios" value="<?= PaginaSEI::tratarHTML($_POST['hdnDestinatarios']) ?>"/>

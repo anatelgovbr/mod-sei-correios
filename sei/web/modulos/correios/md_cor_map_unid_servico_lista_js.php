@@ -11,7 +11,7 @@
     }
 
     function buscaLinhas(){
-        let linhas = document.querySelectorAll('.infraTrVermelha');
+        let linhas = document.querySelectorAll('.trVermelha');
         [linhas].map( row => $( row ).removeClass('infraTrAcessada') );
     }
 

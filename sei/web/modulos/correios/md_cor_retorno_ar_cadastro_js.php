@@ -13,7 +13,7 @@
 
     function iniciarObjUploadArquivo() {
         disabledObjDevolvido();
-        var TAMANHO_MAXIMO = "<?= $tamanhoZip ?>";
+        var TAMANHO_MAXIMO = "<?php echo $tamanhoZip; ?>"
         objUploadArquivo = new infraUpload('frmMdCorRetornoUpload', '<?= $strUrlUploadArquivo ?>');
         objUploadArquivo.finalizou = function (arr) {
             var retorno = contarArquivos(arr['nome_upload']);
@@ -323,6 +323,8 @@
             async: false,
             success: function (r) {
                 var ret = $(r).find('Retorno').text();
+                console.log('ret: ' + ret);
+                console.log(ret == 'true');
                 if (ret == 'true') {
                     retorno = true;
                 } else {
@@ -333,6 +335,7 @@
                 retorno = false;
             }
         });
+        console.log(retorno);
         return retorno;
     }
 </script>

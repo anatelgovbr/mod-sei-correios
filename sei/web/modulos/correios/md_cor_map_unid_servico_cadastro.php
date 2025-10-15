@@ -253,7 +253,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                 <div class="form-group">
                     <div class="input-group mb-3">
                         <select id="selUnidades" name="selUnidades" size="4" multiple="multiple"
-                                class="infraSelect form-select"<?= $strDesabilitar . $strDesabilitarConsultar ?>>
+                                class="infraSelect form-control"<?= $strDesabilitar . $strDesabilitarConsultar ?>>
                             <?= $strItensSelUnidades ?>
                         </select>
                         <? if ($strDesabilitar == '' && $strDesabilitarConsultar == '') { ?>
@@ -285,7 +285,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                         <div class="col-sm-8 col-md-8 col-lg-6">
                             <div class="form-group">
                                 <label class="infraLabelObrigatorio">&nbsp;Número do Contrato no Órgão:</label>
-                                <select name="selContrato" class="infraSelect form-select" id="selContrato" <?= $strDesabilitarConsultar ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                <select name="selContrato" class="infraSelect form-control" id="selContrato" <?= $strDesabilitarConsultar ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                                     <?= $strItensSelContrato ?>
                                 </select>
                             </div>

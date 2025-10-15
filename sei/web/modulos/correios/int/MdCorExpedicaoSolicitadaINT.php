@@ -328,6 +328,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             $genero = $contatoDTO->getStrStaGenero();
             $endereco = $contatoDTO->getStrEndereco();
             $bairro = $contatoDTO->getStrBairro();
+
             // critica qtd de caracteres do endereço, pois na API dos Correios, o logradouro aceita somente ate 50 caracteres
             if (strlen($endereco) > 50) {
                 $msgValidacaoQtdLogra = "O campo 'Endereço' do destinatário extrapolou os 50 caracteres aceitos pelos Correios, o que pode implicar em insucesso na entrega do objeto postal. Dessa forma, revise o campo 'Endereço' do destinatário para que tenha até 50 caracteres antes de fazer uma nova solicitação de expedição";
@@ -665,7 +666,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                     }
                 }
 
-                if ($contatoDTO->getStrStaNatureza() == 'J' && !is_null($contatoDTO->getStrCnpj())) {
+                if ($contatoDTO->getStrStaNatureza() == 'J' && !is_null($contatoDTO->getDblCnpj())) {
 
                     $arrIdContato = [$contatoDTO->getNumIdContato()];
                     $arrObjMdPetVinculoDTO = self::validarPetVinculoUsuarioExterno($arrIdContato);
@@ -678,7 +679,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                         }
                     } else {
                         $objContatoDTO = new ContatoDTO();
-                        $objContatoDTO->setStrCnpj($contatoDTO->getStrCnpj());
+                        $objContatoDTO->setDblCnpj($contatoDTO->getDblCnpj());
                         $objContatoDTO->retNumIdContato();
                         $objContatoDTO = $objContatoRN->listarRN0325($objContatoDTO);
 

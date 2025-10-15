@@ -235,7 +235,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                     value=""/>
                                 <input type="hidden" name="hdnListaContratoServicosReativadas[]" id="hdnListaContratoServicosReativadas"
                                         value=""/>
-                                <table id="tbContratoServicos" class="infraTable w-100" align="left" summary="Lista de Serviços Postais">
+                                <table id="tbContratoServicos" class="infraTable table w-100" align="left" summary="Lista de Serviços Postais">
                                     <thead>
                                         <tr>
                                             <th class="infraTh" style="display: none;">Codigo Servico</th>

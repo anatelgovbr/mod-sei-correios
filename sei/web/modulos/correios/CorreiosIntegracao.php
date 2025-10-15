@@ -15,7 +15,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.6.3';
+        return '2.5.7';
     }
 
     public function getInstituicao()

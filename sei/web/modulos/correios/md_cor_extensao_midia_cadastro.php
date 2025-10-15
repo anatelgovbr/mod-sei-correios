@@ -70,7 +70,7 @@ try {
                         $objMdCorExtensaoMidiaRN->cadastrar($objMdCorExtensaoMidiaDTO);
                     }
                     //$objMdCorExtensaoMidiaDTO = $objMdCorExtensaoMidiaRN->cadastrar($objMdCorExtensaoMidiaDTO);
-                    PaginaSEI::getInstance()->adicionarMensagem('Extensões cadastradas com sucesso.',InfraPagina::$TIPO_MSG_AVISO);
+                    PaginaSEI::getInstance()->adicionarMensagem('Extensões cadastradas com sucesso.');
                     header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao']));
                     die;
                 } catch (Exception $e) {
@@ -104,7 +104,7 @@ try {
                 try {
                     $objMdCorExtensaoMidiaRN = new MdCorExtensaoMidiaRN();
                     $objMdCorExtensaoMidiaRN->alterar($objMdCorExtensaoMidiaDTO);
-                    PaginaSEI::getInstance()->adicionarMensagem("A {$objMdCorExtensaoMidiaDTO->getStrNomeExtensao()} foi alterada com sucesso.",InfraPagina::$TIPO_MSG_AVISO);
+                    PaginaSEI::getInstance()->adicionarMensagem('a "' . $objMdCorExtensaoMidiaDTO->getStrNomeExtensao() . '" alterada com sucesso.');
                     header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($objMdCorExtensaoMidiaDTO->getNumIdMdCorExtensaoMidia())));
                     die;
                 } catch (Exception $e) {
@@ -179,7 +179,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
             <div class="col-sm-12 col-md-11 col-lg-9 col-xl-8">
                 <div class="input-group mb-3">
                     <select id="selPrincipal" name="selPrincipal" size="8" multiple="multiple"
-                            class="infraSelect form-select"
+                            class="infraSelect form-control"
                             tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
                         <?= $strSelectNomeExtensao; ?>
                     </select>

@@ -132,11 +132,11 @@ foreach ($arrArquivoProcessado as $chave => $arquivoProcessado) {
     $habilitaDtAr = !is_null($strDataAR) ? 'disabled="disabled"' : $habilitado;
     $slInfrigencia = MdCorParamArInfrigenINT::montarSelectIdMdCorParamArInfrigencia('null', '', $coMotivo);
     $strResultado .= '<td id="objDevolvido"><div class="input-group" style="width:160px;">';
-    $strResultado .= '<span style="margin-top:5px;"><input class="infraCheckbox form-check-input" ' . $motivoSelecionado . ' ' . $disabledInput . 'id="st_devolvido' . $chave . '" ' . $checkbox . '  onclick="selecionaDevolvido(this)" type="checkbox" name="st_devolvido[' . $chave . ']"/></span>';
+    $strResultado .= '<span style="margin-top:5px;"><input class="infraCheckbox" ' . $motivoSelecionado . ' ' . $disabledInput . 'id="st_devolvido' . $chave . '" ' . $checkbox . '  onclick="selecionaDevolvido(this)" type="checkbox" name="st_devolvido[' . $chave . ']"/></span>';
     $disabledSelect = '';
 
 
-    $strResultado .= '<select ' . $disabledSelect . ' id="co_motivo' . $chave . '" class="co_motivo infraSelect form-select" name="co_motivo[' . $chave . ']" style="width : 80%; font-size:1em; right: -4px;">';
+    $strResultado .= '<select ' . $disabledSelect . ' id="co_motivo' . $chave . '" class="co_motivo infraSelect form-control" name="co_motivo[' . $chave . ']" style="width : 80%; font-size:1em; right: -4px;">';
     $strResultado .= $slInfrigencia;
     $strResultado .= '</select>';
 

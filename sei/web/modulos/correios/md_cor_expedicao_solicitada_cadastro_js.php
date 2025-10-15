@@ -45,8 +45,8 @@
             }
         }
         if (isset($_GET['visualizar']) || $bolExistePLP || $staAberto) { ?>
-        infraDesabilitarCamposAreaDados();
-        $("#imgAjuda").css("visibility", "visible");
+            infraDesabilitarCamposAreaDados();
+            $("#imgAjuda").css("visibility", "visible");
         <?}
         }?>
 

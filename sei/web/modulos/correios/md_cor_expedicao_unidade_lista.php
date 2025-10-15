@@ -306,7 +306,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'); ?>
                             Serviço Postal:
                         </label>
 
-                        <select id="selServicoPostal" name="selServicoPostal" class="infraSelect form-select"
+                        <select id="selServicoPostal" name="selServicoPostal" class="infraSelect form-control"
                                 tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>"
                                 onchange="pesquisar();">
                             <?= $strItensSelServico ?>
