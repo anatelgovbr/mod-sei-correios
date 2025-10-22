@@ -879,7 +879,7 @@ try {
             $objParticipanteDTO->retTodos();
             $objParticipanteDTO = $objParticipanteRN->consultarRN1008($objParticipanteDTO);
 
-            if ($objParticipanteDTO->getNumIdContato() != $dto->getNumIdContatoDestinatario()) {
+            if (!empty($objParticipanteDTO) ?? $objParticipanteDTO->getNumIdContato() != $dto->getNumIdContatoDestinatario()) {
                 $objNovoContato = MdCorContatoINT::getInfoContato($objParticipanteDTO->getNumIdContato());
                 $arrObjMdCorContato['objMdCorContato'] = $objNovoContato;
                 $arrObjMdCorContato['isRegAlterado'] = true;
@@ -922,7 +922,8 @@ try {
                 $arrComandos[] = '<button onclick="infraFecharJanelaModal();" type="button" accesskey="C" id="btnFechar" value="btnFechar" class="infraButton">
                               Fe<span class="infraTeclaAtalho">c</span>har</button>';
             } else {
-                if ( isset( $_GET['acao_origem'] ) && $_GET['acao_origem'] != 'md_cor_geracao_plp_listar' || $dto->getStrSinDevolvido() == 'S') {
+                
+                if ( (isset( $_GET['acao_origem'] ) && $_GET['acao_origem'] != 'md_cor_geracao_plp_listar') || $dto->getStrSinDevolvido() == 'S') {
                     //montando links para pesquisa de protocolos anexos
                     $strLinkPopUpSelecaoProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_cadastro_protocolos_selecionar&tipo_selecao=2&id_procedimento=' . $dto->getDblIdProtocolo() . '&id_doc=' . $_GET['id_doc'] . '&id_object=objLupaProtocoloAnexo');
                     if (SessaoSei::getInstance()->getNumIdUnidadeAtual() == $dto->getNumIdUnidade() && $dto->getNumIdMdCorPlp() == null && $staAberto) {
