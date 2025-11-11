@@ -300,6 +300,8 @@ class MdCorApiRestRN
                         $arrRet['msg'] .= "Erro não Identificado";
                     }
                 }
+
+                $arrRet['msg'] = $this->getOrientacao($arrRet['msg']);
             break;
 
             default:
@@ -341,5 +343,14 @@ class MdCorApiRestRN
 
     public function getEndPoint(){
         return $this->_endpoint;
+    }
+
+    public function getOrientacao($msg) {
+        // validar se na $msg tem o codigo PZN-008 e concatenar pulando 2 linhas uma observação
+        if (strpos($msg, 'PZN-008') !== false) {
+            $msg .= "\n\nOrientação: Não foi possível concluir a Geração da Pré-Postagem pois o CEP indicado para o Destinatário na Solicitação de Expedição se trata de um Ponto de Coleta (Locker). Necessário devolver a Solicitação de Expedição à Unidade Solicitante para que a mesma altere o CEP do Destinatário ou selecione outro Serviço Postal que não possua a contratação de Aviso de Recebimento.";
+        }
+
+        return $msg;
     }
 }
