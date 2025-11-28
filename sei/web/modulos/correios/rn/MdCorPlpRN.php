@@ -822,12 +822,15 @@
 			    ]
 		    ];
 
-            // configura servico adicional
-            $arrServAdd = [
-                ['codigoServicoAdicional' => '025', 'valorDeclarado' => '0'],
-            ];
+        // configura servico adicional
+        $arrServAdd = [];
 
-            if ( $arrItens['stExpedicaoAvisoRecebimentoServico'] == 'S' ) array_push( $arrServAdd , ['codigoServicoAdicional' => '001', 'valorDeclarado' => '0'] );
+        if ( $arrItens['stExpedicaoAvisoRecebimentoServico'] == 'S' ) {
+          $arrServAdd = [
+            ['codigoServicoAdicional' => '025', 'valorDeclarado' => '0'],
+            ['codigoServicoAdicional' => '001', 'valorDeclarado' => '0']
+          ];
+        }
 
 		    $arrJson = [
                 "idCorreios"              => "",

@@ -305,10 +305,12 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
             $contatoDTO = $contatoRN->consultarRN0324($contatoDTO);
 
             if ( is_null($contatoDTO) ) {
-                if($bolEntrada) {
+                if($bolEntrada){
                     $str_msg_validacao = 'O Destinatário deste documento está com cadastro de Contato desativado. <br><br>Acesse o botão de ação "Consultar/Alterar Documento" sobre o documento para trocar o Contato indicado como Destinatário por um contato ativo.';
+                    return $str_msg_validacao;
                 } else {
                     $str_msg_validacao = "O Destinatário deste documento está com cadastro de Contato desativado. \n\nAcesse o botão de ação \"Consultar/Alterar Documento\" sobre o documento para trocar o Contato indicado como Destinatário por um contato ativo.";
+                    return "<item></item><flag>false</flag><mensagem>" . $str_msg_validacao . "</mensagem></item>";
                 }
             }
 
