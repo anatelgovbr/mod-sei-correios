@@ -690,14 +690,14 @@
 
             infraSelecaoMultiplaMarcarTodos('selProtocoloAnexo', true);
 
-            //chegando aqui é porque passou em todas as validações , esta tudo OK e pode submeter o cadastro
+            if (!validarDestinatario()) {
+                return;
+            }
         }
-        var retorno = validarDestinatario();
 
-        if(retorno) {
-            window.onbeforeunload = null;
-            document.getElementById('frmSolicitarExpedicao').submit();
-        }
+        window.onbeforeunload = null;
+        document.getElementById('frmSolicitarExpedicao').submit();
+
     }
 
     function validarDestinatario(mostrarBootstrap = false){
