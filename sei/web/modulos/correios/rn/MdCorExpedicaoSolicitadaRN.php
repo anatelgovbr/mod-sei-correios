@@ -1435,4 +1435,68 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
     }
 
+    public function validarExistenciaObjetoAguardandoRetornoAR($objProcedimentoAPI) {
+        $idProcedimento = $objProcedimentoAPI[0]->getIdProcedimento();
+
+        $mdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
+        $mdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
+        $mdCorExpedicaoSolicitadaDTO->retStrCodigoRastreamento();
+        $mdCorExpedicaoSolicitadaDTO->retDthDataExpedicao();
+        $mdCorExpedicaoSolicitadaDTO->retNumIdDocumentoAr();
+        $mdCorExpedicaoSolicitadaDTO->retDblIdDocumentoPrincipal();
+        $mdCorExpedicaoSolicitadaDTO->retNumIdProcedimento();
+        $mdCorExpedicaoSolicitadaDTO->retNumIdMdCorParamArInfrigencia();
+        $mdCorExpedicaoSolicitadaDTO->retNumIdMdCorPlp();
+        $mdCorExpedicaoSolicitadaDTO->retStrSinDevolvido();
+        $mdCorExpedicaoSolicitadaDTO->retStrStaPlp();
+        $mdCorExpedicaoSolicitadaDTO->setStrStaPlp(MdCorPlpRN::$STA_GERADA, INFRADTO::$OPER_DIFERENTE);
+        $mdCorExpedicaoSolicitadaDTO->setStrSinNecessitaAr('S');
+        $mdCorExpedicaoSolicitadaDTO->setStrSinRecebido('N');
+        $mdCorExpedicaoSolicitadaDTO->setStrSinDevolvido('N');
+        $mdCorExpedicaoSolicitadaDTO->setNumIdProcedimento($idProcedimento);
+        $mdCorExpedicaoSolicitadaDTO->setOrdNumIdMdCorRetornoArDoc(InfraDTO::$TIPO_ORDENACAO_DESC);
+        $arrMdCorExpedicaoSolicitadaDTO = $this->listar($mdCorExpedicaoSolicitadaDTO);
+
+        if (!empty($arrMdCorExpedicaoSolicitadaDTO)) {
+            foreach ($arrMdCorExpedicaoSolicitadaDTO as $mdCorExpedicaoSolicitadaDTO) {
+                // --- CASO 1: OBJETO AINDA NÃO FOI PARA O CORREIO ---
+        
+                // Se não tem PLP, está "Aguardando Expedição" -> PODE BLOQUEAR
+                if (is_null($mdCorExpedicaoSolicitadaDTO->getNumIdMdCorPlp())) {
+                    continue;
+                }
+
+                // Se tem PLP mas NÃO TEM Data de Expedição, está "Em procedimento de postagem" -> PODE BLOQUEAR
+                // Conforme seu var_dump: DataExpedicao é NULL
+                if (is_null($mdCorExpedicaoSolicitadaDTO->getDthDataExpedicao())) {
+                    continue;
+                }
+
+                // --- CASO 2: OBJETO JÁ ESTÁ NA RUA, MAS FOI DEVOLVIDO OU ENTREGUE ---
+
+                // Se foi devolvido por infrigência -> PODE BLOQUEAR
+                if (!is_null($mdCorExpedicaoSolicitadaDTO->getNumIdMdCorParamArInfrigencia())) {
+                    continue;
+                }
+
+                // Verificar o Rastreamento para ver se já foi entregue ou extraviado
+                $objExpedAndamentoRN = new MdCorExpedicaoAndamentoRN();
+                $arrAndamentos = $objExpedAndamentoRN->getDadosAndamentosParaRastreio($mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada());
+                
+                if (!empty($arrAndamentos)) {
+                    $statusRastreio = $arrAndamentos[0]->getStrStaRastreioModulo();
+                    // 'S' = Entregue, 'I' = Insucesso/Extraviado -> PODE BLOQUEAR
+                    if ($statusRastreio == 'S' || $statusRastreio == 'I') {
+                        continue;
+                    }
+                }
+
+                // Se passar por todos os "continues" acima, significa que o ícone atual 
+                // deste objeto é obrigatoriamente "AR enviado aguardando retorno".
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

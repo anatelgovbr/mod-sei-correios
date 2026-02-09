@@ -41,10 +41,21 @@ try {
             break;
         case 'md_cor_retorno_ar_salvar':
             $mdCorRetornoArDocRN = new MdCorRetornoArDocRN();
-            $mdCorRetornoArDocRN->cadastrarArs($_POST);
-            $url = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_retorno_ar_listar');
-            PaginaSEI::getInstance()->adicionarMensagem('Ars Processados com sucesso');
+            $dados = $mdCorRetornoArDocRN->cadastrarArs($_POST);
+            $url = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_retorno_ar_listar&acao_origem=' . $_GET['acao']);
+
+            if (isset($dados['msgErro']) && !empty($dados['msgErro'])) {
+                $msgs = 'Ars Processados com sucesso, porém com as seguintes observações:\n\nO Processo do Retorno de AR dos objetivos listados abaixo não foi realizado.\nMais detalhes são apresentados na ação Resumo do Processo.\n\n';
+                foreach ($dados['msgErro'] as $msg) {
+                    $msgs .= $msg . '\n';
+                }
+                PaginaSEI::getInstance()->adicionarMensagem($msgs, InfraPagina::$TIPO_MSG_AVISO);
+            } else {
+                PaginaSEI::getInstance()->adicionarMensagem('Ars Processados com sucesso', InfraPagina::$TIPO_MSG_INFORMACAO);
+            }
+
             header('Location: ' . $url);
+            die;
             break;
 
         case 'md_cor_retorno_ar_consultar':
@@ -241,6 +252,8 @@ PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
+
+PaginaSEI::getInstance()->montarMensagens();
 PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
 
 ?>
@@ -287,12 +300,12 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
     <form id="frmMdCorRetornoUpload" method="post" enctype="multipart/form-data">
         <?php if (empty($arquivoLido)) { ?>
             <div class="row">
-                <div class="col-10">
+                <div class="col-12">
                     <label class="infraLabelObrigatorio">Selecionar Arquivo ZIP:</label>
                     <input type="file"
                         id="fileArquivo"
                         name="fileArquivo"
-                        class="form-control-file"
+                        class="form-control-file drop-zone-style"
                         onchange="adicionarDocumento()"
                         tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                 </div>
@@ -323,9 +336,12 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
 <?php } ?>
 
 <?
-// PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos, true);
+PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos, true);
 PaginaSEI::getInstance()->fecharAreaDados();
+
 require_once('md_cor_retorno_ar_cadastro_js.php');
+require_once("js/md_cor_global.js");
+
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
 ?>

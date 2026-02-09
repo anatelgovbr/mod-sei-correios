@@ -144,6 +144,27 @@
             return false;
         }
 
+        // Caso o campo Regra de Nível de Acesso esteja marcado como "Pré-definido" valida se foi selecionado um nível de acesso e caso o nivel de acesso for 1 (Restrito) valida se foi selecionada uma hipótese legal
+        var rdNivelAcessoPadraoARPre = document.getElementById('rdNivelAcessoPadraoARPre');
+        var valorHipoteseLegal = document.getElementById('hdnParametroHipoteseLegal').value;
+
+        if (rdNivelAcessoPadraoARPre.checked) {
+            var selNivelAcessoAr = document.getElementById('selNivelAcessoAr');
+            if (selNivelAcessoAr.value == '') {
+                alert('Informe o Nível de Acesso Padrão para Documento Externo de Retorno de AR.');
+                selNivelAcessoAr.focus();
+                return false;
+            }
+            if (selNivelAcessoAr.value == '<?= ProtocoloRN::$NA_RESTRITO ?>') {
+                var selHipoteseLegalAr = document.getElementById('selHipoteseLegalAr');
+                if (valorHipoteseLegal != '0' && selHipoteseLegalAr.value == '') {
+                    alert('Informe a Hipótese Legal Padrão para Documento Externo de Retorno de AR.');
+                    selHipoteseLegalAr.focus();
+                    return false;
+                }
+            }
+        }
+
         document.getElementById('frmMdCorParametroCadastro').submit()
     }
 
@@ -283,6 +304,37 @@
 //                objLupaUnidade.adicionar(id, descricao, document.getElementById('txtDestinatario'));
             }
         };
+    }
+
+    function changeSelectNivelAcesso() {
+
+        var valorSelectNivelAcesso = document.getElementById('selNivelAcessoAr').value;
+        var valorHipoteseLegal = document.getElementById('hdnParametroHipoteseLegal').value;
+
+        if (valorSelectNivelAcesso == '<?= ProtocoloRN::$NA_RESTRITO ?>' && valorHipoteseLegal != '0') {
+            document.getElementById('divHipoteseLegalAr').style.display = 'inherit';
+        } else {
+            document.getElementById('divHipoteseLegalAr').style.display = 'none';
+            // limpar campo hipótese legal
+            document.getElementById('selHipoteseLegalAr').value = '';
+        }
+
+        changeRegraNivelAcesso();
+    }
+
+    function changeRegraNivelAcesso() {
+
+        var rdNivelAcessoPadraoARPre = document.getElementById('rdNivelAcessoPadraoARPre');
+        var valorHipoteseLegal = document.getElementById('hdnParametroHipoteseLegal').value;
+        if (rdNivelAcessoPadraoARPre.checked) {
+            document.getElementById('divNivelAcessoAr').style.display = 'inherit';
+            if (valorHipoteseLegal != '0' && document.getElementById('selNivelAcessoAr').value == '<?= ProtocoloRN::$NA_RESTRITO ?>') {
+                document.getElementById('divHipoteseLegalAr').style.display = 'inherit';
+            }
+        } else {
+            document.getElementById('divNivelAcessoAr').style.display = 'none';
+            document.getElementById('divHipoteseLegalAr').style.display = 'none';
+        }
     }
 
 </script>

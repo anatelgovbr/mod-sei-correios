@@ -47,6 +47,12 @@ class MdCorParametroArDTO extends InfraDTO {
 
     $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'NuDiasPrazoExpRetAr', 'dias_exp_ret_ar');
 
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'SinNivelAcessoDocPrincipalAr', 'sin_niv_ace_doc_princ_ar');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_STR, 'NivelAcessoAr', 'nivel_acesso_ar');
+
+    $this->adicionarAtributoTabela(InfraDTO::$PREFIXO_NUM, 'IdHipoteseLegalAr', 'id_hipotese_legal_ar');
+
     $this->configurarPK('IdMdCorParametroAr', InfraDTO::$TIPO_PK_NATIVA);
 
     //Tipo de serie

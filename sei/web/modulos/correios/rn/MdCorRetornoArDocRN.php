@@ -233,8 +233,17 @@ class MdCorRetornoArDocRN extends InfraRN {
             $mdCorParametroArDTO->retNumIdSerie();
             $mdCorParametroArDTO->retStrNomeArvore();
             $mdCorParametroArDTO->retNumIdTipoConferencia();
+            $mdCorParametroArDTO->retStrSinNivelAcessoDocPrincipalAr();
+            $mdCorParametroArDTO->retStrNivelAcessoAr();
+            $mdCorParametroArDTO->retNumIdHipoteseLegalAr();
 
             $arrMdCorParametroArDTO = $mdCorParametroArRN->consultar($mdCorParametroArDTO);
+
+            $paramsPadraoNivelAcesso = [
+                'SIN_NIVEL_ACESSO_AR_DOC_PRINCIPAL' => $arrMdCorParametroArDTO->getStrSinNivelAcessoDocPrincipalAr() ?? 'S',
+                'NIVEL_ACESSO_AR' => $arrMdCorParametroArDTO->getStrNivelAcessoAr() ?? '',
+                'HIPOTESE_LEGAL_AR' => $arrMdCorParametroArDTO->getNumIdHipoteseLegalAr() ?? ''
+            ];
 
             $arrStatusEstado = array(
                 ProtocoloRN::$TE_PROCEDIMENTO_SOBRESTADO,
@@ -275,6 +284,7 @@ class MdCorRetornoArDocRN extends InfraRN {
                     $documentoRN = new DocumentoRN();
                     $documentoDTO = new DocumentoDTO();
                     $documentoDTO->retStrStaEstadoProcedimento();
+                    $documentoDTO->retStrProtocoloProcedimentoFormatado();
                     $documentoDTO->setStrProtocoloDocumentoFormatado($nuSei);
                     $objDocumentoDTO = $documentoRN->consultarRN0005($documentoDTO);
 
@@ -282,7 +292,7 @@ class MdCorRetornoArDocRN extends InfraRN {
 
                         $idDocumentoAr = null;
                         if (empty($dados['hdnArquivoAlteracao']) && !is_null($idDocumentoPrincipal)) {
-                            $idDocumentoAr = $this->_adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO);
+                            $idDocumentoAr = $this->_adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO, $paramsPadraoNivelAcesso);
                         }
                     }
 
@@ -376,12 +386,15 @@ class MdCorRetornoArDocRN extends InfraRN {
                     if ($objDocumentoDTO->getStrStaEstadoProcedimento() == ProtocoloRN::$TE_PROCEDIMENTO_ANEXADO) {
                         $objMdCorRetornoArDocDTO->setNumIdStatusProcess(MdCorRetornoArRN::$STA_RETORNO_AR_NAO_PROCESSADO);
                         $objMdCorRetornoArDocDTO->setNumIdSubStatusProcess(MdCorRetornoArRN::$SUBSTA_RETORNO_AR_PROC_ANEXADO);
+                        $objMdCorRetornoArDocDTO->setNumIdMdCorParamArInfrigencia(NULL);
                     } elseif ($objDocumentoDTO->getStrStaEstadoProcedimento() == ProtocoloRN::$TE_PROCEDIMENTO_SOBRESTADO) {
                         $objMdCorRetornoArDocDTO->setNumIdStatusProcess(MdCorRetornoArRN::$STA_RETORNO_AR_NAO_PROCESSADO);
                         $objMdCorRetornoArDocDTO->setNumIdSubStatusProcess(MdCorRetornoArRN::$SUBSTA_RETORNO_AR_PROC_SOBRESTADO);
+                        $objMdCorRetornoArDocDTO->setNumIdMdCorParamArInfrigencia(NULL);
                     } elseif ($objDocumentoDTO->getStrStaEstadoProcedimento() == ProtocoloRN::$TE_PROCEDIMENTO_BLOQUEADO) {
                         $objMdCorRetornoArDocDTO->setNumIdStatusProcess(MdCorRetornoArRN::$STA_RETORNO_AR_NAO_PROCESSADO);
                         $objMdCorRetornoArDocDTO->setNumIdSubStatusProcess(MdCorRetornoArRN::$SUBSTA_RETORNO_AR_PROC_BLOQUEADO);
+                        $objMdCorRetornoArDocDTO->setNumIdMdCorParamArInfrigencia(NULL);
                     }
                     $objMdCorRetornoArDocDTO->setStrCodigoRastreamento($coRastreamento);
 
@@ -429,12 +442,12 @@ class MdCorRetornoArDocRN extends InfraRN {
                         if ($dados['hdnArquivoAlteracao'] == '') {
                             $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);
                             
-                            $objDocumentoDTO = new MdCorRetornoArDocDTO();
-                            $objDocumentoDTO->setNumIdDocumentoPrincipal($idDocumentoPrincipal);
-                            $objDocumentoDTO->retNumIdMdCorRetornoArDoc();
-                            $objDocumentoDTO->retStrProtocoloFormatadoDocumento();
-                            $objDocumentoDTO->retNumIdProcedimento();
-                            $objDocumentoDTO->retDtaDataAr();
+                            $objMdCorRetornoArDocDTO = new MdCorRetornoArDocDTO();
+                            $objMdCorRetornoArDocDTO->setNumIdDocumentoPrincipal($idDocumentoPrincipal);
+                            $objMdCorRetornoArDocDTO->retNumIdMdCorRetornoArDoc();
+                            $objMdCorRetornoArDocDTO->retStrProtocoloFormatadoDocumento();
+                            $objMdCorRetornoArDocDTO->retNumIdProcedimento();
+                            $objMdCorRetornoArDocDTO->retDtaDataAr();
                             $arrObjDocumentoDTO = $this->consultar($objMdCorRetornoArDocDTO);
                             
                             $objAtividadeRN = new AtividadeRN();
@@ -468,6 +481,18 @@ class MdCorRetornoArDocRN extends InfraRN {
                     $parametros = array();
                     $parametros[] = $idDocumentoPrincipal;
                     $parametros[] = $codigoRastreamento;
+                    if (in_array($objDocumentoDTO->getStrStaEstadoProcedimento(), $arrStatusEstado)) {
+
+                        switch ($objDocumentoDTO->getStrStaEstadoProcedimento()) {
+                            case ProtocoloRN::$TE_PROCEDIMENTO_SOBRESTADO : $motivo = 'Sobrestado'; break;
+                            case ProtocoloRN::$TE_PROCEDIMENTO_BLOQUEADO : $motivo = 'Bloqueado'; break;
+                            case ProtocoloRN::$TE_PROCEDIMENTO_ANEXADO : $motivo = 'Anexado'; break;
+                        }
+
+                        $dados['msgErro'][] = "Objeto: $nuSei - Processo: {$objDocumentoDTO->getStrProtocoloProcedimentoFormatado()} - Motivo: Procedimento em estado {$motivo}";
+                    }
+                    $parametros[] = in_array($objDocumentoDTO->getStrStaEstadoProcedimento(), $arrStatusEstado);
+                    
                     $this->salvarRecebidoExpedicao($parametros);
                     SessaoSEI::getInstance()->setBolHabilitada(true);
                     SessaoSEI::getInstance()->simularLogin(null, null, $idUsuarioLogado, $idUnidadeLogado);
@@ -495,7 +520,7 @@ class MdCorRetornoArDocRN extends InfraRN {
         }
     }
 
-    private function _adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO) {
+    private function _adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO, $paramsPadraoNivelAcesso) {
 
         
         $idDocumentoPrincipal = $dados['idDocumentoPrincipal'][$chave];
@@ -536,8 +561,14 @@ class MdCorRetornoArDocRN extends InfraRN {
         $objDocumentoDTO->setDblIdProcedimento($idProcedimento);
 
         $objDocumentoDTO->setNumIdSerie($idSerie);
-        $objDocumentoDTO->setNumIdHipoteseLegalProtocolo($objRetDocumentoDTO->getNumIdHipoteseLegalProtocolo());
-        $objDocumentoDTO->setStrStaNivelAcessoLocalProtocolo($objRetDocumentoDTO->getStrStaNivelAcessoLocalProtocolo());
+
+        if ($paramsPadraoNivelAcesso['SIN_NIVEL_ACESSO_AR_DOC_PRINCIPAL'] == 'N') {
+            $objDocumentoDTO->setStrStaNivelAcessoLocalProtocolo($paramsPadraoNivelAcesso['NIVEL_ACESSO_AR']);
+            $objDocumentoDTO->setNumIdHipoteseLegalProtocolo($paramsPadraoNivelAcesso['HIPOTESE_LEGAL_AR']);
+        } else {
+            $objDocumentoDTO->setStrStaNivelAcessoLocalProtocolo($objRetDocumentoDTO->getStrStaNivelAcessoLocalProtocolo());
+            $objDocumentoDTO->setNumIdHipoteseLegalProtocolo($objRetDocumentoDTO->getNumIdHipoteseLegalProtocolo());
+        }
 
         $objDocumentoDTO->setDblIdDocumentoEdoc(null);
         $objDocumentoDTO->setDblIdDocumentoEdocBase(null);
@@ -581,7 +612,12 @@ class MdCorRetornoArDocRN extends InfraRN {
 
         $arrDados = $mdCorExpedicaoSolicitadaDTO = $mdCorExpedicaoSolicitadaRN->consultar($mdCorExpedicaoSolicitadaDTO);
 
-        $mdCorExpedicaoSolicitadaDTO->setStrSinRecebido('S');
+        if ($parametros[2] == true) {
+            $mdCorExpedicaoSolicitadaDTO->setStrSinRecebido('N');
+        } else {
+            $mdCorExpedicaoSolicitadaDTO->setStrSinRecebido('S');
+        }
+
         $mdCorExpedicaoSolicitadaRN->alterar($mdCorExpedicaoSolicitadaDTO);
 
         $mdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();

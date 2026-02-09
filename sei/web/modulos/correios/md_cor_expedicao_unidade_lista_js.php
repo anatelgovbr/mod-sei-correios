@@ -19,29 +19,4 @@
 
         frmExpedicaoSolicitadaUnidade.submit();
     }
-
-    function addEventoEnter() {
-        document.addEventListener("keypress", function (evt) {
-            var key_code = evt.keyCode ? evt.keyCode :
-                evt.charCode ? evt.charCode :
-                    evt.which ? evt.which : void 0;
-
-            if (key_code == 13) {
-                pesquisar();
-            }
-        });
-    }
-
-    function fechar() {
-        document.location = '<?= $strUrlFechar ?>';
-    }
-
-
-    function acaoDetalharRastreamento(url) {
-        parent.infraAbrirJanelaModal(url, 800, 500);
-    }
-
-    function acaoConsultarExpedicao(url) {
-        parent.infraAbrirJanelaModal(url, 1000, 700);
-    }
 </script>

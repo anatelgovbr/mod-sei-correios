@@ -138,47 +138,6 @@
         return validarCadastro();
     }
 
-    function exibirBotao() {
-        var div = document.getElementById('divInfraAvisoFundo');
-
-        if (div != null && div.style.visibility == 'visible') {
-
-            var botaoCancelar = document.getElementById('btnInfraAvisoCancelar');
-
-            if (botaoCancelar != null) {
-                botaoCancelar.style.display = 'block';
-            }
-        }
-    }
-
-    function exibirAvisoEditor() {
-
-        var divFundo = document.getElementById('divInfraAvisoFundo');
-
-        if (divFundo == null) {
-            divFundo = infraAviso(false, 'Processando...');
-        } else {
-            document.getElementById('btnInfraAvisoCancelar').style.display = 'none';
-            document.getElementById('imgInfraAviso').src = '/infra_css/imagens/aguarde.gif';
-        }
-
-        if (INFRA_IE == 0 || INFRA_IE >= 7) {
-            divFundo.style.position = 'fixed';
-        }
-
-        var divAviso = document.getElementById('divInfraAviso');
-
-        divAviso.style.top = Math.floor(infraClientHeight() / 3) + 'px';
-        divAviso.style.left = Math.floor((infraClientWidth() - 200) / 2) + 'px';
-        divAviso.style.width = '200px';
-        divAviso.style.border = '1px solid black';
-
-        divFundo.style.width = screen.width * 2 + 'px';
-        divFundo.style.height = screen.height * 2 + 'px';
-        divFundo.style.visibility = 'visible';
-
-    }
-
     function processando() {
 
         exibirAvisoEditor();
@@ -188,43 +147,5 @@
         } else {
             console.time('s');
         }
-    }
-
-    function verificaAr(campo) {
-        var str = campo.options[campo.selectedIndex].value;
-        var name = campo.getAttribute("name");
-        var indice = name.substr(7);
-        var arrValue = str.split('|');
-        var sinAr = arrValue[1];
-
-        if (sinAr == 'N') {
-            var arrCkAr = document.getElementsByName('ar' + indice);
-            for (i in arrCkAr) {
-                if (!arrCkAr.hasOwnProperty(i)) continue;
-                arrCkAr[i].removeAttribute('checked');
-                arrCkAr[i].setAttribute('disabled', true)
-            }
-        } else {
-            var arrCkAr = document.getElementsByName('ar' + indice);
-            var qtdElemento = arrCkAr.length;
-            for (i in arrCkAr) {
-                if (!arrCkAr.hasOwnProperty(i)) continue;
-                arrCkAr[i].removeAttribute('disabled')
-            }
-
-            arrCkAr[qtdElemento - 1].setAttribute('checked', true);
-        }
-
-    }
-
-    function lerCelula(celula) {
-        var ret = null;
-        var div = celula.getElementsByTagName('div');
-        if (div.length == 0) {
-            ret = celula.innerHTML;
-        } else {
-            ret = div[0].innerHTML;
-        }
-        return ret.infraReplaceAll('<br>', '<br />');
     }
 </script>

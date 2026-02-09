@@ -62,6 +62,9 @@ try {
             $objMdCorParametroArDTO->retNumIdContato();
             $objMdCorParametroArDTO->retStrNomeContato();
             $objMdCorParametroArDTO->retStrNuDiasPrazoExpRetAr();
+            $objMdCorParametroArDTO->retStrSinNivelAcessoDocPrincipalAr();
+            $objMdCorParametroArDTO->retStrNivelAcessoAr();
+            $objMdCorParametroArDTO->retNumIdHipoteseLegalAr();
 
             $objMdCorParametroArRN = new MdCorParametroArRN();
             $arrObjMdCorParametroArDTO = $objMdCorParametroArRN->consultar($objMdCorParametroArDTO);
@@ -76,6 +79,9 @@ try {
 
             if (!is_null($arrObjMdCorParametroArDTO->getNumIdProcedimentoCobranca())) {
                 $arrComboUnidade = MdCorParametroArINT::montarSelectUnidadeGeradora('NULL', ' ', $arrObjMdCorParametroArDTO->getNumIdUnidadeCobranca(), $arrObjMdCorParametroArDTO->getNumIdProcedimentoCobranca());
+                
+                $rdNivelAcessoPadraoARDocPrinci = $arrObjMdCorParametroArDTO->getStrSinNivelAcessoDocPrincipalAr() == 'S' ? 'checked = checked' : '';
+                $rdNivelAcessoPadraoARPre = $arrObjMdCorParametroArDTO->getStrSinNivelAcessoDocPrincipalAr() == 'N' ? 'checked = checked' : '';
             }
 
 
@@ -89,6 +95,10 @@ try {
             $objMdCorParamArInfrigenDTO->setStrSinAtivo('S');
             $objMdCorParamArInfrigenDTO->setNumIdMdCorParametroAr($idParametro);
             $arrObjMdCorParamArInfrigenRN = $objMdCorParamArInfrigenRN->listar($objMdCorParamArInfrigenDTO);
+
+            
+            $objInfraParametro = new InfraParametro(BancoSEI::getInstance());
+            $strValorParamHipoteseLegal = $objInfraParametro->getValor('SEI_HABILITAR_HIPOTESE_LEGAL');
 
 
             if (isset($_POST['txtNuDiaRetorno'])) {
@@ -110,6 +120,19 @@ try {
                     $objMdCorParametroArDTO->setStrModeloCobranca($_POST['txaConteudo']);
                     $objMdCorParametroArDTO->setNumIdContato($_POST['hdnIdDestinatario']);
                     $objMdCorParametroArDTO->setStrNuDiasPrazoExpRetAr($_POST['txtNuLimiteDiaRetorno']);
+                    $objMdCorParametroArDTO->setStrSinNivelAcessoDocPrincipalAr($_POST['rdNivelAcessoPadraoAR']);
+
+                    if ($_POST['rdNivelAcessoPadraoAR'] == 'S') {
+                        $objMdCorParametroArDTO->setStrNivelAcessoAr(null);
+                        $objMdCorParametroArDTO->setNumIdHipoteseLegalAr(null);
+                    } else {
+                        $objMdCorParametroArDTO->setStrNivelAcessoAr($_POST['selNivelAcessoAr']);
+                        if ($strValorParamHipoteseLegal != '0' && $_POST['selNivelAcessoAr'] > 0) {
+                            $objMdCorParametroArDTO->setNumIdHipoteseLegalAr($_POST['selHipoteseLegalAr']);
+                        } else {
+                            $objMdCorParametroArDTO->setNumIdHipoteseLegalAr(null);
+                        }
+                    }
 
                     if (is_null($arrObjMdCorParametroArDTO)) {
                         $objMdCorParametroArRN = $objMdCorParametroArRN->cadastrar($objMdCorParametroArDTO);
@@ -216,6 +239,9 @@ try {
         $objEditorDTO->setStrSinSomenteLeitura('N');
         $objEditorDTO = $objEditorRN->montarSimples($objEditorDTO);
     }
+
+    $strItensSelHipoteseLegal = MdPetVincTpProcessoINT::montarSelectHipoteseLegal(null, null, $arrObjMdCorParametroArDTO->getNumIdHipoteseLegalAr());
+    $strItensSelNivelAcesso = MdPetTipoProcessoINT::montarSelectNivelAcesso(null, null, $arrObjMdCorParametroArDTO->getStrNivelAcessoAr() ?? 0);
 
 } catch (Exception $e) {
     PaginaSEI::getInstance()->processarExcecao($e);
@@ -328,6 +354,52 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-8 col-lg-6 col-xl-6">
+                            <div class="form-group">
+                                <label id="lblMenuAcessoExternoPF" for="" class="infraLabelObrigatorio">Regra de Nível de Acesso: <img
+                                        align="top"
+                                        src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg?<?= Icone::VERSAO ?>"
+                                        name="ajuda" <?= PaginaSEI::montarTitleTooltip('Esta configuração define qual será o Nível de Acesso do AR.', 'Ajuda') ?>
+                                        class="infraImgModulo"/></label>
+                                <br/>
+                                <div class="infraDivRadio mt-2">
+                                    <input <?php echo $rdNivelAcessoPadraoARDocPrinci; ?> type="radio" onchange="changeRegraNivelAcesso()" name="rdNivelAcessoPadraoAR" id="rdNivelAcessoPadraoARDocPrinci" value="S" class="infraRadio">
+                                    <label for="rdNivelAcessoPadraoARDocPrinci" id="lblNivelAcessoPadraoARDocPrinci" class="infraLabelRadio">Usar Nível de Acesso do Documento Principal</label>
+                                </div>
+                                <div class="infraDivRadio">
+                                    <input <?php echo $rdNivelAcessoPadraoARPre; ?> type="radio" onchange="changeRegraNivelAcesso()" name="rdNivelAcessoPadraoAR" id="rdNivelAcessoPadraoARPre" value="N" class="infraRadio">
+                                    <label name="rdNivelAcessoPadraoARPre" id="lblNivelAcessoPadraoARPre" for="rdNivelAcessoPadraoARPre" class="infraLabelRadio">Pré-Definir</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3" id="divNivelAcessoAr" <?php echo $arrObjMdCorParametroArDTO->getStrSinNivelAcessoDocPrincipalAr() == 'N' ? 'style="display: inherit;"' : 'style="display: none;"' ?> >
+
+                            <div class="form-group" style="width: 100%;">
+                                <label name="lblNivelAcessoAr" id="lblNivelAcessoAr" for="selNivelAcessoAr"
+                                        class="infraLabelObrigatorio">Nível
+                                    de Acesso:</label>
+                                <select id="selNivelAcessoAr" name="selNivelAcessoAr" class="infraSelect form-select"
+                                        onchange="changeSelectNivelAcesso()"
+                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                    <?= $strItensSelNivelAcesso ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3" id="divHipoteseLegalAr" <?php echo $arrObjMdCorParametroArDTO->getStrSinNivelAcessoDocPrincipalAr() == 'N' && $strValorParamHipoteseLegal != 0 && $arrObjMdCorParametroArDTO->getStrNivelAcessoAr() > 0 ? 'style="display: inherit;"' : 'style="display: none;"' ?> >
+                            <div class="form-group" style="width: 100%;">
+                                <label name="lblHipoteseLegalAr" id="lblHipoteseLegalAr" for="selHipoteseLegalAr"
+                                        class="infraLabelObrigatorio">Hipótese Legal:</label>
+                                <select id="selHipoteseLegalAr" name="selHipoteseLegalAr"
+                                        class="infraSelect form-select"
+                                        tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>">
+                                    <?= $strItensSelHipoteseLegal ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </fieldset>
             </div>
         </div>
@@ -390,6 +462,7 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
                     </div>
                     <input name="hdnTbMotivo" id="hdnTbMotivo" type="hidden" value="<?php echo $hdnMotivo ?>"/>
                     <input name="hdnIdMotivoDevolucao" id="hdnIdMotivoDevolucao" type="hidden">
+                    <input type="hidden" name="hdnParametroHipoteseLegal" id="hdnParametroHipoteseLegal" value="<?php echo $strValorParamHipoteseLegal; ?>"/>
                 </fieldset>
             </div>
         </div>
