@@ -68,6 +68,7 @@ PaginaSEI::getInstance()->abrirJavaScript();
 PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
 PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"');
+PaginaSEI::getInstance()->montarMensagens();
 ?>
     <form id="frmConsulta" method="post" action="<?= PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $_GET['acao'] . '&acao_origem=' . $_GET['acao'])) ?>">
         <? PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos); ?>

@@ -42,10 +42,6 @@
         document.getElementById('frmGerarPlp').submit();
     }
 
-    function fechar() {
-        document.location = '<?= $strUrlFechar ?>';
-    }
-
     function imprimir() {
         infraImprimirTabela();
     }

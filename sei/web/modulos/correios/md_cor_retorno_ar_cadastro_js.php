@@ -61,34 +61,6 @@
 
     }
 
-    function exibirAvisoEditor() {
-
-        var divFundo = document.getElementById('divInfraAvisoFundo');
-
-        if (divFundo == null) {
-            divFundo = infraAviso(false, 'Processando...');
-        } else {
-            document.getElementById('btnInfraAvisoCancelar').style.display = 'none';
-            document.getElementById('imgInfraAviso').src = '/infra_css/imagens/aguarde.gif';
-        }
-
-        if (INFRA_IE == 0 || INFRA_IE >= 7) {
-            divFundo.style.position = 'fixed';
-        }
-
-        var divAviso = document.getElementById('divInfraAviso');
-
-        divAviso.style.top = Math.floor(infraClientHeight() / 3) + 'px';
-        divAviso.style.left = Math.floor((infraClientWidth() - 200) / 2) + 'px';
-        divAviso.style.width = '200px';
-        divAviso.style.border = '1px solid black';
-
-        divFundo.style.width = screen.width * 2 + 'px';
-        divFundo.style.height = screen.height * 2 + 'px';
-        divFundo.style.visibility = 'visible';
-
-    }
-
     function adicionarDocumento() {
         objUploadArquivo.executar();
     }

@@ -209,5 +209,6 @@ PaginaSEI::getInstance()->montarBarraComandosSuperior($arrComandos);
     </form>
 <?php
 require_once("md_cor_geracao_plp_lista_js.php");
+require_once("js/md_cor_global.js");
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();

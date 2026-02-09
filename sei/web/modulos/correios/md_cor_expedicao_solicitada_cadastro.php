@@ -41,7 +41,7 @@ try {
 
         case 'md_cor_expedicao_solicitada_excluir':
 
-            $strTitulo = 'Excluir Solicita√ß√£o de Expedi√ß√£o pelos Correios';
+            $strTitulo = 'Excluir SolicitaÁ„o de ExpediÁ„o pelos Correios';
 
             if (isset($_POST['txaJustificativa'])) {
 
@@ -65,7 +65,7 @@ try {
                 if ($dto->getNumIdUnidade() == SessaoSEI::getInstance()->getNumIdUnidadeAtual()) {
 
                     if (is_null($dto)) {
-                        throw new InfraException("Registro n√£o encontrado.");
+                        throw new InfraException("Registro n„o encontrado.");
                     }
 
 
@@ -178,7 +178,7 @@ try {
                     $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);
 
                 } else {
-                    PaginaSEI::getInstance()->setStrMensagem('Essa Solicita√ß√£o de Expedi√ß√£o n√£o pertence a essa unidade!', InfraPagina::$TIPO_MSG_AVISO);
+                    PaginaSEI::getInstance()->setStrMensagem('Essa SolicitaÁ„o de ExpediÁ„o n„o pertence a essa unidade!', InfraPagina::$TIPO_MSG_AVISO);
                     header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_controlar'));
                     die;
                 }
@@ -248,7 +248,7 @@ try {
                         $rn->alterar($dto);
 
                         if (is_null($dto)) {
-                            throw new InfraException("Registro n√£o encontrado.");
+                            throw new InfraException("Registro n„o encontrado.");
                         }
 
 
@@ -425,7 +425,7 @@ try {
                         }
 
                     } else {
-                        PaginaSEI::getInstance()->setStrMensagem('Essa Solicita√ß√£o de Expedi√ß√£o n√£o pertence a essa unidade!', InfraPagina::$TIPO_MSG_AVISO);
+                        PaginaSEI::getInstance()->setStrMensagem('Essa SolicitaÁ„o de ExpediÁ„o n„o pertence a essa unidade!', InfraPagina::$TIPO_MSG_AVISO);
                         header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_controlar'));
                         die;
                     }
@@ -607,7 +607,7 @@ try {
                     PaginaSEI::getInstance()->processarExcecao($e);
                 }
 
-                //redirecionar para a tela do consultar ap√≥s finalizar o cadastro
+                //redirecionar para a tela do consultar apÛs finalizar o cadastro
                 //$urlConsulta = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&acao_origem=md_cor_expedicao_processo_listar&id_md_cor_expedicao_solicitada=' . $dto->getNumIdMdCorExpedicaoSolicitada());
                 //header('Location:' . $urlConsulta ); die;
 
@@ -641,10 +641,10 @@ try {
                     $strLinkAjaxProtocoloAnexo = SessaoSEI::getInstance()->assinarLink('controlador_ajax.php?acao_ajax=md_cor_expedicao_cadastro_protocolos_autocompletar&id_procedimento=' . $id_procedimento);
 
 
-                    //aplicar valida√ßao de informa√ßoes do destinatario do doc principal
+                    //aplicar validaÁao de informaÁoes do destinatario do doc principal
                     require_once 'md_cor_expedicao_solicitada_cadastro_validar_destinatario.php';
 
-                    //aplicar valida√ßao de informa√ßoes da unidade solicitante x servi√ßos
+                    //aplicar validaÁao de informaÁoes da unidade solicitante x serviÁos
                     $unidade_sol = '';
                     $id_num_unidade_solic = SessaoSei::getInstance()->getNumIdUnidadeAtual();
                     $id_num_servico_postal = 'null';
@@ -655,7 +655,7 @@ try {
                         ? (MdCorServicoPostalINT::getInfoServicoPostalPorId($id_num_servico_postal))->getStrSinAnexarMidia() ?? 'N'
                         : 'N';
 
-                    //obtendo informa√ß√µes do contato
+                    //obtendo informaÁıes do contato
                     $objContatoDTO = new ContatoDTO();
                     $objContatoRN = new ContatoRN();
                     //$objContatoDTO->retTodos(true);
@@ -696,7 +696,7 @@ try {
                     //$nomeContatoAssociado = $objContatoDTO->getStrNomeContatoAssociado();
 
                     $nome_destinatario_associado = '';
-                    //verifica se tem contato associado e se o contato associado √© PJ
+                    //verifica se tem contato associado e se o contato associado È PJ
                     if (!is_null($idContatoAssociado)) {
                         $objContatoAssociadoDTO = new ContatoDTO();
                         $objContatoAssociadoDTO->retTodos(true);
@@ -706,7 +706,7 @@ try {
                         //captura o nome do associado caso a Natureza seja Pessoa Juridica
                         if ($objContatoAssociadoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_JURIDICA) $nome_destinatario_associado = $objContatoAssociadoDTO->getStrNomeContatoAssociado();
 
-                        //captura o endere√ßo do associado caso esteja sinalizado o uso do seu endere√ßo
+                        //captura o endereÁo do associado caso esteja sinalizado o uso do seu endereÁo
                         if ($objContatoDTO->getStrSinEnderecoAssociado() == 'S') {
                             $endereco_destinatario = $objContatoAssociadoDTO->getStrEndereco();
                             $complemento_destinatario = $objContatoAssociadoDTO->getStrComplemento();
@@ -717,18 +717,18 @@ try {
                         }
                     }
 
-                    //consulta de servi√ßo postal
+                    //consulta de serviÁo postal
                     $strSelectServicoPostal = MdCorMapUnidServicoINT::montarSelectIdMdCorMapUnidServico('null', '&nbsp;', $id_num_servico_postal, $id_num_unidade_solic);
 
                     if ( empty($strSelectServicoPostal) ) {
-                        $msg = MdCorMensagemINT::setMensagemPadraoPersonalizada(MdCorMensagemINT::$MSG_COR_01,['N√£o']);
+                        $msg = MdCorMensagemINT::setMensagemPadraoPersonalizada(MdCorMensagemINT::$MSG_COR_01,['N„o']);
                         PaginaSEI::getInstance()->adicionarMensagem( $msg , InfraPagina::$TIPO_MSG_AVISO );
                     }
 
-                    $strTitulo = 'Cadastrar Solicita√ß√£o de Expedi√ß√£o pelos Correios';
+                    $strTitulo = 'Cadastrar SolicitaÁ„o de ExpediÁ„o pelos Correios';
 
                     $arrComandos[] = '<button type="button" onclick="validarFormulario()" accesskey="S" id="btnSolicitarExpedicao" value="SolicitarExpedicao" class="infraButton">
-	                              <span class="infraTeclaAtalho">S</span>olicitar Expedi√ß√£o</button>';
+	                              <span class="infraTeclaAtalho">S</span>olicitar ExpediÁ„o</button>';
 
                     $arrComandos[] = '<button type="button" accesskey="C" name="btnCancelar" id="btnCancelar" value="Cancelar" onclick="location.href = \'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=arvore_visualizar&acao_origem=protocolo_modelo_cadastrar&arvore=1&id_protocolo=' . $_GET['id_doc']) . '\';" class="infraButton"><span class="infraTeclaAtalho">C</span>ancelar</button>';
 
@@ -753,7 +753,7 @@ try {
 
         case 'md_cor_expedicao_solicitada_consultar':
 
-            $strTitulo = 'Consultar Solicita√ß√£o de Expedi√ß√£o pelos Correios';
+            $strTitulo = 'Consultar SolicitaÁ„o de ExpediÁ„o pelos Correios';
             $strIsConsultar = true;
 
             $idExpedicaoSolicitada = $_GET['id_md_cor_expedicao_solicitada'];
@@ -781,7 +781,7 @@ try {
             $dto = $rn->consultar($dto);
 
             if (is_null($dto)) {
-                throw new InfraException("Registro n√£o encontrado.");
+                throw new InfraException("Registro n„o encontrado.");
             }
 
             if($dto->getStrSinDevolvido() == "S") {
@@ -848,7 +848,7 @@ try {
             }
 
 
-            //listando informa√ß√µes de formatos
+            //listando informaÁıes de formatos
             if (is_array($arrDocs) && count($arrDocs)) {
                 // anexos
                 $rnFormato = new MdCorExpedicaoFormatoRN();
@@ -865,7 +865,7 @@ try {
 
             $s = $dto->getDblIdDocumentoPrincipal();
 
-            //informa√ßoes do doc principal
+            //informaÁoes do doc principal
             $objProtocoloDocPrincipalRN = new ProtocoloRN();
             $objProtocoloDocPrincipalDTO = new ProtocoloDTO();
             $objProtocoloDocPrincipalDTO->retTodos();
@@ -882,7 +882,7 @@ try {
             $strUrlDocumento = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&id_documento=' . $dto->getDblIdDocumentoPrincipal());
             $descricao_documento_principal = $nomeTipoDocumento . ' ' . $numeroDoc . ' <a class="protocoloNormal" style="font-size: 1.0em !important; font-size:1em" href="' . $strUrlDocumento . '" target="_blank">(' . $numeroProtocoloFormatado . ')</a>';
 
-            //obtendo informa√ß√µes do destinatario
+            //obtendo informaÁıes do destinatario
             $isPodeComparar = $dto->getStrSinDevolvido() == "N" ? false : true;
             
             
@@ -938,36 +938,36 @@ try {
 
                         if ( !empty($validaContatoEdicao)) array_push($arrMsgValidacao,$validaContatoEdicao);
 
-                        $strTitulo = 'Alterar Solicita√ß√£o de Expedi√ß√£o pelos Correios';
+                        $strTitulo = 'Alterar SolicitaÁ„o de ExpediÁ„o pelos Correios';
                         $strIsConsultar = false;
 
                         //Caso seja ALTERACAO da solicitacao de expedicao
                         $strSelectServicoPostal = MdCorMapUnidServicoINT::montarSelectIdMdCorMapUnidServico('null', '&nbsp;', $dto->getNumIdMdCorServicoPostal(), $dto->getNumIdUnidade(), true);
 
                         if ( empty($strSelectServicoPostal) ) {
-                            array_push( $arrMsgValidacao , MdCorMensagemINT::setMensagemPadraoPersonalizada( MdCorMensagemINT::$MSG_COR_01 , ['N√£o'] ) );
+                            array_push( $arrMsgValidacao , MdCorMensagemINT::setMensagemPadraoPersonalizada( MdCorMensagemINT::$MSG_COR_01 , ['N„o'] ) );
                         }
 
                         $isPermiteGravarMidia = ( MdCorServicoPostalINT::getInfoServicoPostalPorId( $dto->getNumIdMdCorServicoPostal() ) )->getStrSinAnexarMidia() ?? 'N';
 
-                        // Configura botao de Alterar Solicita√ß√£o quando esta foi devolvida ou n√£o
+                        // Configura botao de Alterar SolicitaÁ„o quando esta foi devolvida ou n„o
                         if ($dto) {
                             if ($dto->getStrSinDevolvido() == "S") {
                                 $arrComandos[] = '<button type="button" accesskey="A" id="btnAlterar" value="btnAlterar" onclick="validarFormulario(\'alterar\')" class="infraButton">
-                                                  <span class="infraTeclaAtalho">A</span>lterar e Reenviar Solicita√ß√£o de Expedi√ß√£o </button>';
+                                                  <span class="infraTeclaAtalho">A</span>lterar e Reenviar SolicitaÁ„o de ExpediÁ„o </button>';
                             } else {
                                 $arrComandos[] = '<button type="button" accesskey="A" id="btnAlterar" value="btnAlterar" onclick="validarFormulario(\'alterar\')" class="infraButton">
-                                                  <span class="infraTeclaAtalho">A</span>lterar Solicita√ß√£o</button>';
+                                                  <span class="infraTeclaAtalho">A</span>lterar SolicitaÁ„o</button>';
                             }
                         }
 
-                        // Se teve mudan√ßa no registro do contato, exibe aviso para o usuario
+                        // Se teve mudanÁa no registro do contato, exibe aviso para o usuario
                         if ( $arrObjMdCorContato['isRegAlterado'] ) {
                             $id_destinatario_aux = $id_destinatario;
                             array_push($arrMsgValidacao, MdCorMensagemINT::$MSG_COR_02 );
                         }
 
-                        // caso tenha alguma msg de alerta para o usu√°ro, trata no if abaixo
+                        // caso tenha alguma msg de alerta para o usu·ro, trata no if abaixo
                         $msg = null;
                         if ( $arrMsgValidacao ) {
                             if ( count($arrMsgValidacao) == 1 ) {
@@ -984,7 +984,7 @@ try {
                         }
 
                         $arrComandos[] = '<button type="button" accesskey="E" id="btnExcluir" value="btnExcluir" onclick="validarFormulario(\'excluir\')" class="infraButton">
-                              <span class="infraTeclaAtalho">E</span>xcluir Solicita√ß√£o de Expedi√ß√£o</button>';
+                              <span class="infraTeclaAtalho">E</span>xcluir SolicitaÁ„o de ExpediÁ„o</button>';
                     }
                     #$strUrlFecharConsulta = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=arvore_visualizar&acao_origem=protocolo_modelo_cadastrar&arvore=1&id_protocolo=' . $_GET['id_doc']);
 
@@ -1005,7 +1005,7 @@ try {
             break;
 
         default:
-            throw new InfraException("A√ß√£o '" . $_GET['acao'] . "' n√£o reconhecida.");
+            throw new InfraException("AÁ„o '" . $_GET['acao'] . "' n„o reconhecida.");
     }
 } catch (Exception $e) {
     PaginaSEI::getInstance()->processarExcecao($e);
@@ -1034,7 +1034,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
         PaginaSEI::getInstance()->abrirAreaDados();
         ?>
         <div class="alert alert-danger alert-dismissible alert-erro-validacao-dados" style="display: none; font-size:.875rem; top:0.25rem; margin-bottom: 14px !important; width:98%; margin:0 auto;" role="alert">
-            Erro na valida√ß√£o do CEP do Destinat√°rio. Verifique com o Gestor do M√≥dulo dos Correios para confirmar o Token da integra√ß√£o do Contrato selecionado abaixo com os Correios em Administra√ß√£o > Correios > Mapeamento das Integra√ß√µes > Correios::Gerar Token.
+            Erro na validaÁ„o do CEP do Destinat·rio. Verifique com o Gestor do MÛdulo dos Correios para confirmar o Token da integraÁ„o do Contrato selecionado abaixo com os Correios em AdministraÁ„o > Correios > Mapeamento das IntegraÁıes > Correios::Gerar Token.
             <br><br>
 
             <span id="msg"></span>
@@ -1072,7 +1072,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-10 col-xl-10">
                 <div class="form-group">
-                    <label class="infraLabelObrigatorio">Servi√ßo Postal:</label>
+                    <label class="infraLabelObrigatorio">ServiÁo Postal:</label>
                     <select class="infraSelect form-control" onchange="validarDestinatario(true)" name="selServicoPostal" id="selServicoPostal" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados(); ?>" onchange="gerenciarDadosServPostal(this)">
                         <?= $strSelectServicoPostal ?>
                     </select>
@@ -1102,7 +1102,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                             <div class="row">
                                 <div class="col-sm-12 col-md-12 col-lg-8 col-xl-6">
                                     <label class="infraLabelOpcional">
-                                        Documento Principal da Expedi√ß√£o: <?php echo $descricao_documento_principal; ?>
+                                        Documento Principal da ExpediÁ„o: <?php echo $descricao_documento_principal; ?>
                                     </label>
                                 </div>
                             </div>
@@ -1110,28 +1110,28 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                             <div class="row">
                                 <div class="col" style="border-left: 6px solid #ff0000; margin: 15px;">
                                     <label class="infraLabelOpcional">
-                                        <span style="color: red; font-weight: bold;"> ATEN√á√ÉO: </span>
-                                        A expedi√ß√£o √© realizada de forma integrada com APIs dos Correios. <br>
-                                        Assim, todo o fluxo de expedi√ß√£o √© automatizado utilizando exclusivamente os dados de Endere√ßamento do Destinat√°rio abaixo exibidos neste momento, sem qualquer rela√ß√£o com o teor do documento a ser expedido. <br>
-                                        Altere antes se necess√°rio.
+                                        <span style="color: red; font-weight: bold;"> ATEN«√O: </span>
+                                        A expediÁ„o È realizada de forma integrada com APIs dos Correios. <br>
+                                        Assim, todo o fluxo de expediÁ„o È automatizado utilizando exclusivamente os dados de EndereÁamento do Destinat·rio abaixo exibidos neste momento, sem qualquer relaÁ„o com o teor do documento a ser expedido. <br>
+                                        Altere antes se necess·rio.
                                     </label>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-sm-12 col-md-12 col-lg-8 col-xl-6">
-                                    <label class="infraLabelOpcional">Destinat√°rio:</label>
+                                    <label class="infraLabelOpcional">Destinat·rio:</label>
                                     <img align="top" id="imgAjuda"
                                          src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                          name="ajuda"
-                                         onmouseover="return infraTooltipMostrar('A Expedi√ß√£o pelos Correios utilizar√° os dados do Contato do Destinat√°rio indicado neste documento, conforme abaixo. \n \n Na Solicita√ß√£o original estes dados do Contato ser√£o armazenados em separado para fins da realiza√ß√£o da Expedi√ß√£o solicitada para este documento e registros de controles. \n \n A Solicita√ß√£o somente poder√° ter os dados do Contato do Destinat√°rio alterados por meio desta tela somente at√© a realiza√ß√£o da Expedi√ß√£o, no √¢mbito do \'\'Alterar Solicita√ß√£o de Expedi√ß√£o pelos Correios\'\' acionando o bot√£o de a√ß√£o sobre o Destinat√°rio \'\'Consultar/Alterar Dados do Destinat√°rio\'\' constante na tela.', 'Ajuda');"
+                                         onmouseover="return infraTooltipMostrar('A ExpediÁ„o pelos Correios utilizar· os dados do Contato do Destinat·rio indicado neste documento, conforme abaixo. \n \n Na SolicitaÁ„o original estes dados do Contato ser„o armazenados em separado para fins da realizaÁ„o da ExpediÁ„o solicitada para este documento e registros de controles. \n \n A SolicitaÁ„o somente poder· ter os dados do Contato do Destinat·rio alterados por meio desta tela somente atÈ a realizaÁ„o da ExpediÁ„o, no ‚mbito do \'\'Alterar SolicitaÁ„o de ExpediÁ„o pelos Correios\'\' acionando o bot„o de aÁ„o sobre o Destinat·rio \'\'Consultar/Alterar Dados do Destinat·rio\'\' constante na tela.', 'Ajuda');"
                                          onmouseout="return infraTooltipOcultar();"
                                          alt="Ajuda" class="infraImgModulo"/>
                                     <img id="imgAlterarDestinatario"
                                          onclick="alterarContato();"
                                          src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/alterar.svg"
-                                         alt="Consultar/Alterar Dados do Destinat√°rio Selecionado"
-                                         title="Consultar/Alterar Dados do Destinat√°rio Selecionado"
+                                         alt="Consultar/Alterar Dados do Destinat·rio Selecionado"
+                                         title="Consultar/Alterar Dados do Destinat·rio Selecionado"
                                          class="infraImgModulo"
                                          tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                                     <div style="margin-top: 7px">
@@ -1214,7 +1214,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                             <div class="row" id="divProtocoloAnexo">
                                 <div class="col-sm-12 col-md-12 col-lg-8 col-xl-6">
                                     <label for="txtProtocoloAnexo" class="infraLabelObrigatorio">
-                                        Protocolos Anexo ao Documento Principal da Expedi√ß√£o:
+                                        Protocolos Anexo ao Documento Principal da ExpediÁ„o:
                                     </label>
                                     <input type="hidden" id="txtProtocoloAnexo" name="txtProtocoloAnexo"
                                            class="infraText form-control"
@@ -1243,16 +1243,16 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                                             <img id="imgLupaProtocoloAnexo"
                                                  onclick="objLupaProtocoloAnexo.selecionar(700, 500);"
                                                  src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/pesquisar.svg"
-                                                 alt="Selecionar Protocolos Anexos ao Documento Principal da Expedi√ß√£o"
-                                                 title="Selecionar Protocolos Anexos ao Documento Principal da Expedi√ß√£o"
+                                                 alt="Selecionar Protocolos Anexos ao Documento Principal da ExpediÁ„o"
+                                                 title="Selecionar Protocolos Anexos ao Documento Principal da ExpediÁ„o"
                                                  tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                                             <br>
 
                                             <img id="imgExcluirProtocoloAnexo"
                                                  onclick="objLupaProtocoloAnexo.remover()"
                                                  src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/remover.svg"
-                                                 alt="Remover Protocolos Anexos ao Documento Principal da Expedi√ß√£o Selecionadas"
-                                                 title="Remover Protocolos Anexos ao Documento Principal da Expedi√ß√£o Selecionadas"
+                                                 alt="Remover Protocolos Anexos ao Documento Principal da ExpediÁ„o Selecionadas"
+                                                 title="Remover Protocolos Anexos ao Documento Principal da ExpediÁ„o Selecionadas"
                                                  tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
                                         </div>
                                     </div>
@@ -1275,22 +1275,22 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
         <div class="row rowFieldSet1 rowFieldSet">
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <fieldset id="fieldFormatoDocumentos" class="infraFieldset sizeFieldset form-control mb-3 py-3">
-                    <legend class="infraLegend">&nbspFormato de Expedi√ß√£o dos Documentos&nbsp</legend>
+                    <legend class="infraLegend">&nbspFormato de ExpediÁ„o dos Documentos&nbsp</legend>
 
-                    <table class="infraTable table table-responsive-lg" summary="Formato Expedi√ß√£o dos Documentos" id="tblFormatoExpedicao">
+                    <table class="infraTable table table-responsive-lg" summary="Formato ExpediÁ„o dos Documentos" id="tblFormatoExpedicao">
                         <thead>
                         <tr>
                             <th class="infraTh text-center" style="display: none;" width="0">ID Documento</th>
                             <th class="infraTh text-center">Documento</th>
-                            <th class="infraTh text-center elementoRadio" width="300px">Formato da Expedi√ß√£o</th>
-                            <th class="infraTh text-center elementoRadio" width="300px">Impress√£o</th>
+                            <th class="infraTh text-center elementoRadio" width="300px">Formato da ExpediÁ„o</th>
+                            <th class="infraTh text-center elementoRadio" width="300px">Impress„o</th>
                             <th class="infraTh text-center">Justificativa</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         <?php
-                        //entra aqui quando a janela √© aberta em modo de consulta
+                        //entra aqui quando a janela È aberta em modo de consulta
                         if ($_GET['acao'] != 'md_cor_expedicao_solicitada_cadastrar') {
 
                             $bolExistePLP = false;
@@ -1329,7 +1329,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                                                                        value="<?php echo MdCorExpedicaoFormatoRN::$TP_FORMATO_MIDIA; ?>" type="radio" name="rdoFormato_<?php echo $formatoDTO->getDblIdProtocolo() ?>">
                                                                 <label class="infraRadioLabel" for="rdoFormato_<?php echo $formatoDTO->getDblIdProtocolo() ?>"></label>
                                                             </div>
-                                                            <label id="lblImpresso_" for="rdoFormato_<?php echo $formatoDTO->getDblIdProtocolo() ?>" class="infraLabelRadio" tabindex="507">Grava√ß√£o em M√≠dia</label>
+                                                            <label id="lblImpresso_" for="rdoFormato_<?php echo $formatoDTO->getDblIdProtocolo() ?>" class="infraLabelRadio" tabindex="507">GravaÁ„o em MÌdia</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1393,7 +1393,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <label for="txaJustificativaDevolucao" class="infraLabelOpcional">
-                            Justificativa da Devolu√ß√£o pela Unidade Expedidora
+                            Justificativa da DevoluÁ„o pela Unidade Expedidora
                         </label>
                         <label for="txaJustificativaDevolucao" class="infraLabelOpcional">
                         </label>
@@ -1410,7 +1410,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                     <label for="txaJustificativa" class="infraLabelOpcional">
-                        Justificativa para Altera√ß√£o / Exclus√£o da Solicita√ß√£o:
+                        Justificativa para AlteraÁ„o / Exclus„o da SolicitaÁ„o:
                     </label>
                     <input type="hidden" id="hdnIdProcedimento" name="hdnIdProcedimento"
                            value="<?php echo $_GET['id_doc']; ?>"/>
@@ -1440,7 +1440,7 @@ if ( $_GET['acao_origem'] != 'md_cor_expedicao_solicitada_cadastrar' && !isset($
 PaginaSEI::getInstance()->montarAreaDebug();
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
-require_once 'md_cor_funcoes_js.php';
 if (!isset($_POST['txaJustificativa']) && $arrComandos ) {
     require_once 'md_cor_expedicao_solicitada_cadastro_js.php';
 }
+require_once("js/md_cor_global.js");

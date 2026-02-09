@@ -8,7 +8,7 @@ class MdCorAtualizadorSeiRN extends InfraRN
     private $versaoAtualDesteModulo = '2.5.0';
     private $nomeDesteModulo = 'MÓDULO CORREIOS';
     private $nomeParametroModulo = 'VERSAO_MODULO_CORREIOS';
-    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0', '2.5.0');
+    private $historicoVersoes = array('1.0.0', '2.0.0', '2.1.0','2.2.0','2.3.0','2.4.0', '2.5.0', '2.6.0', '2.7.0');
 
     public function __construct()
     {
@@ -114,8 +114,11 @@ class MdCorAtualizadorSeiRN extends InfraRN
                     $this->instalarv240();
                 case '2.4.0':
                     $this->instalarv250();
+                case '2.5.0':
+                    $this->instalarv260();
+                case '2.6.0':
+                    $this->instalarv270();
                     break;
-
                 default:
                     $this->finalizar('A VERSÃO MAIS ATUAL DO ' . $this->nomeDesteModulo . ' (v' . $this->versaoAtualDesteModulo . ') JÁ ESTÁ INSTALADA.');
                     break;
@@ -1571,6 +1574,34 @@ ATENÇÃO: As informações contidas neste e-mail, incluindo seus anexos, podem ser 
             }
         }
         
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarv260() {
+        $nmVersao = '2.6.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $objInfraMetaBD->setBolValidarIdentificador(true);
+        
+        $this->atualizarNumeroVersao($nmVersao);
+    }
+
+    protected function instalarv270() {
+        $nmVersao = '2.7.0';
+        $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSAO '. $nmVersao .' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
+
+        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $objInfraMetaBD->setBolValidarIdentificador(true);
+        
+        $this->logar('ADICIONANDO COLUNAS NA TABELA md_cor_adm_parametro_ar');
+        $objInfraMetaBD->adicionarColuna('md_cor_adm_parametro_ar', 'sin_niv_ace_doc_princ_ar', $objInfraMetaBD->tipoTextoVariavel(1), "default 'S' not null");        
+        $objInfraMetaBD->adicionarColuna('md_cor_adm_parametro_ar', 'nivel_acesso_ar', $objInfraMetaBD->tipoTextoFixo(1), 'null');
+        $objInfraMetaBD->adicionarColuna('md_cor_adm_parametro_ar', 'id_hipotese_legal_ar', $objInfraMetaBD->tipoNumero(), 'null');
+        
+        $this->logar('ADICIONANDO CHAVES ESTRANGEIRAS NA TABELA md_cor_adm_parametro_ar');
+        $objInfraMetaBD->adicionarChaveEstrangeira('md_cor_p_ar_hip_leg_fk', 'md_cor_adm_parametro_ar', array('id_hipotese_legal_ar'), 'hipotese_legal', array('id_hipotese_legal'));
+
         $this->atualizarNumeroVersao($nmVersao);
     }
     

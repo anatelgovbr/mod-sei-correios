@@ -15,12 +15,12 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.6.7';
+        return '2.7.0';
     }
 
     public function getInstituicao()
     {
-        return 'Anatel - AgÃªncia Nacional de TelecomunicaÃ§Ãµes';
+        return 'Anatel - Agência Nacional de Telecomunicações';
     }
 
     public function inicializar($strVersaoSEI)
@@ -66,7 +66,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 require_once dirname(__FILE__) . '/md_cor_contrato_cadastro.php';
                 return true;
 
-            //ServiÃ§os Postais
+            //Serviços Postais
             case 'md_cor_servicos_postais_contrato_alterar' :
                 require_once dirname(__FILE__) . '/md_cor_servicos_postais_contrato_cadastro.php';
                 return true;
@@ -171,7 +171,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 return true;
 
             case 'md_cor_plps_geradas_listar':
-            case 'md_cor_expedicao_plp_listar': //9365 - PLPs geradas para expediÃ§Ã£o
+            case 'md_cor_expedicao_plp_listar': //9365 - PLPs geradas para expedição
                 require_once dirname(__FILE__) . '/md_cor_plps_geradas_lista.php';
                 return true;
 
@@ -190,7 +190,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 require_once dirname(__FILE__) . '/md_cor_plp_detalhar_objeto.php';
                 return true;
             //9368
-            //impressÃµes da plp
+            //impressões da plp
             case 'md_cor_plp_imprimir_voucher':
                 require_once dirname(__FILE__) . '/md_cor_plp_imprimir_voucher.php';
                 return true;
@@ -290,7 +290,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 return true;
             */
 
-            //ParametrizaÃ§Ã£o de Status
+            //Parametrização de Status
             case 'md_cor_parametrizacao_status_cadastrar' :
             case 'md_cor_parametrizacao_status_consultar' :
             case 'md_cor_parametrizacao_status_alterar' :
@@ -304,7 +304,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 return true;
 
 
-            //DestinatÃ¡rios nÃ£o habilitados parra expediÃ§Ã£o
+            //Destinatários não habilitados parra expedição
             case 'md_cor_rel_contato_justificativa_cadastrar' :
             case 'md_cor_rel_contato_justificativa_alterar' :
                 require_once dirname(__FILE__) . '/md_cor_rel_contato_justificativa_cadastro.php';
@@ -315,7 +315,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 require_once dirname(__FILE__) . '/md_cor_rel_contato_justificativa_lista.php';
                 return true;
 
-            //Justificativa - DestinatÃ¡rios nÃ£o habilitados parra expediÃ§Ã£o
+            //Justificativa - Destinatários não habilitados parra expedição
             case 'md_cor_justificativa_desativar' :
             case 'md_cor_justificativa_reativar' :
             case 'md_cor_justificativa_excluir' :
@@ -352,9 +352,9 @@ class CorreiosIntegracao extends SeiIntegracao
     public function alterarContato(ContatoAPI $objContatoAPI)
     {
         /**
-         * CriaÃ§Ã£o da variÃ¡vel de SessÃ£o para transportar o Id do Documento Principal da SolicitaÃ§Ã£o de ExpediÃ§Ã£o
-         * Por que a FunÃ§Ã£o Alterar Contato do Core do SEI nÃ£o permite que essa variÃ¡vel seja passada.
-         * Caso seja feita a alteraÃ§Ã£o pela AdministraÃ§Ã£o do SEI, nÃ£o serÃ¡ feito nada nesse mÃ©todo.
+         * Criação da variável de Sessão para transportar o Id do Documento Principal da Solicitação de Expedição
+         * Por que a Função Alterar Contato do Core do SEI não permite que essa variável seja passada.
+         * Caso seja feita a alteração pela Administração do SEI, não será feito nada nesse método.
          */
         $idDocumentoPrincipal = isset($_SESSION['idDocumentoPrincipal']) ? $_SESSION['idDocumentoPrincipal'] : null;
 
@@ -380,7 +380,7 @@ class CorreiosIntegracao extends SeiIntegracao
         $qtdSolicitacaoExp = $mdCorExpedicaoSolicitadaRN->contar($mdCorExpedicaoSolicitadaDTO);
 
         if ($qtdSolicitacaoExp > 0) {
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Excluir este Contato, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios.');
+            $objInfraException->adicionarValidacao('Não é permitido Excluir este Contato, pois ele está relacionado a uma expedição pelos Correios.');
             $objInfraException->lancarValidacoes();
         }
 
@@ -388,7 +388,7 @@ class CorreiosIntegracao extends SeiIntegracao
         $validacao = $mdCorExpedicaoSolicitadaRN->validarContatoComExpedicaoAndamento($objContatoAPI);
 
         if($validacao){
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Desativar este Contato, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios em andamento.');
+            $objInfraException->adicionarValidacao('Não é permitido Desativar este Contato, pois ele está relacionado a uma expedição pelos Correios em andamento.');
             $objInfraException->lancarValidacoes();
         }
     }
@@ -409,7 +409,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
         if ($qtdSolicitacaoExp > 0) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Excluir este Documento, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios.');
+            $objInfraException->adicionarValidacao('Não é permitido Excluir este Documento, pois ele está relacionado a uma expedição pelos Correios.');
             $objInfraException->lancarValidacoes();
         }
     }
@@ -437,13 +437,13 @@ class CorreiosIntegracao extends SeiIntegracao
 
         if (!is_null($MdCorRetornoArDocDTO)) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Cancelar este Documento, pois ele estÃ¡ relacionado ao Retorno de um Aviso de Recebimento (AR) dos Correios.');
+            $objInfraException->adicionarValidacao('Não é permitido Cancelar este Documento, pois ele está relacionado ao Retorno de um Aviso de Recebimento (AR) dos Correios.');
             $objInfraException->lancarValidacoes();
         }
 
         if ($qtdSolicitacaoExp > 0) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Cancelar este Documento, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios.');
+            $objInfraException->adicionarValidacao('Não é permitido Cancelar este Documento, pois ele está relacionado a uma expedição pelos Correios.');
             $objInfraException->lancarValidacoes();
         }
     }
@@ -464,7 +464,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
         if ($qtdSolicitacaoExp > 0) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Mover este Documento, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios.');
+            $objInfraException->adicionarValidacao('Não é permitido Mover este Documento, pois ele está relacionado a uma expedição pelos Correios.');
             $objInfraException->lancarValidacoes();
         }
 
@@ -487,7 +487,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
         if ($qtdSolicitacaoExp > 0) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Alterar este Documento, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios.');
+            $objInfraException->adicionarValidacao('Não é permitido Alterar este Documento, pois ele está relacionado a uma expedição pelos Correios.');
             $objInfraException->lancarValidacoes();
         }
         return parent::atualizarConteudoDocumento($objDocumentoAPI);
@@ -500,7 +500,27 @@ class CorreiosIntegracao extends SeiIntegracao
 
         if ($retorno) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Anexar este Processo, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios ainda em andamento.');
+            $objInfraException->adicionarValidacao('Não é permitido Anexar este Processo, pois ele está relacionado a uma expedição pelos Correios ainda em andamento.');
+            $objInfraException->lancarValidacoes();
+        }
+    }
+
+    public function bloquearProcesso($objProcedimentoAPI)
+    {
+        if ((new MdCorExpedicaoSolicitadaRN())->validarExistenciaObjetoAguardandoRetornoAR($objProcedimentoAPI)) {
+            $msg = $this->getNome() . ': Não é permitido Bloquear este processo, pois o mesmo possui Documentos com Retorno de AR Pendente.';
+            $objInfraException = new InfraException();
+            $objInfraException->adicionarValidacao($msg);
+            $objInfraException->lancarValidacoes();
+        }
+    }
+
+    public function concluirProcesso($objProcedimentoAPI)
+    {
+        if ((new MdCorExpedicaoSolicitadaRN())->validarExistenciaObjetoAguardandoRetornoAR($objProcedimentoAPI)) {
+            $msg = $this->getNome() . ': Não é permitido Concluir este processo, pois o mesmo possui Documentos com Retorno de AR Pendente.';
+            $objInfraException = new InfraException();
+            $objInfraException->adicionarValidacao($msg);
             $objInfraException->lancarValidacoes();
         }
     }
@@ -512,7 +532,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
         if ($retorno) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Sobrestar este Processo, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios ainda em andamento.');
+            $objInfraException->adicionarValidacao('Não é permitido Sobrestar este Processo, pois ele está relacionado a uma expedição pelos Correios ainda em andamento.');
             $objInfraException->lancarValidacoes();
         }
     }
@@ -736,25 +756,25 @@ class CorreiosIntegracao extends SeiIntegracao
 
             $idDocumento = $documentoAPI->getIdDocumento();
 
-            //Inicio EU9360 - Solicitar ExpediÃ§Ã£o pelos correios.
+            //Inicio EU9360 - Solicitar Expedição pelos correios.
 
             $bolAcaoSolicitarExpedicao = SessaoSEI::getInstance()->verificarPermissao('md_cor_expedicao_solicitada_cadastrar');
             $bolAcaoSolicitarExpedicaoMapUnidServicoListar = SessaoSEI::getInstance()->verificarPermissao('md_cor_map_unid_servico_listar');
 
             //==============================================================//
-            //@todo sÃ³ mostrar o botao depois que atender as regras necessarias
-            // Tipo de Documento estiver habilitado como de ExpediÃ§Ã£o;      //
+            //@todo só mostrar o botao depois que atender as regras necessarias
+            // Tipo de Documento estiver habilitado como de Expedição;      //
             // for Documento Gerado; estiver Assinado;                      //
             // o Processo estiver aberto na Unidade geradora do Documento e //
-            // nÃ£o existir solicitaÃ§Ã£o de expediÃ§Ã£o em aberto               //
-            // usando esse doc como principal da expediÃ§Ã£o.                 //
+            // não existir solicitação de expedição em aberto               //
+            // usando esse doc como principal da expedição.                 //
             //==============================================================//
 
             $idSerie = $documentoAPI->getIdSerie();
             $isAssinado = $documentoAPI->getSinAssinado();
             $idUnidadeGeradora = $documentoAPI->getIdUnidadeGeradora();
 
-            //checar se o tipo de documento esta habilitado como Tipo de ExpediÃ§Ã£o
+            //checar se o tipo de documento esta habilitado como Tipo de Expedição
 
             $bolAcaoListarSerie = SessaoSEI::getInstance()->verificarPermissao('md_cor_serie_exp_listar');
 
@@ -771,7 +791,7 @@ class CorreiosIntegracao extends SeiIntegracao
                 }
             }
 
-            //checar se o Processo estÃ¡ aberto na Unidade geradora do Documento (a forma de checar onde o processo estÃ¡ aberto muda caso o processo seja sigiloso)
+            //checar se o Processo está aberto na Unidade geradora do Documento (a forma de checar onde o processo está aberto muda caso o processo seja sigiloso)
             $isProcessoAbertoUnidadeGeradoraDoDocumento = false;
 
             if ($objProcedimentoAPI->getSinAberto() == 'S') {
@@ -786,7 +806,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
             if ($bolAcaoListarExpedicao || $bolAcaoConsultarExpedicao) {
 
-                //checar se nÃ£o existe solicitaÃ§Ã£o de expediÃ§Ã£o em aberto
+                //checar se não existe solicitação de expedição em aberto
                 $rnExpSolicitada = new MdCorExpedicaoSolicitadaRN();
                 $bdExpSolicitada = new MdCorExpedicaoSolicitadaBD(BancoSEI::getInstance());
                 $dtoExpSolicitada = new MdCorExpedicaoSolicitadaDTO();
@@ -835,16 +855,16 @@ class CorreiosIntegracao extends SeiIntegracao
 
                     if (!$isSolicitacaoExpedicaoEmAberto) {
                         $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_cadastrar&arvore=1&id_doc=' . $idDocumento . "&staAberto=" . $objProcedimentoAPI->getSinAberto());
-                        $title = "Solicitar ExpediÃ§Ã£o pelos Correios";
+                        $title = "Solicitar Expedição pelos Correios";
                     } else {
 
-                        //jÃ¡ tem expediÃ§Ã£o solicitada usando esse doc como principal
+                        //já tem expedição solicitada usando esse doc como principal
                         $idExpedicao = $arrDtoExpSolicitada[0]->getNumIdMdCorExpedicaoSolicitada();
 
                         $isConsultar = $arrDtoExpSolicitada[0]->getStrSinDevolvido() == 'S' ? '' : '&isConsultar=S';
 
                         $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc=' . $idDocumento . '&id_md_cor_expedicao_solicitada=' . $idExpedicao . "&staAberto=" . $objProcedimentoAPI->getSinAberto() . $isConsultar);
-                        $title = "Consultar ExpediÃ§Ã£o pelos Correios";
+                        $title = "Consultar Expedição pelos Correios";
                     }
 
                     $imgIcone = "modulos/correios/imagens/svg/solicitacao_correios.svg?".Icone::VERSAO;
@@ -889,7 +909,7 @@ class CorreiosIntegracao extends SeiIntegracao
         $bolProcedimentoAberto = $objProcedimentoAPI->getSinAberto() == 'S';
         $bolPermissaoAcesso = $objProcedimentoAPI->getCodigoAcesso() > 0;
 //        $bolProcedimentoAberto = true;
-        //Inicio EU9362 - Lista de ExpediÃ§Ãµes pelos Correios
+        //Inicio EU9362 - Lista de Expedições pelos Correios
         $bolAcaoListarExpedicao = SessaoSEI::getInstance()->verificarPermissao('md_cor_expedicao_processo_listar');
         $processoPossuiExpedicao = false;
         if ($bolAcaoListarExpedicao === true) {
@@ -901,7 +921,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
         //=======================================================================//
         // Exibido quando o Processo estiver aberto em sua Unidade;              //
-        // e existir pelo menos uma ExpediÃ§Ã£o realizada no Processo em questÃ£o.  //
+        // e existir pelo menos uma Expedição realizada no Processo em questão.  //
         //=======================================================================//
 //        echo "<pre>";
 //        var_dump(array($bolAcaoListarExpedicao, $bolProcedimentoAberto, $bolPermissaoAcesso, $processoPossuiExpedicao));
@@ -912,7 +932,7 @@ class CorreiosIntegracao extends SeiIntegracao
             $strLink = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_expedicao_processo_listar&arvore=1&id_procedimento=' . $_GET['id_procedimento']);
 
             $imgIcone = "modulos/correios/imagens/svg/solicitacao_correios.svg?".Icone::VERSAO;
-            $title = "Listar ExpediÃ§Ãµes pelos Correios";
+            $title = "Listar Expedições pelos Correios";
 
             $strBotaoListarExpedicao = '<a href="' . $strLink . '"class="botaoSEI">';
             $strBotaoListarExpedicao .= '<img class="infraCorBarraSistema" src="' . $imgIcone . '" alt="' . $title . '" title="' . $title . '">';
@@ -920,7 +940,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
             $arrBotoes[] = $strBotaoListarExpedicao;
         }
-        //Fim EU9362 - Lista de ExpediÃ§Ãµes pelos Correios
+        //Fim EU9362 - Lista de Expedições pelos Correios
 
         return $arrBotoes;
     }
@@ -989,7 +1009,7 @@ class CorreiosIntegracao extends SeiIntegracao
                             }
                             if($statusRecebidoRastreamento == "N") {
                                 $icone = 'modulos/correios/imagens/svg/objeto_extraviado.svg?'.Icone::VERSAO;
-                                $title = 'Objeto nÃ£o entregue!';
+                                $title = 'Objeto não entregue!';
                             }
 
                             $stDevolvido = $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorParamArInfrigencia();
@@ -1001,7 +1021,7 @@ class CorreiosIntegracao extends SeiIntegracao
                             $stPlpNaoGerada = $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorPlp();
                             if (is_null($stPlpNaoGerada)) {
                                 $icone = 'modulos/correios/imagens/svg/plp_nao_gerada.svg?'.Icone::VERSAO;
-                                $title = 'Aguardando ExpediÃ§Ã£o';
+                                $title = 'Aguardando Expedição';
                                 $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada() . "&staAberto=" . $objProcedimentoAPI->getSinAberto().'&isConsultar=S');
                             }
 
@@ -1016,7 +1036,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
                             if ($stSolicitacaoDevolvida == "S") {
                                 $icone = 'modulos/correios/imagens/svg/devolucao_solicitacao.svg?'.Icone::VERSAO;
-                                $title = 'SolicitaÃ§Ã£o de expediÃ§Ã£o devolvida';
+                                $title = 'Solicitação de expedição devolvida';
                                 $link = $link = SessaoSEI::getInstance()->assinarLink("controlador.php?acao=md_cor_expedicao_solicitada_consultar&arvore=1&id_doc={$idDocumento}&id_md_cor_expedicao_solicitada=" . $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada() . "&staAberto=" . $objProcedimentoAPI->getSinAberto().'&isAlterar=S');
                             }
                             
@@ -1134,7 +1154,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
         if ($existe) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao('Unidade nÃ£o pode ser desativada por que exitem solicitaÃ§Ã£o de expediÃ§Ã£o sem AR retornado');
+            $objInfraException->adicionarValidacao('Unidade não pode ser desativada por que exitem solicitação de expedição sem AR retornado');
             $objInfraException->lancarValidacoes();
         }
     }
@@ -1183,7 +1203,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
         $arrIdUnidadeSolicitante = [];
 
-        #Verifica se Ã© uma unidade de expediÃ§Ã£o
+        #Verifica se é uma unidade de expedição
         if (!empty($objMdCorUnidadeExpDTO)) {
 
             $objMdCorMapeamentoUniExpSolRN = new MdCorMapeamentoUniExpSolRN();
@@ -1290,7 +1310,7 @@ class CorreiosIntegracao extends SeiIntegracao
             $validacao = $mdCorExpedicaoSolicitadaRN->validarContatoComExpedicaoAndamento($objContatoAPI[0]);
 
             if($validacao){
-                $objInfraException->adicionarValidacao('NÃ£o Ã© permitido Desativar este Contato, pois ele estÃ¡ relacionado a uma expediÃ§Ã£o pelos Correios em andamento.');
+                $objInfraException->adicionarValidacao('Não é permitido Desativar este Contato, pois ele está relacionado a uma expedição pelos Correios em andamento.');
                 $objInfraException->lancarValidacoes();
             }
         }

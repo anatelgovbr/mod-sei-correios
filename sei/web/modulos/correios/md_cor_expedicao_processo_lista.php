@@ -250,5 +250,6 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'); ?>
     </form>
 <?php
 require_once("md_cor_expedicao_processo_listar_js.php");
+require_once("js/md_cor_global.js");
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
