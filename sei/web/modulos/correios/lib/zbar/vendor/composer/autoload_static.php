@@ -11,6 +11,10 @@ class ComposerStaticInit389c70a25ddf925d206d5e2434c4c206
         array (
             'Symfony\\Component\\Process\\' => 26,
         ),
+        'T' => 
+        array (
+            'TarfinLabs\\ZbarPhp\\' => 19,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -18,20 +22,22 @@ class ComposerStaticInit389c70a25ddf925d206d5e2434c4c206
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
+        'TarfinLabs\\ZbarPhp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/tarfin-labs/zbar-php/src',
+        ),
     );
 
     public static $prefixesPsr0 = array (
-        'R' => 
-        array (
-            'RobbieP\\ZbarQrdecoder\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/robbiep/zbar-qrdecoder/src',
-            ),
-        ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'TarfinLabs\\ZbarPhp\\Zbar' => __DIR__ . '/..' . '/tarfin-labs/zbar-php/src/Zbar.php',
+        'TarfinLabs\\ZbarPhp\\BarCode' => __DIR__ . '/..' . '/tarfin-labs/zbar-php/src/BarCode.php',
+        'TarfinLabs\\ZbarPhp\\Exceptions\\ZbarError' => __DIR__ . '/..' . '/tarfin-labs/zbar-php/src/Exceptions/ZbarError.php',
+        'TarfinLabs\\ZbarPhp\\Exceptions\\InvalidFormat' => __DIR__ . '/..' . '/tarfin-labs/zbar-php/src/Exceptions/InvalidFormat.php',
+        'TarfinLabs\\ZbarPhp\\Exceptions\\UnableToOpen' => __DIR__ . '/..' . '/tarfin-labs/zbar-php/src/Exceptions/UnableToOpen.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

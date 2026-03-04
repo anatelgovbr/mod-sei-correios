@@ -7,74 +7,22 @@
     "content-hash": "389c70a25ddf925d206d5e2434c4c206",
     "packages": [
         {
-            "name": "robbiep/zbar-qrdecoder",
-            "version": "2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/robbiepaul/zbar-qrdecoder.git",
-                "reference": "ca652762b28745e8e470ee43f006a2691403c4e8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/robbiepaul/zbar-qrdecoder/zipball/ca652762b28745e8e470ee43f006a2691403c4e8",
-                "reference": "ca652762b28745e8e470ee43f006a2691403c4e8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5.0",
-                "symfony/process": "^3.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "0.9.*@dev",
-                "phpunit/phpunit": "4.3.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "RobbieP\\ZbarQrdecoder\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Robbie Paul",
-                    "email": "robbiepaul@me.com"
-                }
-            ],
-            "description": "A PHP wrapper for Zbar. Decodes images/photos containing QR codes.",
-            "keywords": [
-                "decode",
-                "laravel",
-                "php",
-                "qr",
-                "qrcode",
-                "zbar"
-            ],
-            "support": {
-                "issues": "https://github.com/robbiepaul/zbar-qrdecoder/issues",
-                "source": "https://github.com/robbiepaul/zbar-qrdecoder/tree/2.x"
-            },
-            "time": "2016-03-13T16:05:08+00:00"
-        },
-        {
             "name": "symfony/process",
-            "version": "v3.4.47",
+            "version": "v5.4.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "b8648cf1d5af12a44a51d07ef9bf980921f15fca"
+                "reference": "22479f6cf3901a88df5ec5bc9c43b3512b9d0739"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/b8648cf1d5af12a44a51d07ef9bf980921f15fca",
-                "reference": "b8648cf1d5af12a44a51d07ef9bf980921f15fca",
+                "url": "https://api.github.com/repos/symfony/process/zipball/22479f6cf3901a88df5ec5bc9c43b3512b9d0739",
+                "reference": "22479f6cf3901a88df5ec5bc9c43b3512b9d0739",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5.9|>=7.0.8"
+                "php": ">=7.2.5",
+                "symfony/polyfill-php80": "^1.16"
             },
             "type": "library",
             "autoload": {
@@ -102,7 +50,7 @@
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v3.4.47"
+                "source": "https://github.com/symfony/process/tree/v5.4.51"
             },
             "funding": [
                 {
@@ -118,7 +66,57 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-24T10:57:07+00:00"
+            "time": "2025-01-27T10:48:02+00:00"
+        },
+        {
+            "name": "tarfin-labs/zbar-php",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tarfin-labs/zbar-php.git",
+                "reference": "2e043130983f434054972337772714a08182ec3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tarfin-labs/zbar-php/zipball/2e043130983f434054972337772714a08182ec3f",
+                "reference": "2e043130983f434054972337772714a08182ec3f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0",
+                "symfony/process": "^3.0|^4.0|^5.0|^6.0|^7.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.21",
+                "phpstan/phpstan": "^1.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TarfinLabs\\ZbarPhp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yunus Emre Deligöz",
+                    "email": "yunus@deligoz.me"
+                }
+            ],
+            "description": "A PHP wrapper for Zbar Barcode Reader",
+            "keywords": [
+                "barcode",
+                "qr code",
+                "zbar"
+            ],
+            "support": {
+                "issues": "https://github.com/tarfin-labs/zbar-php/issues",
+                "source": "https://github.com/tarfin-labs/zbar-php/tree/2.2.1"
+            },
+            "time": "2023-11-28T10:48:33+00:00"
         }
     ],
     "packages-dev": [],

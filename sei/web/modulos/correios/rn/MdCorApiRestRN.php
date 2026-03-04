@@ -1,8 +1,5 @@
 <?php
 
-// require_once dirname(__FILE__) . '/../lib/nusoap/nusoap.php';
-
-
 /**
  * RN responsálvel por consultar o andamento dos objetos nos correios
  *

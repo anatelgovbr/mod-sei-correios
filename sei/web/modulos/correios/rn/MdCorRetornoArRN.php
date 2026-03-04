@@ -13,6 +13,8 @@ require_once dirname(__FILE__) . '/../lib/zbar/vendor/autoload.php';
 
 class MdCorRetornoArRN extends InfraRN
 {
+  const MAX_ARQUIVOS_ZIP = 50;
+  const MAX_PDF_SIZE_BYTES = 3145728;
 
   public static $STA_RETORNO_AR_AUTOMATICO = 1;
   public static $STA_RETORNO_AR_MANUAL = 2;
@@ -259,59 +261,98 @@ class MdCorRetornoArRN extends InfraRN
 
   protected function processarArquivoConectado($dados)
   {
-    ini_set('memory_limit','-1');
-    ini_set('max_execution_time', 0);
-    $nome = $dados['hdnNomeArquivo'];
-    $url = DIR_SEI_TEMP . '/' . $nome;
-    $arrNome = substr($nome, 0, -4);
-    $_SESSION['ARQUIVO_ZIP'] = DIR_SEI_TEMP . '/' . $nome;
-    $_SESSION['ARQUIVO_PASTA'] = DIR_SEI_TEMP . '/' . $arrNome;
-    $destino = DIR_SEI_TEMP . '/' . $arrNome;
+    ini_set('memory_limit', '256M');
+    ini_set('max_execution_time', 120);
 
     $objInfraException = new InfraException();
+    $strNomeOriginal = isset($dados['hdnNomeArquivo']) ? $dados['hdnNomeArquivo'] : '';
+    $nome = basename((string)$strNomeOriginal);
 
-    if ( file_exists($url) === false ) {
-        $objInfraException->adicionarValidacao('Arquivo Zip não encontrado no caminho: ' . $url);
-        $objInfraException->lancarValidacoes();
+    if ($nome !== $strNomeOriginal) {
+      throw new InfraException('Nome de arquivo de upload invalido.');
     }
+
+    if (!preg_match('/^\[[A-Za-z0-9_.]+\]\[\d{8}-\d{6}\]-[A-Za-z0-9_.]+\.zip$/D', $nome)) {
+      throw new InfraException('Formato do arquivo de upload invalido.');
+    }
+
+    if (!isset($_SESSION['MD_COR_UPLOAD_AR_VALIDOS']) || !is_array($_SESSION['MD_COR_UPLOAD_AR_VALIDOS']) || !isset($_SESSION['MD_COR_UPLOAD_AR_VALIDOS'][$nome])) {
+      throw new InfraException('Arquivo nao foi gerado pelo fluxo de upload da sessao atual.');
+    }
+
+    $strDirTempCanonico = realpath(DIR_SEI_TEMP);
+    if ($strDirTempCanonico === false || !is_dir($strDirTempCanonico)) {
+      throw new InfraException('Diretorio temporario de upload invalido.');
+    }
+
+    $url = $strDirTempCanonico . DIRECTORY_SEPARATOR . $nome;
+    if (file_exists($url) === false) {
+      unset($_SESSION['MD_COR_UPLOAD_AR_VALIDOS'][$nome]);
+      $objInfraException->adicionarValidacao('Arquivo Zip nao encontrado no caminho esperado de upload.');
+      $objInfraException->lancarValidacoes();
+    }
+
+    $strArquivoCanonico = realpath($url);
+    if ($strArquivoCanonico === false || strpos($strArquivoCanonico, $strDirTempCanonico . DIRECTORY_SEPARATOR) !== 0) {
+      throw new InfraException('Caminho canonico do arquivo de upload invalido.');
+    }
+
+    $arrNome = substr($nome, 0, -4);
+    $destino = $strDirTempCanonico . DIRECTORY_SEPARATOR . $arrNome;
+    if (dirname($destino) !== $strDirTempCanonico) {
+      throw new InfraException('Diretorio de extracao invalido para o arquivo de upload.');
+    }
+
+    $_SESSION['ARQUIVO_ZIP'] = $strArquivoCanonico;
+    $_SESSION['ARQUIVO_PASTA'] = $destino;
+    unset($_SESSION['MD_COR_UPLOAD_AR_VALIDOS'][$nome]);
 
     $zip = new ZipArchive();
-    $bolOpenZip = $zip->open($url);
+    $bolOpenZip = $zip->open($strArquivoCanonico);
 
     if ( $bolOpenZip !== true ) {
-        $objInfraException->adicionarValidacao('Não foi possível abrir o arquivo Zip no caminho: ' . $url);
+        $objInfraException->adicionarValidacao('Não foi possível abrir o arquivo Zip no caminho: ' . $strArquivoCanonico);
         $objInfraException->lancarValidacoes();
     }
 
-    $arrArs = [];
-    $arrArs['numFiles'] = $zip->numFiles;
-    if ($zip->numFiles <= 50) {
-        if ($zip->extractTo($destino) == TRUE) {
-          $arrArs = $this->converterPdfImage($destino);
-        }
+    if ($zip->numFiles <= self::MAX_ARQUIVOS_ZIP) {
+      try {
+        MdCorRetornoArINT::extrairArquivosPdfPlanos($zip, $destino);
+      } catch (Exception $e) {
         $zip->close();
-        return $this->verificarArs($arrArs);
-    } else {
-        $zip->close();
-        $objInfraException->adicionarValidacao('Dentro do ZIP somente deve constar 50 arquivos PDFs.');
+        $objInfraException->adicionarValidacao($e->getMessage());
         $objInfraException->lancarValidacoes();
+      }
+
+      $arrArs = $this->converterPdfImage($destino);
+      $zip->close();
+      return $this->verificarArs($arrArs);
+    } else {
+      $zip->close();
+      $objInfraException->adicionarValidacao('Dentro do ZIP somente deve constar 50 arquivos PDFs.');
+      $objInfraException->lancarValidacoes();
     }
   }
 
   protected function converterPdfImageControlado($url)
   {
-    ini_set('memory_limit','-1');
-    ini_set('max_execution_time', 0);
+    ini_set('memory_limit', '256M');
+    ini_set('max_execution_time', 120);
+
+    if (stripos(PHP_OS, 'WIN') === 0 || stripos(PHP_OS, 'MSYS') === 0 || stripos(PHP_OS, 'MINGW') === 0) {
+      throw new InfraException('Fluxo de leitura de AR por zbarimg suportado somente em ambientes Linux.');
+    }
+
     //Tamanho permitido em MB do arquivo PDF dentro do ZIP após a descompactação
     $tamanhoPdf = 3;
     $objInfraException = new InfraException();
     $files = array_diff(scandir($url), array('.', '..'));
 
-    $objDecoder = new \RobbieP\ZbarQrdecoder\ZbarDecoder();
-
-    $arrQrCode = [];
+    $arrQrCode = array();
 
     foreach ($files as $chave => $file) {
+      $this->validarNomeArquivoExtraido($file, $objInfraException);
+
       $localArquivo = $url . '/' . $file;
       $noArquivoJpg = $url . '/' . str_replace('pdf', 'jpg', $file);
       $ext = pathinfo($file, PATHINFO_EXTENSION);
@@ -321,8 +362,8 @@ class MdCorRetornoArRN extends InfraRN
         $objInfraException->lancarValidacoes();
       }
 
-      $tamanho = (filesize($localArquivo) / 1024 / 1024);
-      if ($tamanho > $tamanhoPdf) {
+      $tamanho = filesize($localArquivo);
+      if ($tamanho === false || $tamanho > self::MAX_PDF_SIZE_BYTES) {
         $objInfraException->adicionarValidacao('Tamanho do Arquivo PDF maior que o Permitido.');
         $objInfraException->lancarValidacoes();
       }
@@ -339,9 +380,9 @@ class MdCorRetornoArRN extends InfraRN
       $im->clear();
       $im->destroy();
 
-      // realiza leitura de qrcode ou barcode
-      $result = $objDecoder->make($noArquivoJpg);
-      $codigo = $result->code == 200 ? $result->text : '0';
+      $zbar = new \TarfinLabs\ZbarPhp\Zbar($noArquivoJpg);
+      $codigo = $zbar->scan();
+      $codigo = ($codigo && $codigo !== '') ? $codigo : '0';
 
       $arrQrCode[$file] = $codigo;
 
@@ -473,6 +514,24 @@ class MdCorRetornoArRN extends InfraRN
 
     return $arrStatus;
 
+  }
+
+  private function validarNomeArquivoExtraido($nomeArquivo, InfraException $objInfraException)
+  {
+    if (preg_match('/[\x00-\x1F\x7F]/', $nomeArquivo)) {
+      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com nome inválido.');
+      $objInfraException->lancarValidacoes();
+    }
+
+    if (strpos($nomeArquivo, '/') !== false || strpos($nomeArquivo, '\\') !== false || strpos($nomeArquivo, '..') !== false) {
+      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com caminho inválido.');
+      $objInfraException->lancarValidacoes();
+    }
+
+    if (!preg_match('/^[A-Za-z0-9._\s-]+\.pdf$/', $nomeArquivo)) {
+      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com Formato não Permitido');
+      $objInfraException->lancarValidacoes();
+    }
   }
 
 

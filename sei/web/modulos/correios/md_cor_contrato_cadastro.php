@@ -387,5 +387,5 @@ PaginaSEI::getInstance()->fecharAreaDados();
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
 include_once('md_cor_contrato_cadastro_js.php');
-require_once("js/md_cor_global.js");
+require_once("js/md_cor_global_js.php");
 ?>
