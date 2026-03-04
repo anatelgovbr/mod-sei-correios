@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),
+    'TarfinLabs\\ZbarPhp\\' => array($vendorDir . '/tarfin-labs/zbar-php/src'),
 );

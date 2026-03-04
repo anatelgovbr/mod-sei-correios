@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'RobbieP\\ZbarQrdecoder\\' => array($vendorDir . '/robbiep/zbar-qrdecoder/src'),
+    'TarfinLabs\\ZbarPhp\\' => array($vendorDir . '/tarfin-labs/zbar-php/src'),
 );

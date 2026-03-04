@@ -323,6 +323,6 @@ PaginaSEI::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'); ?>
     </form>
 <?php
 require_once('md_cor_expedicao_unidade_lista_js.php');
-require_once("js/md_cor_global.js");
+require_once("js/md_cor_global_js.php");
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();

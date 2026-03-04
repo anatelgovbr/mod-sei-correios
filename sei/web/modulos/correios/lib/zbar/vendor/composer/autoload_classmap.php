@@ -6,5 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'TarfinLabs\\ZbarPhp\\Zbar' => $vendorDir . '/tarfin-labs/zbar-php/src/Zbar.php',
+    'TarfinLabs\\ZbarPhp\\BarCode' => $vendorDir . '/tarfin-labs/zbar-php/src/BarCode.php',
+    'TarfinLabs\\ZbarPhp\\Exceptions\\ZbarExtensionNotFoundException' => $vendorDir . '/tarfin-labs/zbar-php/src/Exceptions/ZbarExtensionNotFoundException.php',
+    'TarfinLabs\\ZbarPhp\\Exceptions\\ZbarOutputNotFoundException' => $vendorDir . '/tarfin-labs/zbar-php/src/Exceptions/ZbarOutputNotFoundException.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
 );

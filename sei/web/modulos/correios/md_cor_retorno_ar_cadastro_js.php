@@ -67,7 +67,7 @@
 
     function buscarDadosDocumento(campo) {
         var nuSeiDocumento = $.trim(campo.value);
-        var linha = $(campo).parents('tr').find('td:eq(0)').html();
+        var linha = $(campo).parents('tr').find('td:eq(0)').html() - 1;
         var campoNuSei = $('.nu-sei');
 
         $("#dt_ar" + linha).attr('disabled', 'disabled');
@@ -169,7 +169,7 @@
         $(".nu_sei").each(function () {
             var nuSei = $.trim($(this).val());
 
-            var linha = $(this).parents('tr').find('td:eq(0)').html();
+            var linha = $(this).parents('tr').find('td:eq(0)').html() - 1;
             var dtAr = $('#dt_ar' + linha).val();
             var dtRetorno = $('#dt_retorno' + linha).val();
             var stDevolvido = $('#st_devolvido' + linha + ':checked').length;

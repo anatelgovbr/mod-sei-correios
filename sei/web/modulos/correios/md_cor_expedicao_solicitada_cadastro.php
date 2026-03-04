@@ -1443,4 +1443,4 @@ PaginaSEI::getInstance()->fecharHtml();
 if (!isset($_POST['txaJustificativa']) && $arrComandos ) {
     require_once 'md_cor_expedicao_solicitada_cadastro_js.php';
 }
-require_once("js/md_cor_global.js");
+require_once("js/md_cor_global_js.php");

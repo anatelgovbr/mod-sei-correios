@@ -1,18 +1,18 @@
-# MÃ³dulo SEI Correios
+# Módulo SEI Correios
 
 ## Requisitos
-- Requisito MÃ­nimo Ã© o SEI 5.0.3 instalado/atualizado - NÃ£o Ã© compatÃ­vel com versÃµes anteriores e em versÃµes mais recentes Ã© necessÃ¡rio conferir antes se possui compatibilidade.
-   - Verificar valor da constante de versÃ£o no arquivo /sei/web/SEI.php ou, apÃ³s logado no sistema, parando o mouse sobre a logo do SEI no canto superior esquerdo.
-- Antes de executar os scripts de instalaÃ§Ã£o/atualizaÃ§Ã£o, o usuÃ¡rio de acesso aos bancos de dados do SEI e do SIP, constante nos arquivos ConfiguracaoSEI.php e ConfiguracaoSip.php, deverÃ¡ ter permissÃ£o de acesso total ao banco de dados, permitindo, por exemplo, criaÃ§Ã£o e exclusÃ£o de tabelas.
-- Os cÃ³digos-fonte do MÃ³dulo podem ser baixados a partir do link a seguir, devendo sempre utilizar a versÃ£o mais recente: [https://github.com/anatelgovbr/mod-sei-correios/releases](https://github.com/anatelgovbr/mod-sei-correios/releases "Clique e acesse")
-- Se jÃ¡ tiver instalado versÃ£o principal com a execuÃ§Ã£o dos scripts de banco do mÃ³dulo no SEI e no SIP, **em versÃµes intermediÃ¡rias basta sobrescrever os cÃ³digos** e nÃ£o precisa executar os scripts de banco novamente.
-   - AtualizaÃ§Ãµes apenas de cÃ³digo sÃ£o identificadas com o incremento apenas do terceiro dÃ­gito da versÃ£o (p. ex. v4.1.1, v4.1.2) e nÃ£o envolve execuÃ§Ã£o de scripts de banco.
+- Requisito Mínimo é o SEI 5.0.3 instalado/atualizado - Não é compatível com versões anteriores e em versões mais recentes é necessário conferir antes se possui compatibilidade.
+   - Verificar valor da constante de versão no arquivo /sei/web/SEI.php ou, após logado no sistema, parando o mouse sobre a logo do SEI no canto superior esquerdo.
+- Antes de executar os scripts de instalação/atualização, o usuário de acesso aos bancos de dados do SEI e do SIP, constante nos arquivos ConfiguracaoSEI.php e ConfiguracaoSip.php, deverá ter permissão de acesso total ao banco de dados, permitindo, por exemplo, criação e exclusão de tabelas.
+- Os códigos-fonte do Módulo podem ser baixados a partir do link a seguir, devendo sempre utilizar a versão mais recente: [https://github.com/anatelgovbr/mod-sei-correios/releases](https://github.com/anatelgovbr/mod-sei-correios/releases "Clique e acesse")
+- Se já tiver instalado versão principal com a execução dos scripts de banco do módulo no SEI e no SIP, **em versões intermediárias basta sobrescrever os códigos** e não precisa executar os scripts de banco novamente.
+   - Atualizações apenas de código são identificadas com o incremento apenas do terceiro dígito da versão (p. ex. v4.1.1, v4.1.2) e não envolve execução de scripts de banco.
 
-## Procedimentos para InstalaÃ§Ã£o
+## Procedimentos para Instalação
 1. Fazer backup dos bancos de dados do SEI e do SIP.
-2. Carregar no servidor os arquivos do mÃ³dulo nas pastas correspondentes nos servidores do SEI e do SIP.
-   - **Caso se trate de atualizaÃ§Ã£o de versÃ£o anterior do MÃ³dulo**, antes de copiar os cÃ³digos-fontes para a pasta "/sei/web/modulos/correios", Ã© necessÃ¡rio excluir os arquivos anteriores prÃ© existentes na mencionada pasta, para nÃ£o manter arquivos de cÃ³digos que foram renomeados ou descontinuados.
-3. Editar o arquivo "/sei/config/ConfiguracaoSEI.php", tomando o cuidado de usar editor que nÃ£o altere o charset do arquivo, para adicionar a referÃªncia Ã  classe de integraÃ§Ã£o do mÃ³dulo e seu caminho relativo dentro da pasta "/sei/web/modulos" na array 'Modulos' da chave 'SEI':
+2. Carregar no servidor os arquivos do módulo nas pastas correspondentes nos servidores do SEI e do SIP.
+   - **Caso se trate de atualização de versão anterior do Módulo**, antes de copiar os códigos-fontes para a pasta "/sei/web/modulos/correios", é necessário excluir os arquivos anteriores pré existentes na mencionada pasta, para não manter arquivos de códigos que foram renomeados ou descontinuados.
+3. Editar o arquivo "/sei/config/ConfiguracaoSEI.php", tomando o cuidado de usar editor que não altere o charset do arquivo, para adicionar a referência à classe de integração do módulo e seu caminho relativo dentro da pasta "/sei/web/modulos" na array 'Modulos' da chave 'SEI':
 
 		'SEI' => array(
 			...
@@ -21,95 +21,96 @@
 				),
 			),
 
-4. Antes de seguir para os prÃ³ximos passos, Ã© importante conferir se o MÃ³dulo foi corretamente declarado no arquivo "/sei/config/ConfiguracaoSEI.php". Acesse o menu **Infra > MÃ³dulos** e confira se consta a linha correspondente ao MÃ³dulo, pois, realizando os passos anteriores da forma correta, independente da execuÃ§Ã£o do script de banco, o MÃ³dulo jÃ¡ deve ser reconhecido na tela aberta pelo menu indicado.
-5. Rodar o script de banco "/sip/scripts/sip_atualizar_versao_modulo_correios.php" em linha de comando no servidor do SIP, verificando se nÃ£o houve erro em sua execuÃ§Ã£o, em que ao final do log deverÃ¡ ser informado "FIM". Exemplo de comando de execuÃ§Ã£o:
+4. Antes de seguir para os próximos passos, é importante conferir se o Módulo foi corretamente declarado no arquivo "/sei/config/ConfiguracaoSEI.php". Acesse o menu **Infra > Módulos** e confira se consta a linha correspondente ao Módulo, pois, realizando os passos anteriores da forma correta, independente da execução do script de banco, o Módulo já deve ser reconhecido na tela aberta pelo menu indicado.
+5. Rodar o script de banco "/sip/scripts/sip_atualizar_versao_modulo_correios.php" em linha de comando no servidor do SIP, verificando se não houve erro em sua execução, em que ao final do log deverá ser informado "FIM". Exemplo de comando de execução:
 
 		/usr/bin/php -c /etc/php.ini /opt/sip/scripts/sip_atualizar_versao_modulo_correios.php > atualizacao_correio_sip.log
 
-6. Rodar o script de banco "/sei/scripts/sei_atualizar_versao_modulo_correios.php" em linha de comando no servidor do SEI, verificando se nÃ£o houve erro em sua execuÃ§Ã£o, em que ao final do log deverÃ¡ ser informado "FIM". Exemplo de comando de execuÃ§Ã£o:
+6. Rodar o script de banco "/sei/scripts/sei_atualizar_versao_modulo_correios.php" em linha de comando no servidor do SEI, verificando se não houve erro em sua execução, em que ao final do log deverá ser informado "FIM". Exemplo de comando de execução:
 
 		/usr/bin/php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_correios.php > atualizacao_modulo_correios_sei.log
 
-7. **IMPORTANTE**: Na execuÃ§Ã£o dos dois scripts de banco acima, ao final deve constar o termo "FIM", o "TEMPO TOTAL DE EXECUÃ‡ÃƒO" e a informaÃ§Ã£o de que a instalaÃ§Ã£o/atualizaÃ§Ã£o foi realizada com sucesso na base de dados correspondente (SEM ERROS). Do contrÃ¡rio, o script nÃ£o foi executado atÃ© o final e algum dado nÃ£o foi inserido/atualizado no respectivo banco de dados, devendo recuperar o backup do banco e repetir o procedimento.
-   - Constando ao final da execuÃ§Ã£o do script as informaÃ§Ãµes indicadas, pode logar no SEI e SIP e verificar no menu **Infra > ParÃ¢metros** dos dois sistemas se consta o parÃ¢metro "VERSAO_MODULO_CORREIOS" com o valor da Ãºltima versÃ£o do mÃ³dulo.
-8. Em caso de erro durante a execuÃ§Ã£o do script, verificar (lendo as mensagens de erro e no menu Infra > Log do SEI e do SIP) se a causa Ã© algum problema na infraestrutura local ou ajustes indevidos na estrutura de banco do core do sistema. Neste caso, apÃ³s a correÃ§Ã£o, deve recuperar o backup do banco pertinente e repetir o procedimento, especialmente a execuÃ§Ã£o dos scripts de banco indicados acima.
-9. ApÃ³s a execuÃ§Ã£o com sucesso, com um usuÃ¡rio com permissÃ£o de Administrador no SEI, seguir os passos dispostos no tÃ³pico "OrientaÃ§Ãµes Negociais" mais abaixo.
-10. Para o funcionamento correto do MÃ³dulo SEI Correios Ã© necessÃ¡rio a instalaÃ§Ã£o da biblioteca PHP "ImageMagick" e "ImageMagick-devel" em cada nÃ³ de aplicaÃ§Ã£o do SEI, conforme comandos abaixo:
+7. **IMPORTANTE**: Na execução dos dois scripts de banco acima, ao final deve constar o termo "FIM", o "TEMPO TOTAL DE EXECUÇÃO" e a informação de que a instalação/atualização foi realizada com sucesso na base de dados correspondente (SEM ERROS). Do contrário, o script não foi executado até o final e algum dado não foi inserido/atualizado no respectivo banco de dados, devendo recuperar o backup do banco e repetir o procedimento.
+   - Constando ao final da execução do script as informações indicadas, pode logar no SEI e SIP e verificar no menu **Infra > Parâmetros** dos dois sistemas se consta o parâmetro "VERSAO_MODULO_CORREIOS" com o valor da última versão do módulo.
+8. Em caso de erro durante a execução do script, verificar (lendo as mensagens de erro e no menu Infra > Log do SEI e do SIP) se a causa é algum problema na infraestrutura local ou ajustes indevidos na estrutura de banco do core do sistema. Neste caso, após a correção, deve recuperar o backup do banco pertinente e repetir o procedimento, especialmente a execução dos scripts de banco indicados acima.
+9. Após a execução com sucesso, com um usuário com permissão de Administrador no SEI, seguir os passos dispostos no tópico "Orientações Negociais" mais abaixo.
+10. Para o funcionamento correto do Módulo SEI Correios é necessário a instalação da biblioteca PHP "ImageMagick" e "ImageMagick-devel" em cada nó de aplicação do SEI, conforme comandos abaixo:
 
 		Execute a linha de comando "yum install -y ImageMagick ImageMagick-devel"
 		Execute a linha de comando "pecl install imagick"
-		Modifique o arquvivo "/etc/php.ini", incluindo a linha "extension=imagick.so" no final da seÃ§Ã£o "Dynamic Extensions"
-11. Para o funcionamento do Processamento de Retorno do AR Ã© necessÃ¡rio a instalaÃ§Ã£o do kit de ferramenta Zbar. Para saber mais ver o link: [https://github.com/robbiepaul/zbar-qrdecoder](https://github.com/robbiepaul/zbar-qrdecoder) no tÃ³pico **Requirements**. Exemplo de instalaÃ§Ã£o para uso no Sistema Operacional Centos:
+		Modifique o arquvivo "/etc/php.ini", incluindo a linha "extension=imagick.so" no final da seção "Dynamic Extensions"
+11. Para o funcionamento do Processamento de Retorno do AR é necessário a instalação do kit de ferramenta Zbar. Para saber mais ver o link: [https://github.com/tarfin-labs/zbar-php](https://github.com/tarfin-labs/zbar-php) no tópico **Requirements**. Exemplo de instalação para uso no Sistema Operacional Centos:
     
         yum install zbar
-## OrientaÃ§Ãµes Negociais
-1. Imediatamente apÃ³s a instalaÃ§Ã£o com sucesso, com usuÃ¡rio com permissÃ£o de "Administrador" do SEI, acessar os menus de administraÃ§Ã£o do MÃ³dulo pelo seguinte caminho: AdministraÃ§Ã£o > Correios. Somente com tudo parametrizado adequadamente serÃ¡ possÃ­vel o uso do mÃ³dulo.
-2. O script de banco do SIP jÃ¡ cria todos os Recursos e Menus e os associam automaticamente aos Perfis "BÃ¡sico", "Administrador" e "ExpediÃ§Ã£o Correios".
-	- Independente da criaÃ§Ã£o de outros Perfis, os recursos indicados para o Perfil "BÃ¡sico", "Administrador" e "ExpediÃ§Ã£o Correios" devem manter correspondÃªncia com os Perfis dos UsuÃ¡rios internos que utilizarÃ£o o MÃ³dulo e dos UsuÃ¡rios Administradores do MÃ³dulo.
-	- TÃ£o quanto ocorre com as atualizaÃ§Ãµes do SEI, versÃµes futuras deste MÃ³dulo continuarÃ£o a atualizar e criar Recursos e associÃ¡-los apenas aos Perfis "BÃ¡sico", "Administrador" e "ExpediÃ§Ã£o Correios".
-	- Todos os recursos do MÃ³dulo iniciam pelo prefixo **"md_cor_"**.
-	- NÃ£o foi possÃ­vel ainda elaborar Manuais do mÃ³dulo. Contudo, Ã© importante ler o resumo sobre cada funcionalidade abaixo para poder entender o funcionamento do mÃ³dulo e poder parametrizÃ¡-lo da forma correta.
-3. Funcionalidades do MÃ³dulo SEI Correios:
-	- 3.1. AdministraÃ§Ã£o:
-		- Correios > Contratos e ServiÃ§os Postais:
-			- Cadastra o Contrato que o Ã³rgÃ£o possui com os Correios e pelo menos o Tipo de Embalagem "Envelope".
-			- Na tela de Cadastro do Contrato deve informar todos os campos sobre o Contrato junto aos Correios, especialmente os NÃºmeros de Contrato e Postagem informado pelos Correios ao Ã“rgÃ£o para que as integraÃ§Ãµes funcionem.
-				- [Acesse o Link dos Correios](https://www.correios.com.br/atendimento/developers "Acesso Ã  documentaÃ§Ã£o das API's") para acesso Ã  documentaÃ§Ã£o sobre o uso das API's dos Correios.
-				- Caso nÃ£o tenha usuÃ¡rio no ambiente de HomologaÃ§Ã£o, acesse [https://cwshom.correios.com.br](https://cwshom.correios.com.br), clicar na opÃ§Ã£o "Cadastrar" e informar os dados solicitados.
-				- Caso nÃ£o tenha usuÃ¡rio no ambiente de ProduÃ§Ã£o, acesse [https://cws.correios.com.br](https://cws.correios.com.br) e realizar o mesmo procedimento feito no ambiente de HomologaÃ§Ã£o.
-				- Caso tenha dÃºvidas, entrar em contato com o agente comercial dos Correios que atende o Ã“rgÃ£o. 
-			- Deve deixar na lista de ServiÃ§os Postais somente os serviÃ§os que quer que fiquem disponÃ­veis para uso, sendo o mais tradicional o serviÃ§o "CARTA COM A FATURAR SELO E SE", tipo "Carta Registrada", Expedido com AR "Sim", DescriÃ§Ã£o AmigÃ¡vel "CorrespondÃªncia Registrada".
-				- Remover os serviÃ§os que nÃ£o for utilizar.
-				- Os serviÃ§os mantidos na lista deverÃ£o depois serem mapeados com as unidades no menu AdministraÃ§Ã£o > Correios > Mapeamento Unidades e ServiÃ§os Postais.
-		- Tipos de Documentos de ExpediÃ§Ã£o:
-			- Tela onde indica os Tipos de Documentos gerados no SEI que tem indicaÃ§Ã£o de DestinatÃ¡rio e que, depois de assinado, aparecerÃ¡ o botÃ£o para "Solicitar ExpediÃ§Ã£o pelos Correios". Tradicionalmente Ã© usado o tipo de documento "OfÃ­cio" nos Ã³rgÃ£os.
-			- SerÃ£o listados os Tipos de Documentos que na AdministraÃ§Ã£o do SEI possuem indicaÃ§Ã£o de preenchimento de DestinatÃ¡rio.
+## Orientações Negociais
+1. Imediatamente após a instalação com sucesso, com usuário com permissão de "Administrador" do SEI, acessar os menus de administração do Módulo pelo seguinte caminho: Administração > Correios. Somente com tudo parametrizado adequadamente será possível o uso do módulo.
+2. O script de banco do SIP já cria todos os Recursos e Menus e os associam automaticamente aos Perfis "Básico", "Administrador" e "Expedição Correios".
+	- Independente da criação de outros Perfis, os recursos indicados para o Perfil "Básico", "Administrador" e "Expedição Correios" devem manter correspondência com os Perfis dos Usuários internos que utilizarão o Módulo e dos Usuários Administradores do Módulo.
+	- Tão quanto ocorre com as atualizações do SEI, versões futuras deste Módulo continuarão a atualizar e criar Recursos e associá-los apenas aos Perfis "Básico", "Administrador" e "Expedição Correios".
+	- Todos os recursos do Módulo iniciam pelo prefixo **"md_cor_"**.
+	- Não foi possível ainda elaborar Manuais do módulo. Contudo, é importante ler o resumo sobre cada funcionalidade abaixo para poder entender o funcionamento do módulo e poder parametrizá-lo da forma correta.
+3. Funcionalidades do Módulo SEI Correios:
+	- 3.1. Administração:
+		- Correios > Contratos e Serviços Postais:
+			- Cadastra o Contrato que o órgão possui com os Correios e pelo menos o Tipo de Embalagem "Envelope".
+			- Na tela de Cadastro do Contrato deve informar todos os campos sobre o Contrato junto aos Correios, especialmente os Números de Contrato e Postagem informado pelos Correios ao Órgão para que as integrações funcionem.
+				- [Acesse o Link dos Correios](https://www.correios.com.br/atendimento/developers "Acesso à documentação das API's") para acesso à documentação sobre o uso das API's dos Correios.
+				- Caso não tenha usuário no ambiente de Homologação, acesse [https://cwshom.correios.com.br](https://cwshom.correios.com.br), clicar na opção "Cadastrar" e informar os dados solicitados.
+				- Caso não tenha usuário no ambiente de Produção, acesse [https://cws.correios.com.br](https://cws.correios.com.br) e realizar o mesmo procedimento feito no ambiente de Homologação.
+				- Caso tenha dúvidas, entrar em contato com o agente comercial dos Correios que atende o Órgão. 
+			- Deve deixar na lista de Serviços Postais somente os serviços que quer que fiquem disponíveis para uso, sendo o mais tradicional o serviço "CARTA COM A FATURAR SELO E SE", tipo "Carta Registrada", Expedido com AR "Sim", Descrição Amigável "Correspondência Registrada".
+				- Remover os serviços que não for utilizar.
+				- Os serviços mantidos na lista deverão depois serem mapeados com as unidades no menu Administração > Correios > Mapeamento Unidades e Serviços Postais.
+		- Tipos de Documentos de Expedição:
+			- Tela onde indica os Tipos de Documentos gerados no SEI que tem indicação de Destinatário e que, depois de assinado, aparecerá o botão para "Solicitar Expedição pelos Correios". Tradicionalmente é usado o tipo de documento "Ofício" nos órgãos.
+			- Serão listados os Tipos de Documentos que na Administração do SEI possuem indicação de preenchimento de Destinatário.
 		- Unidades Expedidoras:
-			- Tela onde cadastra as Unidades Expedidoras que vÃ£o realizar a validaÃ§Ã£o da ExpediÃ§Ã£o do Correios.
+			- Tela onde cadastra as Unidades Expedidoras que vão realizar a validação da Expedição do Correios.
 		- Mapeamento de Unidades Expedidoras e Unidades Solicitantes:
-			- Tela onde vincula a Unidade Expedidora com as Unidades Solicitantes que vÃ£o pode solicitar a ExpediÃ§Ã£o do Correios.
-		- Mapeamento de Unidades Solicitantes e ServiÃ§os Postais:
-			- Tela onde vincula as Unidades Solicitantes com os ServiÃ§os Postais jÃ¡ cadastrados.
-		- ExtensÃµes para GravaÃ§Ã£o em MÃ­dia:
-			- Tela onde cadastra as ExtensÃµes Permitidas de Arquivos para GravaÃ§Ã£o em MÃ­dia.
-		- ParÃ¢metros para Retorno da AR:
-			- Tela onde indica os ParÃ¢metros para Retorno da AR.
-		- Mapeamento das IntegraÃ§Ãµes:
-			- A Tela inicial Ã© a listagem das integraÃ§Ãµes cadastradas apÃ³s a execuÃ§Ã£o do Script de instalaÃ§Ã£o do mÃ³dulo. 
-			Para uso inicial das integraÃ§Ãµes Ã© necessÃ¡rio cadastrar usuÃ¡rio, senha e token correspondente ao ambiente utilizado.
-			O Authorization a ser usado na API **Token** pode ser recuperado no ambiente de [HomologaÃ§Ã£o](https://cwshom.correios.com.br) ou [ProduÃ§Ã£o](https://cws.correios.com.br) apÃ³s seguir as instruÃ§Ãµes da documentaÃ§Ã£o do uso das API's mencionada no item
-			3 > 3.1 AdministraÃ§Ã£o.
-			- AtenÃ§Ã£o: conforme disposto nos Manuais dos Correios, os cÃ³digos de Rastreio de Objeto ficam disponÃ­veis para consulta apenas por 180 dias, inclusive na pÃ¡gina na Internet de Rastreio de Objetos dos Correios.
-			- Inclusive, somente com cÃ³digos de rastreio jÃ¡ existentes/reais Ã© que o rastreio de objetos funciona, inclusive em outros ambientes internos do Ã“rgÃ£o. Assim, para testes, tem que pegar cÃ³digos de rastreios reais recentes (menos de 180 dias) e incluir manualmente pelo banco do mÃ³dulo para que possa testar.
-		- Tipos de SituaÃ§Ãµes SRO:
-			- Tela onde lista os Tipos de SituaÃ§Ãµes SRO vinculados ao ServiÃ§o.
-		- DestinatÃ¡rios nÃ£o Habilitados para ExpediÃ§Ã£o:
-			- Tela onde cadastrado os Contatos que nÃ£o sÃ£o DestinatÃ¡rios Habilitados para ExpediÃ§Ã£o.
-	- 3.2. Unidade de ExpediÃ§Ã£o:
-		- ExpediÃ§Ã£o pelos Correios:
-		    - Nomenclatura PLP = Identificador para **PrÃ© lista de PrÃ©-Postagens**
-			- Gerar PrÃ©-Postagem: 
-				- Tela onde lista as solicitaÃ§Ãµes de expediÃ§Ãµes realizadas pelos UsuÃ¡rios e gera a PLP(prÃ©-lista de postagem), sendo possÃ­vel selecionar o "Formato de ExpediÃ§Ã£o do Objeto" e visualizar a "SolicitaÃ§Ã£o de ExpediÃ§Ã£o" cadastrada.
-			- Expedir PrÃ©-Postagem:
-				- Lista as PLPs(prÃ©-lista de postagem) geradas para expediÃ§Ã£o e realiza o "Expedir PLP".
-					- Antes de "Concluir a ExpediÃ§Ã£o da PLP" e possÃ­vel Imprimir os Documentos, Envelopes, ARs e Voucher da PLP.
+			- Tela onde vincula a Unidade Expedidora com as Unidades Solicitantes que vão pode solicitar a Expedição do Correios.
+		- Mapeamento de Unidades Solicitantes e Serviços Postais:
+			- Tela onde vincula as Unidades Solicitantes com os Serviços Postais já cadastrados.
+		- Extensões para Gravação em Mídia:
+			- Tela onde cadastra as Extensões Permitidas de Arquivos para Gravação em Mídia.
+		- Parâmetros para Retorno da AR:
+			- Tela onde indica os Parâmetros para Retorno da AR.
+		- Mapeamento das Integrações:
+			- A Tela inicial é a listagem das integrações cadastradas após a execução do Script de instalação do módulo. 
+			Para uso inicial das integrações é necessário cadastrar usuário, senha e token correspondente ao ambiente utilizado.
+			O Authorization a ser usado na API **Token** pode ser recuperado no ambiente de [Homologação](https://cwshom.correios.com.br) ou [Produção](https://cws.correios.com.br) após seguir as instruções da documentação do uso das API's mencionada no item
+			3 > 3.1 Administração.
+			- Atenção: conforme disposto nos Manuais dos Correios, os códigos de Rastreio de Objeto ficam disponíveis para consulta apenas por 180 dias, inclusive na página na Internet de Rastreio de Objetos dos Correios.
+			- Inclusive, somente com códigos de rastreio já existentes/reais é que o rastreio de objetos funciona, inclusive em outros ambientes internos do Órgão. Assim, para testes, tem que pegar códigos de rastreios reais recentes (menos de 180 dias) e incluir manualmente pelo banco do módulo para que possa testar.
+		- Tipos de Situações SRO:
+			- Tela onde lista os Tipos de Situações SRO vinculados ao Serviço.
+		- Destinatários não Habilitados para Expedição:
+			- Tela onde cadastrado os Contatos que não são Destinatários Habilitados para Expedição.
+	- 3.2. Unidade de Expedição:
+		- Expedição pelos Correios:
+		    - Nomenclatura PLP = Identificador para **Pré lista de Pré-Postagens**
+			- Gerar Pré-Postagem: 
+				- Tela onde lista as solicitações de expedições realizadas pelos Usuários e gera a PLP(pré-lista de postagem), sendo possível selecionar o "Formato de Expedição do Objeto" e visualizar a "Solicitação de Expedição" cadastrada.
+			- Expedir Pré-Postagem:
+				- Lista as PLPs(pré-lista de postagem) geradas para expedição e realiza o "Expedir PLP".
+					- Antes de "Concluir a Expedição da PLP" e possível Imprimir os Documentos, Envelopes, ARs e Voucher da PLP.
 			- Consultar PLPs Geradas:
-				- Tela onde lista as PLPs Geradas e visualiza o detalhamento Ã© sendo possÃ­vel Imprimir os Documentos, Envelopes, ARs e Voucher da PLP.
+				- Tela onde lista as PLPs Geradas e visualiza o detalhamento é sendo possível Imprimir os Documentos, Envelopes, ARs e Voucher da PLP.
 			- Processamento de Retorno de AR:
 				- Tela onde Lista o Processamento de Retorno de AR e realiza o processamento em lote.
 			- ARs Pendentes de Retorno:
-				- Tela onde lista os ARs Pendentes de Retorno e "Gerar Documento de CobranÃ§a" vinculado aos dias em atraso do processo.
-	- 3.3 RelatÃ³rios:
+				- Tela onde lista os ARs Pendentes de Retorno e "Gerar Documento de Cobrança" vinculado aos dias em atraso do processo.
+	- 3.3 Relatórios:
 		- Correios:
-			- ExpediÃ§Ãµes Solicitadas pela Unidade:
-				- Tela onde lista as ExpediÃ§Ãµes Solicitadas pela Unidade.
-	- 3.4. UsuÃ¡rios:
-		- Iniciar Processo > OfÃ­cio > Solicitar ExpediÃ§Ã£o pelos Correios:
-			- Solicitar ExpediÃ§Ã£o pelos Correios:
-				- ApÃ³s iniciar um Processo e vincular um documento do tipo "OfÃ­cio" Ã© realizar a assinatura do documento serÃ¡ exibido o icone "Solicitar ExpediÃ§Ã£o pelos Correios".
-				- Na tela de "Solicitar ExpediÃ§Ã£o pelos Correios" Ã© possÃ­vel alterar os dados dos "Documentos Expedidos" e preencher o "Formato de ExpediÃ§Ã£o dos Documentos" Ã© incluir uma "ObservaÃ§Ã£o".
+			- Expedições Solicitadas pela Unidade:
+				- Tela onde lista as Expedições Solicitadas pela Unidade.
+	- 3.4. Usuários:
+		- Iniciar Processo > Ofício > Solicitar Expedição pelos Correios:
+			- Solicitar Expedição pelos Correios:
+				- Após iniciar um Processo e vincular um documento do tipo "Ofício" é realizar a assinatura do documento será exibido o icone "Solicitar Expedição pelos Correios".
+				- Na tela de "Solicitar Expedição pelos Correios" é possível alterar os dados dos "Documentos Expedidos" e preencher o "Formato de Expedição dos Documentos" é incluir uma "Observação".
 
-## Erros ou SugestÃµes
-1. [Abrir Issue](https://github.com/anatelgovbr/mod-sei-correios/issues) no repositÃ³rio do GitHub do mÃ³dulo se ocorrer erro na execuÃ§Ã£o dos scripts de banco do mÃ³dulo no SEI ou no SIP acima.
-2. [Abrir Issue](https://github.com/anatelgovbr/mod-sei-correios/issues) no repositÃ³rio do GitHub do mÃ³dulo se ocorrer erro na operaÃ§Ã£o do mÃ³dulo.
+## Erros ou Sugestões
+1. [Abrir Issue](https://github.com/anatelgovbr/mod-sei-correios/issues) no repositório do GitHub do módulo se ocorrer erro na execução dos scripts de banco do módulo no SEI ou no SIP acima.
+2. [Abrir Issue](https://github.com/anatelgovbr/mod-sei-correios/issues) no repositório do GitHub do módulo se ocorrer erro na operação do módulo.
 3. Na abertura da Issue utilizar o modelo **"1 - Reportar Erro"**.
+

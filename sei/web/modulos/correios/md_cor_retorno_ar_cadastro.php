@@ -340,7 +340,7 @@ PaginaSEI::getInstance()->montarBarraComandosInferior($arrComandos, true);
 PaginaSEI::getInstance()->fecharAreaDados();
 
 require_once('md_cor_retorno_ar_cadastro_js.php');
-require_once("js/md_cor_global.js");
+require_once("js/md_cor_global_js.php");
 
 PaginaSEI::getInstance()->fecharBody();
 PaginaSEI::getInstance()->fecharHtml();
