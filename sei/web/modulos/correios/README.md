@@ -39,7 +39,7 @@
 		Execute a linha de comando "yum install -y ImageMagick ImageMagick-devel"
 		Execute a linha de comando "pecl install imagick"
 		Modifique o arquvivo "/etc/php.ini", incluindo a linha "extension=imagick.so" no final da seção "Dynamic Extensions"
-11. Para o funcionamento do Processamento de Retorno do AR é necessário a instalação do kit de ferramenta Zbar. Para saber mais ver o link: [https://github.com/tarfin-labs/zbar-php](https://github.com/tarfin-labs/zbar-php) no tópico **Requirements**. Exemplo de instalação para uso no Sistema Operacional Centos:
+11. Para o funcionamento do Processamento de Retorno do AR é necessário a instalação do kit de ferramenta Zbar. Exemplo de instalação para uso no Sistema Operacional Centos:
     
         yum install zbar
 ## Orientações Negociais
