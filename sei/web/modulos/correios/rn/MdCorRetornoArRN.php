@@ -1,10 +1,10 @@
-<?
+<?php
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ * TRIBUNAL REGIONAL FEDERAL DA 4Âª REGIÃƒO
  *
  * 19/06/2018 - criado por augusto.cast
  *
- * Versão do Gerador de Código: 1.41.0
+ * VersÃ£o do Gerador de CÃ³digo: 1.41.0
  */
 
 require_once dirname(__FILE__) . '/../../../SEI.php';
@@ -38,17 +38,17 @@ class MdCorRetornoArRN extends InfraRN
   public static $arrStatus = [
     1 => 'Identificado Automaticamente',
     2 => 'Identificado Manualmente',
-    4 => 'Não Processado',
-    3 => 'Retorno de AR já Processado Anteriormente',
+    4 => 'NÃ£o Processado',
+    3 => 'Retorno de AR jÃ¡ Processado Anteriormente',
   ];
 
   public static $arrStatusRetorno = [
-    'C' => 'Pendente de retorno - Com Cobrança',
-    'S' => 'Pendente de retorno - Sem Cobrança',
-    'F' => 'Fora do Prazo do Cobrança',
+    'C' => 'Pendente de retorno - Com CobranÃ§a',
+    'S' => 'Pendente de retorno - Sem CobranÃ§a',
+    'F' => 'Fora do Prazo do CobranÃ§a',
     'P' => 'Cobrado Fora do Prazo ',
-    'E' => 'Objeto Extraviado - Sem Cobrança',
-    'O' => 'Objeto Extraviado - Com Cobrança',
+    'E' => 'Objeto Extraviado - Sem CobranÃ§a',
+    'O' => 'Objeto Extraviado - Com CobranÃ§a',
   ];
 
   public function __construct()
@@ -65,7 +65,7 @@ class MdCorRetornoArRN extends InfraRN
   private function validarNumIdMdCorParametroAr(MdCorParametroArDTO $objMdCorParametroArDTO, InfraException $objInfraException)
   {
     if (InfraString::isBolVazia($objMdCorParametroArDTO->getNumIdMdCorParametroAr())) {
-      $objInfraException->adicionarValidacao(' não informado.');
+      $objInfraException->adicionarValidacao(' nÃ£o informado.');
     }
   }
 
@@ -73,7 +73,7 @@ class MdCorRetornoArRN extends InfraRN
   {
 
     if (InfraString::isBolVazia($objMdCorParametroArDTO->getStrNuDiasRetornoAr())) {
-      $objInfraException->adicionarValidacao(' não informad.');
+      $objInfraException->adicionarValidacao(' nÃ£o informad.');
     } else {
       $objMdCorParametroArDTO->setStrNuDiasRetornoAr(trim($objMdCorParametroArDTO->getStrNuDiasRetornoAr()));
 
@@ -86,14 +86,14 @@ class MdCorRetornoArRN extends InfraRN
   private function validarNumIdSerie(MdCorParametroArDTO $objMdCorParametroArDTO, InfraException $objInfraException)
   {
     if (InfraString::isBolVazia($objMdCorParametroArDTO->getNumIdSerie())) {
-      $objInfraException->adicionarValidacao(' não informad.');
+      $objInfraException->adicionarValidacao(' nÃ£o informad.');
     }
   }
 
   private function validarStrNomeArvore(MdCorParametroArDTO $objMdCorParametroArDTO, InfraException $objInfraException)
   {
     if (InfraString::isBolVazia($objMdCorParametroArDTO->getStrNomeArvore())) {
-      $objInfraException->adicionarValidacao(' não informad.');
+      $objInfraException->adicionarValidacao(' nÃ£o informad.');
     } else {
       $objMdCorParametroArDTO->setStrNomeArvore(trim($objMdCorParametroArDTO->getStrNomeArvore()));
 
@@ -106,7 +106,7 @@ class MdCorRetornoArRN extends InfraRN
   private function validarNumIdTipoConferencia(MdCorParametroArDTO $objMdCorParametroArDTO, InfraException $objInfraException)
   {
     if (InfraString::isBolVazia($objMdCorParametroArDTO->getNumIdTipoConferencia())) {
-      $objInfraException->adicionarValidacao(' não informad.');
+      $objInfraException->adicionarValidacao(' nÃ£o informad.');
     }
   }
 
@@ -311,7 +311,7 @@ class MdCorRetornoArRN extends InfraRN
     $bolOpenZip = $zip->open($strArquivoCanonico);
 
     if ( $bolOpenZip !== true ) {
-        $objInfraException->adicionarValidacao('Não foi possível abrir o arquivo Zip no caminho: ' . $strArquivoCanonico);
+        $objInfraException->adicionarValidacao('NÃ£o foi possÃ­vel abrir o arquivo Zip no caminho: ' . $strArquivoCanonico);
         $objInfraException->lancarValidacoes();
     }
 
@@ -343,7 +343,7 @@ class MdCorRetornoArRN extends InfraRN
       throw new InfraException('Fluxo de leitura de AR por zbarimg suportado somente em ambientes Linux.');
     }
 
-    //Tamanho permitido em MB do arquivo PDF dentro do ZIP após a descompactação
+    //Tamanho permitido em MB do arquivo PDF dentro do ZIP apÃ³s a descompactaÃ§Ã£o
     $tamanhoPdf = 3;
     $objInfraException = new InfraException();
     $files = array_diff(scandir($url), array('.', '..'));
@@ -358,7 +358,7 @@ class MdCorRetornoArRN extends InfraRN
       $ext = pathinfo($file, PATHINFO_EXTENSION);
 
       if ($ext != 'pdf') {
-        $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com Formato não Permitido');
+        $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com Formato nÃ£o Permitido');
         $objInfraException->lancarValidacoes();
       }
 
@@ -519,17 +519,17 @@ class MdCorRetornoArRN extends InfraRN
   private function validarNomeArquivoExtraido($nomeArquivo, InfraException $objInfraException)
   {
     if (preg_match('/[\x00-\x1F\x7F]/', $nomeArquivo)) {
-      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com nome inválido.');
+      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com nome invÃ¡lido.');
       $objInfraException->lancarValidacoes();
     }
 
     if (strpos($nomeArquivo, '/') !== false || strpos($nomeArquivo, '\\') !== false || strpos($nomeArquivo, '..') !== false) {
-      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com caminho inválido.');
+      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com caminho invÃ¡lido.');
       $objInfraException->lancarValidacoes();
     }
 
     if (!preg_match('/^[A-Za-z0-9._\s-]+\.pdf$/', $nomeArquivo)) {
-      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com Formato não Permitido');
+      $objInfraException->adicionarValidacao('Arquivo Dentro do Zip com Formato nÃ£o Permitido');
       $objInfraException->lancarValidacoes();
     }
   }
