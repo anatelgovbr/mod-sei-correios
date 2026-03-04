@@ -42,16 +42,19 @@ foreach ($arrArquivoProcessado as $chave => $arquivoProcessado) {
     $strNomeArquivoPdfExibicao = PaginaSEI::tratarHTML(utf8_decode($strNomeArquivoPdf));
     $strNomeArquivoPdfAttr = htmlspecialchars($strNomeArquivoPdf, ENT_QUOTES, 'ISO-8859-1');
 
-    $strNuSei = isset($arquivoProcessado['nuSei']) ? (string)$arquivoProcessado['nuSei'] : '';
+    $strNuSei                   = isset($arquivoProcessado['nuSei']) ? (string)$arquivoProcessado['nuSei'] : '';
+    $strIdDocumentoPrincipal    = isset($arquivoProcessado['idDocumentoPrincipal']) ? (string)$arquivoProcessado['idDocumentoPrincipal'] : '';
+    $strNuProcesso              = isset($arquivoProcessado['nuProcesso']) ? (string)$arquivoProcessado['nuProcesso'] : '';
+    $strNuSerieHtml             = isset($arquivoProcessado['nuSerie']) ? (string)$arquivoProcessado['nuSerie'] : '';
+    $strNuDocumento             = isset($arquivoProcessado['nuDocumento']) ? (string)$arquivoProcessado['nuDocumento'] : '';
+    $strTipoDocumento             = isset($arquivoProcessado['tipoDocumento']) ? (string)$arquivoProcessado['tipoDocumento'] : '';
+        
     $strNuSeiHtml = PaginaSEI::tratarHTML($strNuSei);
     $strNuSeiAttr = htmlspecialchars($strNuSei, ENT_QUOTES, 'ISO-8859-1');
-
-    // ... (repetir a lógica para as demais variáveis)
-
-    $strNuProcessoAttr = htmlspecialchars($strNuProcesso, ENT_QUOTES, 'ISO-8859-1');
     $strNuSerieHtml = PaginaSEI::tratarHTML($strNuSerie);
     $strNuDocumentoHtml = PaginaSEI::tratarHTML($strNuDocumento);
     $strTipoDocumentoHtml = PaginaSEI::tratarHTML($strTipoDocumento);
+    $strNuProcessoAttr = htmlspecialchars($strNuProcesso, ENT_QUOTES, 'ISO-8859-1');
     $strIdDocumentoPrincipalAttr = htmlspecialchars($strIdDocumentoPrincipal, ENT_QUOTES, 'ISO-8859-1');
 
     $strCodigoRastreamento = isset($arquivoProcessado['coRastreamanento']) ? (string)$arquivoProcessado['coRastreamanento'] : '';
