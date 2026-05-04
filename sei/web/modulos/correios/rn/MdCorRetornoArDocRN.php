@@ -1,11 +1,11 @@
 <?
 
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ * TRIBUNAL REGIONAL FEDERAL DA 4Âª REGIÃƒO
  *
  * 29/06/2018 - criado por augusto.cast
  *
- * Versão do Gerador de Código: 1.41.0
+ * VersÃ£o do Gerador de CÃ³digo: 1.41.0
  */
 require_once dirname(__FILE__) . '/../../../SEI.php';
 
@@ -21,37 +21,37 @@ class MdCorRetornoArDocRN extends InfraRN {
 
     private function validarNumIdCorRetornoArDoc(MdCorRetornoArDocDTO $objMdCorRetornoArDocDTO, InfraException $objInfraException) {
         if (InfraString::isBolVazia($objMdCorRetornoArDocDTO->getNumIdMdCorRetornoArDoc())) {
-            $objInfraException->adicionarValidacao(' não informad.');
+            $objInfraException->adicionarValidacao(' nÃ£o informad.');
         }
     }
 
     private function validarNumIdCorRetornoAr(MdCorRetornoArDocDTO $objMdCorRetornoArDocDTO, InfraException $objInfraException) {
         if (InfraString::isBolVazia($objMdCorRetornoArDocDTO->getNumIdMdCorRetornoAr())) {
-            $objInfraException->adicionarValidacao(' não informad.');
+            $objInfraException->adicionarValidacao(' nÃ£o informad.');
         }
     }
 
     private function validarNumIdDocumentoPrincipal(MdCorRetornoArDocDTO $objMdCorRetornoArDocDTO, InfraException $objInfraException) {
         if (InfraString::isBolVazia($objMdCorRetornoArDocDTO->getNumIdDocumentoPrincipal())) {
-            $objInfraException->adicionarValidacao(' não informad2.');
+            $objInfraException->adicionarValidacao(' nÃ£o informad2.');
         }
     }
 
     private function validarDthDataAr(MdCorRetornoArDocDTO $objMdCorRetornoArDocDTO, InfraException $objInfraException) {
         if (InfraString::isBolVazia($objMdCorRetornoArDocDTO->getDtaDataAr())) {
-            $objInfraException->adicionarValidacao(' não informad3.');
+            $objInfraException->adicionarValidacao(' nÃ£o informad3.');
         }
     }
 
     private function validarDthDataRetorno(MdCorRetornoArDocDTO $objMdCorRetornoArDocDTO, InfraException $objInfraException) {
         if (InfraString::isBolVazia($objMdCorRetornoArDocDTO->getDtaDataRetorno())) {
-            $objInfraException->adicionarValidacao(' não informad4.');
+            $objInfraException->adicionarValidacao(' nÃ£o informad4.');
         }
     }
 
     private function validarStrSinStatus(MdCorRetornoArDocDTO $objMdCorRetornoArDocDTO, InfraException $objInfraException) {
         if (InfraString::isBolVazia($objMdCorRetornoArDocDTO->getStrSinStatus())) {
-            $objInfraException->adicionarValidacao(' não informad5.');
+            $objInfraException->adicionarValidacao(' nÃ£o informad5.');
         } else {
             $objMdCorRetornoArDocDTO->setStrSinStatus(trim($objMdCorRetornoArDocDTO->getStrSinStatus()));
 
@@ -299,7 +299,6 @@ class MdCorRetornoArDocRN extends InfraRN {
                     $objMdCorRetornoArDocDTO->setNumIdDocumentoPrincipal($idDocumentoPrincipal);
                     $objMdCorRetornoArDocDTO->retNumIdMdCorRetornoArDoc();
                     $objMdCorRetornoArDocDTO->retStrProtocoloFormatadoDocumento();
-                    $objMdCorRetornoArDocDTO->retNumIdProcedimento();
                     $objMdCorRetornoArDocDTO->retDtaDataAr();
                     $arrObjMdCorRetornoArDTO = null;
 
@@ -316,7 +315,6 @@ class MdCorRetornoArDocRN extends InfraRN {
                 $objMdCorRetornoArDocDTO->setDtaDataRetorno($dtRetorno);
                 if (!is_null($arrObjMdCorRetornoArDTO) && !is_null($idDocumentoPrincipal)) {
                     $objMdCorRetornoArDocDTO = $arrObjMdCorRetornoArDTO;
-                    $numIdProcedimento = $objMdCorRetornoArDocDTO->getNumIdProcedimento();
                     if (!empty($dtRetorno)) {
                         $objMdCorRetornoArDocDTO->setDtaDataRetorno($dtRetorno);
                         $objMdCorRetornoArDocDTO->setDtaDataAr($dtAr);
@@ -354,7 +352,7 @@ class MdCorRetornoArDocRN extends InfraRN {
                             $objAtributoAndamentoDTO->setStrIdTarefaModuloTarefa('MD_COR_RETORNO_AR');
                             $objAtributoAndamentoDTO->setStrValor($objMdCorRetornoArDocDTO->getStrProtocoloFormatadoDocumento());
                             $arrObjAtributoAndamento = $atributoAndamentoRN->listarRN1367($objAtributoAndamentoDTO);
-                            //Aviso de Recebimento dos Correios referente ao Documento @DOCUMENTO@, Código de Rastreamento @CODIGO_RASTREAMENTO_OBJETO_CORREIOS@, foi retornado em @DATA_RETORNO_AR_CORREIOS@, com a situação @SITUACAO_RETORNO_AR@ @MOTIVO_OBJETO_DEVOLVIDO@
+                            //Aviso de Recebimento dos Correios referente ao Documento @DOCUMENTO@, CÃ³digo de Rastreamento @CODIGO_RASTREAMENTO_OBJETO_CORREIOS@, foi retornado em @DATA_RETORNO_AR_CORREIOS@, com a situaÃ§Ã£o @SITUACAO_RETORNO_AR@ @MOTIVO_OBJETO_DEVOLVIDO@
                             $objAtributoAndamentoDTONovo = new AtributoAndamentoDTO();
                             $objAtributoAndamentoDTONovo->setNumIdAtividade($arrObjAtributoAndamento[0]->getNumIdAtividade());
                             $objAtributoAndamentoDTONovo->setStrNome('MOTIVO_OBJETO_DEVOLVIDO');
@@ -425,7 +423,7 @@ class MdCorRetornoArDocRN extends InfraRN {
                         $objEntradaLancarAndamentoAPI->setIdTarefaModulo('MD_COR_RETORNO_AR');
 
 
-                        $strRastreio = " não identificado";
+                        $strRastreio = " nÃ£o identificado";
                         if (!is_null($coRastreamento)) {
                             $strRastreio = $coRastreamento;
                         }
@@ -441,14 +439,7 @@ class MdCorRetornoArDocRN extends InfraRN {
                         $objSeiRN = new SeiRN();
                         if ($dados['hdnArquivoAlteracao'] == '') {
                             $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);
-                            
-                            $objMdCorRetornoArDocDTO = new MdCorRetornoArDocDTO();
-                            $objMdCorRetornoArDocDTO->setNumIdDocumentoPrincipal($idDocumentoPrincipal);
-                            $objMdCorRetornoArDocDTO->retNumIdMdCorRetornoArDoc();
-                            $objMdCorRetornoArDocDTO->retStrProtocoloFormatadoDocumento();
-                            $objMdCorRetornoArDocDTO->retNumIdProcedimento();
-                            $objMdCorRetornoArDocDTO->retDtaDataAr();
-                            $arrObjDocumentoDTO = $this->consultar($objMdCorRetornoArDocDTO);
+                            $idProcedimento = $objAndamentoDocumentoDTO->getDblIdProcedimento();
                             
                             $objAtividadeRN = new AtividadeRN();
                             $objAtividadeDTO = new AtividadeDTO();
@@ -457,7 +448,7 @@ class MdCorRetornoArDocRN extends InfraRN {
                             $objAtividadeDTO->retStrSiglaUnidade();
                             $objAtividadeDTO->retStrDescricaoUnidade();
                             $objAtividadeDTO->retNumIdUsuarioAtribuicao();
-                            $objAtividadeDTO->setDblIdProtocolo($arrObjDocumentoDTO->getNumIdProcedimento());
+                            $objAtividadeDTO->setDblIdProtocolo($idProcedimento);
                             $objAtividadeDTO->setOrdNumIdAtividade(InfraDTO::$TIPO_ORDENACAO_DESC);
                             $objAtividadeDTO->setNumMaxRegistrosRetorno(1);
                             if ($idUnidadeParametro){
@@ -467,7 +458,7 @@ class MdCorRetornoArDocRN extends InfraRN {
 
                             $arrParams = array(
                                 $idUnidadeParametro,
-                                $arrObjDocumentoDTO->getNumIdProcedimento(),
+                                $idProcedimento,
                                 $arrObjAtividadeDTO[0]->getNumIdUsuarioAtribuicao()
                             );
 
@@ -652,7 +643,7 @@ class MdCorRetornoArDocRN extends InfraRN {
             $arrObjAtributoAndamentoDTO = array();
             $objAtributoAndamentoDTO = new AtributoAndamentoDTO();
             $objAtributoAndamentoDTO->setStrNome('UNIDADE');
-            $objAtributoAndamentoDTO->setStrValor($unidadeDTO->getStrSigla().'¥'.$unidadeDTO->getStrDescricao());
+            $objAtributoAndamentoDTO->setStrValor($unidadeDTO->getStrSigla().'Â¥'.$unidadeDTO->getStrDescricao());
             $objAtributoAndamentoDTO->setStrIdOrigem($unidadeDTO->getNumIdUnidade());
             $arrObjAtributoAndamentoDTO[] = $objAtributoAndamentoDTO;
 
