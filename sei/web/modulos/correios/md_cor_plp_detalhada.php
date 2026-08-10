@@ -37,7 +37,7 @@ try {
 
     switch ($_GET['acao']) {
         case 'md_cor_plp_detalhada':
-            $strTitulo = 'Detalhar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' - Identificador nº ';
+            $strTitulo = 'Detalhar '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' - Identificador nÂº ';
             $strAcaoTabela = 'md_cor_plp_detalhar_objeto';
             $titleBotao = 'Detalhar Objeto';
 
@@ -55,7 +55,7 @@ try {
 
         case 'md_cor_plp_expedir':
             $strAcaoTabela = 'md_cor_plp_expedir_objeto';
-            $strTitulo = 'Expedir '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' - Identificador nº ';
+            $strTitulo = 'Expedir '. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' - Identificador nÂº ';
             $titleBotao = 'Expedir Objeto';
 
             $arrComandos[] = '<button type="button" accesskey="t" id="btnArquivoLote" onclick="imprimirArquivolLote();" class="infraButton">
@@ -70,7 +70,7 @@ try {
                                    Impri<span class="infraTeclaAtalho">m</span>ir ARs
                               </button>';
             $arrComandos[] = '<button type="button" accesskey="o" id="btnImprimir" onclick="ConcluirPrePostagem()" class="infraButton">
-                                  C<span class="infraTeclaAtalho">o</span>ncluir Expedição
+                                  C<span class="infraTeclaAtalho">o</span>ncluir ExpediÃ§Ã£o
                               </button>';
             break;
 
@@ -167,7 +167,7 @@ try {
             }
 
             if ($zipFile->close() === false) {
-                throw new InfraException('Não foi possível fechar arquivo zip.');
+                throw new InfraException('NÃ£o foi possÃ­vel fechar arquivo zip.');
             }
 
             if (file_exists($strCaminhoCompletoArquivoPdf)){
@@ -192,23 +192,20 @@ try {
                 $objMdCorPlpDTO->setNumIdMdPlp($idPlp);
                 $objMdCorPlpDTO = $objMdCorPlpRN->consultar($objMdCorPlpDTO);
 
-                $objMdCorPlpDTO->setStrStaPlp(MdCorPlpRN::$STA_PENDENTE);
-                $objMdCorPlpRN->alterar($objMdCorPlpDTO);
-
                 $arrParametro = [
                     'idUnidade' => $idUnidadeAtual,
                     'idUsuario' => $idUsuarioAtual,
                     'idPlp' => $idPlp,
                 ];
                 $objMdCorPlpRN->salvarAndamentoProcesso($arrParametro);
-                PaginaSEI::getInstance()->setStrMensagem('Conclusão da expedição realizada com sucesso!', InfraPagina::$TIPO_MSG_AVISO);
+                PaginaSEI::getInstance()->setStrMensagem('ConclusÃ£o da expediÃ§Ã£o realizada com sucesso!', InfraPagina::$TIPO_MSG_AVISO);
                 header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_geracao_plp_listar'));
             } catch (Exception $e) {
                 throw new InfraException('Erro ao imprimir', $e);
             }
             break;
         default:
-            throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
+            throw new InfraException("AÃ§Ã£o '" . $_GET['acao'] . "' nÃ£o reconhecida.");
     }
 
     $arrComandos[] = '<button type="button" accesskey="c" id="btnFechar" onclick="location.href=\'' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . PaginaSEI::getInstance()->montarAncora($_GET['id_md_cor_plp'])) . '\';" class="infraButton">
@@ -225,7 +222,7 @@ try {
     if($processar) {
         $strTitulo .= $objMdCorPlpDTO->getDblCodigoPlp();
 
-        //recuperando a lista de expedição solicitada
+        //recuperando a lista de expediÃ§Ã£o solicitada
         $objMdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
         $objMdCorExpedicaoSolicitadaDTO->retStrSiglaUnidade();
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorPlp();
@@ -269,17 +266,17 @@ try {
             $strResultado .= '<th class="infraTh" width="15px">' . PaginaSEI::getInstance()->getThCheck() . '</th>' . "\n";
             $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Unidade Solicitante', 'SiglaUnidade', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
 
-            $strResultado .= '<th class="infraTh"">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Data da Solicitação', 'DataSolicitacao', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
+            $strResultado .= '<th class="infraTh"">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Data da SolicitaÃ§Ã£o', 'DataSolicitacao', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
 
             if ($_GET['acao'] == 'md_cor_plp_detalhada') {
-                $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Data da Expedição', 'DataExpedicao', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
+                $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Data da ExpediÃ§Ã£o', 'DataExpedicao', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
             }
 
             $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Documento Principal', 'ProtocoloFormatadoDocumento', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
             $strResultado .= '<th class="infraTh"><div style="width: 150px">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Processo', 'ProtocoloFormatado', $arrObjMdCorExpedicaoSolicitadaDTO) . '</div></th>' . "\n";
             $strResultado .= '<th class="infraTh" width="60px">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Rastreamento', 'CodigoRastreamento', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
             $strResultado .= '<th class="infraTh" width="20px">' . PaginaSEI::getInstance()->getThOrdenacao($objMdCorPlpDTO, 'Anexos', 'CodigoRastreamento', $arrObjMdCorExpedicaoSolicitadaDTO) . '</th>' . "\n";
-            $strResultado .= '<th class="infraTh text-center"><div style="width: 90px; text-align: center">Ações</div></th>' . "\n";
+            $strResultado .= '<th class="infraTh text-center"><div style="width: 90px; text-align: center">AÃ§Ãµes</div></th>' . "\n";
 
             $strResultado .= '</tr>' . "\n";
             $strCssTr = '';
@@ -288,7 +285,7 @@ try {
 
                 $midia = '';
                 if ($arrObjMdCorExpedicaoSolicitadaDTO[$i]->getStrMidia() == 'S') {
-                    $midia = '<div style="float: left"><img src="modulos/correios/imagens/svg/media.svg?'.Icone::VERSAO.'" title="'. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' possui midia para gravação." style="width: 24px; height: 24px" alt="'. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' possui midia para gravação." class="infraImg mr-1" /></div>';
+                    $midia = '<div style="float: left"><img src="modulos/correios/imagens/svg/media.svg?'.Icone::VERSAO.'" title="'. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' possui midia para gravaÃ§Ã£o." style="width: 24px; height: 24px" alt="'. MdCorPlpRN::$STR_SING_PRE_POSTAGEM .' possui midia para gravaÃ§Ã£o." class="infraImg mr-1" /></div>';
                 }
 
                 $strCssTr = ($strCssTr == '<tr class="infraTrClara">') ? '<tr class="infraTrEscura">' : '<tr class="infraTrClara">';
@@ -319,9 +316,9 @@ try {
                     $strResultado .= '<a onclick=" setTimeout(function(){substituiIconeExpedirPlp('.$arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada().')}, 500);" href="' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . $strAcaoTabela . '&acao_origem=' . $_GET['acao'] . '&acao_retorno=' . $_GET['acao'] . '&id_md_expedicao_solicitada=' . $arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada() . '&id_md_cor_plp=' . $_GET['id_md_cor_plp']) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '" class="botaoExpedirObjeto"><img src="modulos/correios/imagens/svg/expedir_objeto_ok.svg?'.Icone::VERSAO.'" title="' . $titleBotao . '" alt="' . $titleBotao . '" class="infraImgAcoes" /></a>';
                 }
 
-                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/impressao_rotulo_envelope.svg?'.Icone::VERSAO.'" title="Impressão do Rótulo do Envelope" onclick="imprimirRotuloEnvelopeModal(' . $arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada() . ')"  alt="Impressão do Rótulo do Envelope" class="infraImgAcoes" /></a>';
+                $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/impressao_rotulo_envelope.svg?'.Icone::VERSAO.'" title="ImpressÃ£o do RÃ³tulo do Envelope" onclick="imprimirRotuloEnvelopeModal(' . $arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada() . ')"  alt="ImpressÃ£o do RÃ³tulo do Envelope" class="infraImgAcoes" /></a>';
                 if ($arrObjMdCorExpedicaoSolicitadaDTO[$i]->getStrSinNecessitaAr() == 'S') {
-                    $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/impressao_ar.svg?'.Icone::VERSAO.'" title="Impressão do AR" onclick="imprimirAR(' . $arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada() . ')" alt="Impressão do AR" class="infraImgAcoes" /></a>';
+                    $strResultado .= '<a href="' . PaginaSEI::getInstance()->montarAncora($arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada()) . '" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '"><img src="modulos/correios/imagens/svg/impressao_ar.svg?'.Icone::VERSAO.'" title="ImpressÃ£o do AR" onclick="imprimirAR(' . $arrObjMdCorExpedicaoSolicitadaDTO[$i]->getNumIdMdCorExpedicaoSolicitada() . ')" alt="ImpressÃ£o do AR" class="infraImgAcoes" /></a>';
                 }
 
 

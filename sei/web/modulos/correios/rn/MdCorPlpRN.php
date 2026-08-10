@@ -1,10 +1,10 @@
 <?
   /**
-   * TRIBUNAL REGIONAL FEDERAL DA 4™ REGI√O
+   * TRIBUNAL REGIONAL FEDERAL DA 4¬™ REGI√ÉO
    *
-   * 11/10/2017 - criado por JosÈ Vieira <jose.vieira@cast.com.br>
+   * 11/10/2017 - criado por Jos√© Vieira <jose.vieira@cast.com.br>
    *
-   * Vers„o do Gerador de CÛdigo: 1.41.0
+   * Vers√£o do Gerador de C√≥digo: 1.41.0
    */
 
   require_once dirname(__FILE__) . '/../../../SEI.php';
@@ -23,8 +23,8 @@
     public static $STA_RETORNO_AR_PENDENTE = 'R';
     public static $STA_FINALIZADA = 'F';
 
-    public static $STR_SING_PRE_POSTAGEM = 'PrÈ-Postagem';
-    public static $STR_PLURAL_PRE_POSTAGEM = 'PrÈ-Postagens';
+    public static $STR_SING_PRE_POSTAGEM = 'Pr√©-Postagem';
+    public static $STR_PLURAL_PRE_POSTAGEM = 'Pr√©-Postagens';
 
     public function __construct() {
       parent::__construct();
@@ -41,17 +41,17 @@
 
         $objPlpMdCorPlpDTO = new MdCorPlpDTO();
         $objPlpMdCorPlpDTO->setStrStaPlp(self::$PLP_1);
-        $objPlpMdCorPlpDTO->setStrDescricao('DescriÁ„o Plp 1');
+        $objPlpMdCorPlpDTO->setStrDescricao('Descri√ß√£o Plp 1');
         $arrObjPlpMdCorPlpDTO[] = $objPlpMdCorPlpDTO;
 
         $objPlpMdCorPlpDTO = new PlpMdCorPlpDTO();
         $objPlpMdCorPlpDTO->setStrStaPlp(self::$PLP_2);
-        $objPlpMdCorPlpDTO->setStrDescricao('DescriÁ„o Plp 2');
+        $objPlpMdCorPlpDTO->setStrDescricao('Descri√ß√£o Plp 2');
         $arrObjPlpMdCorPlpDTO[] = $objPlpMdCorPlpDTO;
 
         $objPlpMdCorPlpDTO = new PlpMdCorPlpDTO();
         $objPlpMdCorPlpDTO->setStrStaPlp(self::$PLP_3);
-        $objPlpMdCorPlpDTO->setStrDescricao('DescriÁ„o Plp 3');
+        $objPlpMdCorPlpDTO->setStrDescricao('Descri√ß√£o Plp 3');
         $arrObjPlpMdCorPlpDTO[] = $objPlpMdCorPlpDTO;
 
         return $arrObjPlpMdCorPlpDTO;
@@ -63,22 +63,22 @@
 
     private function validarNumIdMdPlp(MdCorPlpDTO $objMdCorPlpDTO, InfraException $objInfraException) {
       if (InfraString::isBolVazia($objMdCorPlpDTO->getNumIdMdPlp())) {
-        $objInfraException->adicionarValidacao(' n„o informad.');
+        $objInfraException->adicionarValidacao(' n√£o informad.');
       }
     }
 
     private function validarDblCodigoPlp(MdCorPlpDTO $objMdCorPlpDTO, InfraException $objInfraException) {
       if (InfraString::isBolVazia($objMdCorPlpDTO->getDblCodigoPlp())) {
-        $objInfraException->adicionarValidacao(' n„o informad.');
+        $objInfraException->adicionarValidacao(' n√£o informad.');
       }
     }
 
     private function validarStrStaPlp(MdCorPlpDTO $objMdCorPlpDTO, InfraException $objInfraException) {
       if (InfraString::isBolVazia($objMdCorPlpDTO->getStrStaPlp())) {
-        $objInfraException->adicionarValidacao(' n„o informad.');
+        $objInfraException->adicionarValidacao(' n√£o informad.');
       } else {
         if (!in_array($objMdCorPlpDTO->getStrStaPlp(), InfraArray::converterArrInfraDTO($this->listarValoresPlp(), 'StaPlp'))) {
-          $objInfraException->adicionarValidacao(' inv·lid.');
+          $objInfraException->adicionarValidacao(' inv√°lid.');
         }
       }
     }
@@ -403,8 +403,8 @@
      */
 
     /**
-     * MÈtodo responsavel pela solicitacao da etiqueta, geraÁ„o da plp e fechamento da PLP das solicitaÁıes
-     * de expediÁ„o pelos correios
+     * M√©todo responsavel pela solicitacao da etiqueta, gera√ß√£o da plp e fechamento da PLP das solicita√ß√µes
+     * de expedi√ß√£o pelos correios
      * @param $arrIdMdCorExpedicaoSolicitada
      * @return mixed
      */
@@ -428,6 +428,7 @@
         $objMdCorExpedicaoSolicitadaDTO->retDblIdContatoOrgao();
         $objMdCorExpedicaoSolicitadaDTO->retStrCodigoWsCorreioServico();
         $objMdCorExpedicaoSolicitadaDTO->retStrExpedicaoAvisoRecebimentoServico();
+        $objMdCorExpedicaoSolicitadaDTO->retStrSinNecessitaAr();
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
         $objMdCorExpedicaoSolicitadaDTO->retStrBairroContratoOrgao();
 
@@ -461,7 +462,7 @@
               $objContDTO = $objContatoRN->consultar( $objContDTO );
 
               if( $objContDTO->getStrCep() != $objDto->getStrCepDestinatario() ) {
-                  LogSEI::getInstance()->gravar("A solicitaÁ„o de expediÁ„o de id ".$objDto->getNumIdMdCorExpedicaoSolicitada()." n„o foi inserida na PLP. O CEP enviado para a PLP est· diferente do CEP cadastrado na tabela md_cor_contato. O CEP inserido na PLP È ".$objDto->getStrCepDestinatario(). " o CEP correto È o ".$objContDTO->getStrCep());
+                  LogSEI::getInstance()->gravar("A solicita√ß√£o de expedi√ß√£o de id ".$objDto->getNumIdMdCorExpedicaoSolicitada()." n√£o foi inserida na PLP. O CEP enviado para a PLP est√° diferente do CEP cadastrado na tabela md_cor_contato. O CEP inserido na PLP √© ".$objDto->getStrCepDestinatario(). " o CEP correto √© o ".$objContDTO->getStrCep());
                   continue;
               }
 
@@ -470,6 +471,7 @@
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['IdMdCorContrato']                    = $objDto->getDblIdMdCorContrato();
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['coServicoPostagem']                  = trim($objDto->getStrCodigoWsCorreioServico());
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['stExpedicaoAvisoRecebimentoServico'] = $objDto->getStrExpedicaoAvisoRecebimentoServico();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['sinNecessitaAr']                      = $objDto->getStrSinNecessitaAr();
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['noDestinatario']                     = $objDto->getStrNomeDestinatario();
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsEnderecoDestinatario']             = $objDto->getStrEnderecoDestinatario();
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['dsBairroDestinatario']               = $objDto->getStrBairroDestinatario();
@@ -490,7 +492,7 @@
               $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['idUnidadeExpedidora'] = $arrIdUnidade[] = $objDto->getDblIdUnidadeExpedidora();
 
               $tipo = explode(" ", $objDto->getStrNomeSerie())[0];
-              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = $tipo . " SEI n∫ " . $objDto->getStrProtocoloFormatadoDocumento();
+              $arrDados[$objDto->getNumIdMdCorExpedicaoSolicitada()]['infoAnexos'] = $tipo . " SEI n¬∫ " . $objDto->getStrProtocoloFormatadoDocumento();
         }
 
         $objMDCorUnidadeExpRN = new MdCorUnidadeExpRN();
@@ -509,10 +511,10 @@
         $arrCodigoRastreio = [];
 
         foreach ( $arrParamJson as $arrItens ) {
-          // retorna dados da integraÁ„o GERAR PRE POSTAGEM
+          // retorna dados da integra√ß√£o GERAR PRE POSTAGEM
           $objMdCorIntegSolicPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$GERAR_PRE_POSTAGEM, $arrItens['arrJson']['idMdCorContrato']);
 
-          if ( is_null( $objMdCorIntegSolicPPN ) ) throw new InfraException('Mapeamento de IntegraÁ„o '. MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM .' n„o existe ou est· inativo.');
+          if ( is_null( $objMdCorIntegSolicPPN ) ) throw new InfraException('Mapeamento de Integra√ß√£o '. MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM .' n√£o existe ou est√° inativo.');
 
           $arrParametroRest = [
               'endpoint' => $objMdCorIntegSolicPPN->getStrUrlOperacao(),
@@ -524,7 +526,7 @@
           
           if ( is_array( $ret ) && isset( $ret['suc'] ) && $ret['suc'] === false ) {
             $strUrlAPIUsada = $ret['url'] ?? $arrParametroRest['endpoint'];
-            throw new InfraException("Falha na IntegraÁ„o: " . MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM . "." . "\n" . $ret['msg'] );
+            throw new InfraException("Falha na Integra√ß√£o: " . MdCorAdmIntegracaoRN::$STR_PRE_POSTAGEM . "." . "\n" . $ret['msg'] );
           }
           
           // instancia class ApiRest com os dados necessarios para uso da API que gera Pre Postagem
@@ -534,7 +536,7 @@
 
             if ( is_array( $rs ) and $rs['suc'] === false ) {
                 $strUrlAPIUsada = $objMdCorApiPPN->getEndPoint();
-                throw new InfraException("A solicitaÁ„o de expediÁ„o de id {$arrItens['idSolicExp']} n„o foi inserida na PrÈ-Postagem.\n\n {$rs['msg']}");
+                throw new InfraException("A solicita√ß√£o de expedi√ß√£o de id {$arrItens['idSolicExp']} n√£o foi inserida na Pr√©-Postagem.\n\n {$rs['msg']}");
             }
 
             $arrCodigoRastreio[$arrItens['idSolicExp']] = [
@@ -551,10 +553,10 @@
 
       } catch ( InfraException $e ) {
           $operacao = '';
-          $msgDefault = "N„o foi possÌvel Gerar PLP devido ‡ incompatibilidade das informaÁıes da SolicitaÁ„o de ExpediÁ„o com a nova IntegraÁ„o com os Correios. 
-          … necess·rio Devolver a SolicitaÁ„o de ExpediÁ„o e requerer ‡ Unidade Solicitante que revise o ServiÁo Postal e demais informaÁıes da SolicitaÁ„o.";
+          $msgDefault = "N√£o foi poss√≠vel Gerar PLP devido √† incompatibilidade das informa√ß√µes da Solicita√ß√£o de Expedi√ß√£o com a nova Integra√ß√£o com os Correios. 
+          √â necess√°rio Devolver a Solicita√ß√£o de Expedi√ß√£o e requerer √† Unidade Solicitante que revise o Servi√ßo Postal e demais informa√ß√µes da Solicita√ß√£o.";
 
-          if ( ! empty( $strUrlAPIUsada) ) $operacao = "OperaÁ„o: $strUrlAPIUsada \n\n";
+          if ( ! empty( $strUrlAPIUsada) ) $operacao = "Opera√ß√£o: $strUrlAPIUsada \n\n";
 
           $msgFinal = "$msgDefault \n\n" . $operacao . "Retorno: " . $e->getMessage();
 
@@ -644,7 +646,23 @@
         return $arr;
     }
 
-    protected function salvarAndamentoProcessoConectado($arrParametro) {
+    /**
+     * Conclui a expedi√ß√£o da PLP: altera o status da PLP, lan√ßa o andamento de expedi√ß√£o em
+     * cada processo e grava a data de expedi√ß√£o de cada solicita√ß√£o.
+     *
+     * M√©todo Controlado (transacional) de prop√≥sito: se o la√ßo falhar no meio, o status da PLP
+     * n√£o pode ficar gravado sem a data de expedi√ß√£o das solicita√ß√µes, sen√£o essas solicita√ß√µes
+     * deixam de bloquear a conclus√£o do processo por AR pendente.
+     *
+     * @param array $arrParametro idUnidade, idUsuario e idPlp
+     */
+    protected function salvarAndamentoProcessoControlado($arrParametro) {
+
+      $objMdCorPlpDTO = new MdCorPlpDTO();
+      $objMdCorPlpDTO->setNumIdMdPlp($arrParametro['idPlp']);
+      $objMdCorPlpDTO->setStrStaPlp(self::$STA_PENDENTE);
+      $this->alterar($objMdCorPlpDTO);
+
       $mdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
       $mdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
       $mdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
@@ -723,7 +741,7 @@
       $objAtributoAndamentoAPI->setNome($nome);
 
       $objAtributoAndamentoAPI->setValor($valor);
-      $objAtributoAndamentoAPI->setIdOrigem($id); //ID do prÈdio, pode ser null
+      $objAtributoAndamentoAPI->setIdOrigem($id); //ID do pr√©dio, pode ser null
 
       return $objAtributoAndamentoAPI;
     }
@@ -773,9 +791,9 @@
 		    "obs"         => "",
 		    "endereco"    => [
 			    "cep"         => InfraUtil::retirarFormatacao($objContatoDTO->getStrCep()),
-			    "logradouro"  => InfraString::excluirAcentos( str_replace( ['∫','™','&'] , ['','a','e'] , $arrContato['endereco'] ) ),
+			    "logradouro"  => InfraString::excluirAcentos( str_replace( ['¬∫','¬™','&'] , ['','a','e'] , $arrContato['endereco'] ) ),
 			    "numero"      => "N/A",
-			    "complemento" => InfraString::excluirAcentos( str_replace( ['∫','™','&'] , ['','a','e'] , $arrContato['complemento'] ) ),
+			    "complemento" => InfraString::excluirAcentos( str_replace( ['¬∫','¬™','&'] , ['','a','e'] , $arrContato['complemento'] ) ),
 			    "bairro"      => substr(InfraString::excluirAcentos($objContatoDTO->getStrBairro()), 0, 30),
 			    "cidade"      => substr(InfraString::excluirAcentos($objContatoDTO->getStrNomeCidade()), 0, 30),
 			    "uf"          => $objContatoDTO->getStrSiglaUf()
@@ -813,9 +831,9 @@
 			    "obs"         => "",
 			    "endereco"    => [
 				    "cep"         => InfraUtil::retirarFormatacao($destinatarioCEP),
-				    "logradouro"  => InfraString::excluirAcentos( str_replace( ['∫','™','&'],['','a','e'],$arrEnderecoDest['endereco'] ) ),
+				    "logradouro"  => InfraString::excluirAcentos( str_replace( ['¬∫','¬™','&'],['','a','e'],$arrEnderecoDest['endereco'] ) ),
 				    "numero"      => "N/A",
-				    "complemento" => InfraString::excluirAcentos( str_replace( ['∫','™','&'],['','a','e'],$arrEnderecoDest['complemento'] ) ),
+				    "complemento" => InfraString::excluirAcentos( str_replace( ['¬∫','¬™','&'],['','a','e'],$arrEnderecoDest['complemento'] ) ),
 				    "bairro"      => substr(InfraString::excluirAcentos($destinatarioBairro), 0, 30),
 				    "cidade"      => substr(InfraString::excluirAcentos($destinatarioCidade), 0, 30),
 				    "uf"          => $destinatarioUF,
@@ -825,11 +843,16 @@
         // configura servico adicional
         $arrServAdd = [];
 
+        // 025 (Registro) e obrigatorio quando o servico e registrado: e ele que declara
+        // o objeto como registrado na pre-postagem. Sem o 025 os Correios classificam o
+        // objeto no arquivo de objetos simples e recusam com PPN-213.
+        // Somente o 001 (AR) depende de o solicitante ter marcado Aviso de Recebimento.
         if ( $arrItens['stExpedicaoAvisoRecebimentoServico'] == 'S' ) {
-          $arrServAdd = [
-            ['codigoServicoAdicional' => '025', 'valorDeclarado' => '0'],
-            ['codigoServicoAdicional' => '001', 'valorDeclarado' => '0']
-          ];
+          $arrServAdd[] = ['codigoServicoAdicional' => '025', 'valorDeclarado' => '0'];
+
+          if ( $arrItens['sinNecessitaAr'] == 'S' ) {
+            $arrServAdd[] = ['codigoServicoAdicional' => '001', 'valorDeclarado' => '0'];
+          }
         }
 
 		    $arrJson = [
@@ -869,13 +892,13 @@
 	}
 
 	protected function cancelarPlpConectado($arrDados){
-    // retorna dados da integraÁ„o GERAR PRE POSTAGEM
+    // retorna dados da integra√ß√£o GERAR PRE POSTAGEM
       $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
 
       $objMdCorIntegCancelarPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CANCELAR_PRE_POSTAGEM, $arrDados['idContrato']);
 
       if ( empty($objMdCorIntegCancelarPPN) || ( is_array( $objMdCorIntegCancelarPPN ) && isset($objMdCorIntegCancelarPPN['suc'] ) && $objMdCorIntegCancelarPPN['suc'] === false ) )
-        return ['suc' => false , 'msg' => 'Mapeamento de IntegraÁ„o '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' n„o existe ou est· inativo.'];
+        return ['suc' => false , 'msg' => 'Mapeamento de Integra√ß√£o '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' n√£o existe ou est√° inativo.'];
         
         $arrParametroRest = [
             'endpoint' => $objMdCorIntegCancelarPPN->getStrUrlOperacao(),
@@ -895,7 +918,7 @@
         $rs = $objMdCorApiCancelarPPN->cancelarPPN($arrCodRastreamento);
 
         if ( is_array($rs) ){
-            $msgErroCompl = "OperaÁ„o: {$objMdCorApiCancelarPPN->getEndPoint()}.#Retorno: {$rs['msg']}";
+            $msgErroCompl = "Opera√ß√£o: {$objMdCorApiCancelarPPN->getEndPoint()}.#Retorno: {$rs['msg']}";
             return ['suc' => false , 'msg' => $msgErroCompl];
         }
 

@@ -15,7 +15,7 @@ body {
 }
 img.logo-correio{max-width: 80px;vertical-align: middle;float: left;}
 .titulo-correio{font-weight: bold;display: inline-block;vertical-align: middle;margin:0}
-#tableServico tr td{padding: 0;}
+.tableServico tr td{padding: 0;}
 
 .verticalTableHeader {text-align:center;white-space:nowrap;transform: rotate(90deg);border-style: dotted; width:0.4cm;padding: 0;}
 .verticalTableHeader p {margin:0;display:inline-block;width: 0.5cm;font-size: 10px;}

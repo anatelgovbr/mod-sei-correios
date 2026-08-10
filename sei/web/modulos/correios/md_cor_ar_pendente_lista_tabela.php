@@ -67,8 +67,8 @@
   }
 
   $txtDiasAtraso = PaginaSEI::getInstance()->recuperarCampo('txtDiasAtraso');
-  if ( $txtDiasAtraso != '') {
-    $nuDiasAtraso = $txtDiasAtraso;
+  if ( $txtDiasAtraso != '' && is_numeric($txtDiasAtraso)) {
+    $nuDiasAtraso = (int)$txtDiasAtraso;
     $dtPermitida = InfraData::calcularData($nuDiasAtraso, InfraData::$UNIDADE_DIAS, InfraData::$SENTIDO_ATRAS);
     $mdCorExpedicaoSolicitadaDTO->setDthDataExpedicao($dtPermitida, InfraDTO::$OPER_IGUAL);
   } else {
@@ -108,20 +108,20 @@
   PaginaSEI::getInstance()->processarPaginacao($mdCorExpedicaoSolicitadaDTO);
   $strCaptionTabela = 'ARs Pendentes de Retorno';
 
-  $strResultado = '<table width="100%" class="infraTable" summary="ServiÁos">';
+  $strResultado = '<table width="100%" class="infraTable" summary="Servi√ßos">';
   $strResultado .= '<caption class="infraCaption">' . PaginaSEI::getInstance()->gerarCaptionTabela($strCaptionTabela, $numRegistros) . '</caption>';
   $strResultado .= '<tr style="height: 25px;">';
   $strResultado .= '<th class="infraTh"  style="width: 25px !important;">' . PaginaSEI::getInstance()->getThCheck() . '</th>' . "\n";
   $strResultado .= '<th class="infraTh" style="width: 140px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Documento Principal', 'ProtocoloFormatadoDocumento', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
   $strResultado .= '<th class="infraTh" style="width: 90px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Rastreamento', 'CodigoRastreamento', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
-  $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Destinat·rio', 'EnderecoDestinatario', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
+  $strResultado .= '<th class="infraTh">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Destinat√°rio', 'EnderecoDestinatario', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
 
-  $strResultado .= '<th class="infraTh" style="width: 70px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Data SolicitaÁ„o', 'DataSolicitacao', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
-  $strResultado .= '<th class="infraTh" style="width: 70px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Data ExpediÁ„o', 'DataExpedicao', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
+  $strResultado .= '<th class="infraTh" style="width: 70px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Data Solicita√ß√£o', 'DataSolicitacao', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
+  $strResultado .= '<th class="infraTh" style="width: 70px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Data Expedi√ß√£o', 'DataExpedicao', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
 
   $strResultado .= '<th class="infraTh" style="width: 70px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Dias Atraso', 'DataExpedicao', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
   $strResultado .= '<th class="infraTh" style="width: 140px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Tipo Atraso', 'NomeDestinatario', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
-  $strResultado .= '<th class="infraTh" style="width: 140px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Documento CobranÁa', 'ProtocoloFormatadoDocumento', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
+  $strResultado .= '<th class="infraTh" style="width: 140px  !important;">' . PaginaSEI::getInstance()->getThOrdenacao($mdCorExpedicaoSolicitadaDTO, 'Documento Cobran√ßa', 'ProtocoloFormatadoDocumento', $arrMdCorExpedicaoSolicitadaDTO) . '</th>';
   $strResultado .= '</tr>';
 
 
@@ -227,7 +227,7 @@
       foreach ($arrMdCorArCobrancaDTO as $chave=>$result) {
           $strUrlDocumento = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&infra_sistema='.$result->getStrProtocoloFormatadoCobranca().'&id_documento=' .$result->getDblIdDocumentoCobranca());
           $strResultado .= '<a class="protocoloNormal" style="font-size: 1.0em !important; font-size:1em" href="' . $strUrlDocumento . '" target="_blank">';
-          $strResultado .= 'OfÌcio '.$result->getStrNumeroDocumentoCobranca().' (' . $result->getStrProtocoloFormatadoCobranca().')';
+          $strResultado .= 'Of√≠cio '.$result->getStrNumeroDocumentoCobranca().' (' . $result->getStrProtocoloFormatadoCobranca().')';
           $strResultado .= '</a>'. "<br>";
       }
 

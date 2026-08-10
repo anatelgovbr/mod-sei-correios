@@ -1,10 +1,10 @@
 <?
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ * TRIBUNAL REGIONAL FEDERAL DA 4Âª REGIÃƒO
  *
  * 23/11/2022 - criado por gustavos.colab
  *
- * Versão do Gerador de Código: 1.43.1
+ * VersÃ£o do Gerador de CÃ³digo: 1.43.1
  */
 
 require_once dirname(__FILE__).'/../../../SEI.php';
@@ -21,25 +21,25 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 	public static $STR_CEP         = 'Correios::Consultar CEP';
 
 	public static $SERV_POSTAL     = '4';
-	public static $STR_SERV_POSTAL = 'Correios::Serviços Postais';
+	public static $STR_SERV_POSTAL = 'Correios::ServiÃ§os Postais';
 
 	public static $GERAR_ETIQUETAS     = '5';
 	public static $STR_GERAR_ETIQUETAS = 'Correios::Solicitar Etiquetas';
 
 	public static $GERAR_PRE_POSTAGEM  = '6';
-	public static $STR_PRE_POSTAGEM    = 'Correios::Pré Postagem Nacional';
+	public static $STR_PRE_POSTAGEM    = 'Correios::PrÃ© Postagem Nacional';
 
 	public static $EMITIR_ROTULO     = '7';
-	public static $STR_EMITIR_ROTULO = 'Correios::Emitir Rótulo';
+	public static $STR_EMITIR_ROTULO = 'Correios::Emitir RÃ³tulo';
 
 	public static $DOWN_ROTULO     = '8';
-	public static $STR_DOWN_ROTULO = 'Correios::Download Rótulo';
+	public static $STR_DOWN_ROTULO = 'Correios::Download RÃ³tulo';
 
     public static $AVISO_RECEB     = '9';
     public static $STR_AVISO_RECEB = 'Correios::Aviso Recebimento';
 
     public static $CANCELAR_PRE_POSTAGEM = '10';
-    public static $STR_CANCELAR_PRE_POSTAGEM = 'Correios::Cancelar Pré Postagem';
+    public static $STR_CANCELAR_PRE_POSTAGEM = 'Correios::Cancelar PrÃ© Postagem';
 
 	public static $STR_POST        = 'POST';
 	public static $STR_GET         = 'GET';
@@ -57,7 +57,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 
 	private function validarStrNome(MdCorAdmIntegracaoDTO $objMdCorAdmIntegracaoDTO, InfraException $objInfraException){
 		if (InfraString::isBolVazia($objMdCorAdmIntegracaoDTO->getStrNome())){
-			$objInfraException->adicionarValidacao('Nome não informado.');
+			$objInfraException->adicionarValidacao('Nome nÃ£o informado.');
 		}else{
 			$objMdCorAdmIntegracaoDTO->setStrNome(trim($objMdCorAdmIntegracaoDTO->getStrNome()));
 
@@ -69,16 +69,16 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 
 	private function validarNumFuncionalidade(MdCorAdmIntegracaoDTO $objMdCorAdmIntegracaoDTO, InfraException $objInfraException){
 		if (InfraString::isBolVazia($objMdCorAdmIntegracaoDTO->getNumFuncionalidade())){
-			$objInfraException->adicionarValidacao('Funcionalidade não informada.');
+			$objInfraException->adicionarValidacao('Funcionalidade nÃ£o informada.');
 		}
 	}
 
 	private function validarStrSinAtivo(MdCorAdmIntegracaoDTO $objMdCorAdmIntegracaoDTO, InfraException $objInfraException){
 		if (InfraString::isBolVazia($objMdCorAdmIntegracaoDTO->getStrSinAtivo())){
-			$objInfraException->adicionarValidacao('Sinalizador de Exclusão Lógica não informado.');
+			$objInfraException->adicionarValidacao('Sinalizador de ExclusÃ£o LÃ³gica nÃ£o informado.');
 		}else{
 			if (!InfraUtil::isBolSinalizadorValido($objMdCorAdmIntegracaoDTO->getStrSinAtivo())){
-				$objInfraException->adicionarValidacao('Sinalizador de Exclusão Lógica inválido.');
+				$objInfraException->adicionarValidacao('Sinalizador de ExclusÃ£o LÃ³gica invÃ¡lido.');
 			}
 		}
 	}
@@ -99,7 +99,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			return $ret;
 
 		}catch(Exception $e){
-			throw new InfraException('Erro cadastrando Integração.',$e);
+			throw new InfraException('Erro cadastrando IntegraÃ§Ã£o.',$e);
 		}
 	}
 
@@ -123,7 +123,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			$objMdCorAdmIntegracaoBD->alterar( $objMdCorAdmIntegracaoDTO );
 
 		}catch(Exception $e){
-			throw new InfraException('Erro alterando Integração.',$e);
+			throw new InfraException('Erro alterando IntegraÃ§Ã£o.',$e);
 		}
 	}
 
@@ -189,7 +189,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			}
 
 		}catch(Exception $e){
-			throw new InfraException('Erro excluindo Integração.',$e);
+			throw new InfraException('Erro excluindo IntegraÃ§Ã£o.',$e);
 		}
 	}
 
@@ -207,7 +207,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 
 			return $ret;
 		}catch(Exception $e){
-			throw new InfraException('Erro consultando Integração.',$e);
+			throw new InfraException('Erro consultando IntegraÃ§Ã£o.',$e);
 		}
 	}
 
@@ -227,7 +227,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			return $ret;
 
 		}catch(Exception $e){
-			throw new InfraException('Erro listando Integrações.',$e);
+			throw new InfraException('Erro listando IntegraÃ§Ãµes.',$e);
 		}
 	}
 
@@ -246,7 +246,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 
 			return $ret;
 		}catch(Exception $e){
-			throw new InfraException('Erro contando Integrações.',$e);
+			throw new InfraException('Erro contando IntegraÃ§Ãµes.',$e);
 		}
 	}
 
@@ -266,7 +266,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			}
 
 		}catch(Exception $e){
-			throw new InfraException('Erro desativando Integração.',$e);
+			throw new InfraException('Erro desativando IntegraÃ§Ã£o.',$e);
 		}
 	}
 
@@ -286,7 +286,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			}
 
 		}catch(Exception $e){
-			throw new InfraException('Erro reativando Integração.',$e);
+			throw new InfraException('Erro reativando IntegraÃ§Ã£o.',$e);
 		}
 	}
 
@@ -305,7 +305,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 
 			return $ret;
 		}catch(Exception $e){
-			throw new InfraException('Erro bloqueando Integração.',$e);
+			throw new InfraException('Erro bloqueando IntegraÃ§Ã£o.',$e);
 		}
 	}
 
@@ -314,7 +314,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 	 * */
 	public function buscaIntegracaoPorFuncionalidade( $tpFuncionalidade, $contratoId ){
 
-	    if ( empty($tpFuncionalidade) || empty($contratoId) ) return ['suc' => false , 'msg' => 'O Tipo de Funcionalidade da Integração e Contrato estão vazios ou nulos.'];
+	    if ( empty($tpFuncionalidade) || empty($contratoId) ) return ['suc' => false , 'msg' => 'O Tipo de Funcionalidade da IntegraÃ§Ã£o e Contrato estÃ£o vazios ou nulos.'];
 
 		//$objMdCorAdmIntegracaoDTO = new MdCorAdmIntegracaoDTO();
 		$objMdCorAdmIntegracaoTokensDTO = new MdCorAdmIntegracaoTokensDTO();
@@ -330,7 +330,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 		$ret = $objMdCorAdmIntegracaoTokensRN->consultar( $objMdCorAdmIntegracaoTokensDTO );
 		//$ret = $ret[0] ?? null;
 
-		// caso não exista integração cadastrada, realiza a inserção com os campos token, usuario e senha como null
+		// caso nÃ£o exista integraÃ§Ã£o cadastrada, realiza a inserÃ§Ã£o com os campos token, usuario e senha como null
 		if ( $ret == null ) {
 			$objMdCorAdmIntegRN = new MdCorAdmIntegracaoRN();
 			$objMdCorAdmIntegDTO = new MdCorAdmIntegracaoDTO();
@@ -390,7 +390,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 			    return $objMdCorIntegToken;
 
 			if ( empty($objMdCorIntegToken) )
-			    return ['suc' => false , ',msg' => 'Mapeamento de Integração '. MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN .' não existe ou está inativo.'];
+			    return ['suc' => false , ',msg' => 'Mapeamento de IntegraÃ§Ã£o '. MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN .' nÃ£o existe ou estÃ¡ inativo.'];
 			
 			// busca nova data de expiracao e token da operacao da API
 			$dados = ( new MdCorApiRestRN() )->gerarToken($objMdCorIntegToken);
@@ -431,7 +431,7 @@ class MdCorAdmIntegracaoRN extends InfraRN {
 		$objMdCorApiValidaRotulo = new MdCorApiRestRN($arrParametroRest);
 		$statusRotulo = $objMdCorApiValidaRotulo->validaStatusRotulo( $idPPN, $arrParametroRest['endpoint'] );
 
-		if ( !isset( $arrStatusRotulo['suc'] ) && $statusRotulo == 'Cancelado' ) {
+		if ( !isset( $statusRotulo['suc'] ) && $statusRotulo == 'Cancelado' ) {
 			return true;
 		}
 

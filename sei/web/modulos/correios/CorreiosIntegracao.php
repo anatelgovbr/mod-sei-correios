@@ -15,7 +15,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.7.2';
+        return '2.7.3';
     }
 
     public function getInstituicao()
@@ -505,22 +505,28 @@ class CorreiosIntegracao extends SeiIntegracao
         }
     }
 
-    public function bloquearProcesso($objProcedimentoAPI)
+    public function bloquearProcesso($arrObjProcedimentoAPI)
     {
-        if ((new MdCorExpedicaoSolicitadaRN())->validarExistenciaObjetoAguardandoRetornoAR($objProcedimentoAPI)) {
-            $msg = $this->getNome() . ': Não é permitido Bloquear este processo, pois o mesmo possui Documentos com Retorno de AR Pendente.';
+        $arrProtocoloBloqueado = (new MdCorExpedicaoSolicitadaRN())->validarExistenciaObjetoAguardandoRetornoAR($arrObjProcedimentoAPI);
+
+        if (!empty($arrProtocoloBloqueado)) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao($msg);
+            foreach ($arrProtocoloBloqueado as $strProtocolo) {
+                $objInfraException->adicionarValidacao($this->getNome() . ': Não é permitido Bloquear o processo ' . $strProtocolo . ', pois o mesmo possui Solicitação de Expedição pelos Correios em andamento.');
+            }
             $objInfraException->lancarValidacoes();
         }
     }
 
-    public function concluirProcesso($objProcedimentoAPI)
+    public function concluirProcesso($arrObjProcedimentoAPI)
     {
-        if ((new MdCorExpedicaoSolicitadaRN())->validarExistenciaObjetoAguardandoRetornoAR($objProcedimentoAPI)) {
-            $msg = $this->getNome() . ': Não é permitido Concluir este processo, pois o mesmo possui Documentos com Retorno de AR Pendente.';
+        $arrProtocoloBloqueado = (new MdCorExpedicaoSolicitadaRN())->validarExistenciaObjetoAguardandoRetornoAR($arrObjProcedimentoAPI);
+
+        if (!empty($arrProtocoloBloqueado)) {
             $objInfraException = new InfraException();
-            $objInfraException->adicionarValidacao($msg);
+            foreach ($arrProtocoloBloqueado as $strProtocolo) {
+                $objInfraException->adicionarValidacao($this->getNome() . ': Não é permitido Concluir o processo ' . $strProtocolo . ', pois o mesmo possui Solicitação de Expedição pelos Correios em andamento.');
+            }
             $objInfraException->lancarValidacoes();
         }
     }
@@ -711,6 +717,7 @@ class CorreiosIntegracao extends SeiIntegracao
 			          } else {
 				         $xml .= "<Retorno>N</Retorno>";
 				        }
+				        $xml .= "<Ar>" . ( $objDTO->getStrExpedicaoAvisoRecebimento() == 'S' ? 'S' : 'N' ) . "</Ar>";
 			        }
 		        }
 		        $xml .= "</Documento>";
