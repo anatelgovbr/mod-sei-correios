@@ -1,10 +1,10 @@
 <?
 /**
-* TRIBUNAL REGIONAL FEDERAL DA 4™ REGI√O
+* TRIBUNAL REGIONAL FEDERAL DA 4¬™ REGI√ÉO
 *
-* 23/12/2016 - criado por Wilton J˙nior
+* 23/12/2016 - criado por Wilton J√∫nior
 *
-* Vers„o do Gerador de CÛdigo: 1.39.0
+* Vers√£o do Gerador de C√≥digo: 1.39.0
 */
 
 require_once dirname(__FILE__).'/../../../SEI.php';
@@ -63,7 +63,7 @@ class MdCorServicoPostalINT extends InfraINT {
 
       $objMdCorIntegServPostal = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$SERV_POSTAL, $id_contrato);
       if ( empty( $objMdCorIntegServPostal ) || is_array($objMdCorIntegServPostal) && isset($objMdCorIntegServPostal['suc']) && $objMdCorIntegServPostal['suc'] === false )
-          return self::retornarXmlServicosPostais(['suc' => false , 'msg' => 'Mapeamento de IntegraÁ„o '. MdCorAdmIntegracaoRN::$STR_SERV_POSTAL .' n„o existe ou est· inativo.<br>* Pode ser necess·rio cadastrar dados de autenticaÁ„o na integraÁ„o '. MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN .' para o contrato selecionado.']);
+          return self::retornarXmlServicosPostais(['suc' => false , 'msg' => 'Mapeamento de Integra√ß√£o '. MdCorAdmIntegracaoRN::$STR_SERV_POSTAL .' n√£o existe ou est√° inativo.<br>* Pode ser necess√°rio cadastrar dados de autentica√ß√£o na integra√ß√£o '. MdCorAdmIntegracaoRN::$STR_GERAR_TOKEN .' para o contrato selecionado.']);
       
         $arrParametro = [
           'endpoint' => $objMdCorIntegServPostal->getStrUrlOperacao(),
@@ -110,6 +110,7 @@ class MdCorServicoPostalINT extends InfraINT {
 	  $objMdCorServicoPostalDTO->setNumIdMdCorServicoPostal( $id );
 	  $objMdCorServicoPostalDTO->retStrSinAnexarMidia();
 	  $objMdCorServicoPostalDTO->retStrSinServicoCobrar();
+	  $objMdCorServicoPostalDTO->retStrExpedicaoAvisoRecebimento();
 	  $objMdCorServicoPostalDTO->retStrNome();
 	  $objMdCorServicoPostalDTO->retStrDescricao();
 
@@ -148,7 +149,7 @@ class MdCorServicoPostalINT extends InfraINT {
 
   public static function retornarXmlServicosPostais($dados){
       // se ocorreu algum erro, gera uma exception
-	  $msg = 'Erro na busca dos ServiÁos Postais:';
+	  $msg = 'Erro na busca dos Servi√ßos Postais:';
 
 	  if ( array_key_exists('suc',$dados) && $dados['suc'] === false ) {
           $msg .= "<br/>" . $dados['msg'];

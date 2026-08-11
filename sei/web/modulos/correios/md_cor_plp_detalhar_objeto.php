@@ -16,6 +16,8 @@ try {
 
     $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
 
+    $arrComandos = array();
+
     switch ($_GET['acao']) {
         case 'md_cor_plp_detalhar_objeto':
             $strTitulo = 'Detalhar objeto';
@@ -132,7 +134,7 @@ try {
             break;
 
         default:
-            throw new InfraException("AÁ„o '" . $_GET['acao'] . "' n„o reconhecida.");
+            throw new InfraException("A√ß√£o '" . $_GET['acao'] . "' n√£o reconhecida.");
     }
 
     $strUrlZerarZip = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_plp_gerar_zip&acao_origem=' . $_GET['acao'] . '&id_md_expedicao_solicitada=' . $_GET['id_md_expedicao_solicitada']);
@@ -165,7 +167,7 @@ try {
                                     Fe<span class="infraTeclaAtalho">c</span>har
                               </button>';
 
-    //recuperando a lista de expediÁ„o formato
+    //recuperando a lista de expedi√ß√£o formato
     $objMdCorExpedicaoFormatoDTO = new MdCorExpedicaoFormatoDTO();
     $objMdCorExpedicaoFormatoDTO->retTodos(true);
 
@@ -193,10 +195,10 @@ try {
         $strResultado .= '<tr>';
         $strResultado .= '<th class="infraTh" width="1%">' . PaginaSEI::getInstance()->getThCheck() . '</th>' . "\n";
         $strResultado .= '<th class="infraTh" width="20%">Documento</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="20%">Formato de ExpediÁ„o</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="5%">Impress„o</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="20%">Formato de Expedi√ß√£o</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="5%">Impress√£o</th>' . "\n";
         $strResultado .= '<th class="infraTh" width="30%">Justificativa</th>' . "\n";
-        $strResultado .= '<th class="infraTh" width="5%">AÁıes</th>' . "\n";
+        $strResultado .= '<th class="infraTh" width="5%">A√ß√µes</th>' . "\n";
 
         $strResultado .= '</tr>' . "\n";
         $strCssTr = '';
@@ -217,7 +219,7 @@ try {
                 }
             } else {
                 $imgImpressao = 'gravacao_media.svg';
-                $title = 'Gravar MÌdia';
+                $title = 'Gravar M√≠dia';
             }
 
             $bolDocumentoRestrito = !$objMdCorExpedicaoSolicitadaRN->validarAcessoRestrito( $arrObjMdCorExpedicaoFormatoDTO[$i]->getDblIdDocumento() ) ? 'null' : $objMdCorExpedicaoSolicitadaRN->validarAcessoRestrito( $arrObjMdCorExpedicaoFormatoDTO[$i]->getDblIdDocumento() );
@@ -240,7 +242,7 @@ try {
                 $strUrl = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_plp_pdf_arquivo_lote_objeto&acao_origem=' . $_GET['acao'] . '&id_documento=' . $arrObjMdCorExpedicaoFormatoDTO[$i]->getDblIdDocumento());
 
                 $strResultado .= '<a onclick="javascript:validarAcesso( '.$bolDocumentoRestrito.', '."'$strUrl'".' )" tabindex="' . PaginaSEI::getInstance()->getProxTabTabela() . '">
-                                    <img   src="modulos/correios/imagens/svg/impressao.svg" title="Impress„o de documento" alt="Impress„o de documento" class="infraImgAcoes" />
+                                    <img   src="modulos/correios/imagens/svg/impressao.svg" title="Impress√£o de documento" alt="Impress√£o de documento" class="infraImgAcoes" />
                                   </a>&nbsp;';
             } else {
                 $verificaProtocolo = strpos($arrObjMdCorExpedicaoFormatoDTO[$i]->getStrProtocoloFormatado(), '.');
@@ -248,7 +250,7 @@ try {
                     $strUrl = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=md_cor_plp_gerar_zip&acao_origem=' . $_GET['acao'] . '&id_documento=' . $arrObjMdCorExpedicaoFormatoDTO[$i]->getDblIdDocumento());
                     $strResultado .= '<a  onclick="javascript:validarAcesso( '.$bolDocumentoRestrito.', '."'$strUrl'".' )">
 
-                                      <img src="modulos/correios/imagens/svg/download_arquivo_media.svg" title="download do arquivo para gravaÁ„o em mÌdia" alt="Detalhar Objeto" class="infraImgAcoes" style="width: 24px; height: 24px" />
+                                      <img src="modulos/correios/imagens/svg/download_arquivo_media.svg" title="download do arquivo para grava√ß√£o em m√≠dia" alt="Detalhar Objeto" class="infraImgAcoes" style="width: 24px; height: 24px" />
                                   </a>';
                     $strResultado .= '&nbsp;';
                 }else {
@@ -306,7 +308,7 @@ infraEfeitoTabelas();
 function validarAcesso( bolDocumentoRestrito, strUrl ){
 
     /*if( bolDocumentoRestrito != 1){
-        alert('Esta Unidade Expedidora n„o possui acesso ao documento para poder imprimir.');
+        alert('Esta Unidade Expedidora n√£o possui acesso ao documento para poder imprimir.');
         return false;
     }*/
 
@@ -331,7 +333,7 @@ function gerarZip(id){
     /*var isRestrito = getAjaxValidarDocumentoAPI();
 
     if(isRestrito === 'false'){
-        alert('Esta Unidade Expedidora n„o possui acesso ao documento para poder imprimir.');
+        alert('Esta Unidade Expedidora n√£o possui acesso ao documento para poder imprimir.');
         return false;
     }*/
 
@@ -410,7 +412,7 @@ function gerarArquivoLote(){
     var isDocumentoRestrito = getAjaxValidarDocumentoProtocoloFormatadoAPI();
 
     if(isDocumentoRestrito === 'false'){
-        alert('Esta Unidade Expedidora n„o possui acesso ao documento para poder imprimir.');
+        alert('Esta Unidade Expedidora n√£o possui acesso ao documento para poder imprimir.');
         return false;
     }
 

@@ -20,7 +20,7 @@ try {
             break;
 
         default:
-            throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
+            throw new InfraException("AÃ§Ã£o '" . $_GET['acao'] . "' nÃ£o reconhecida.");
     }
 
     //colocando a pagina sem menu e titulo inicial
@@ -38,7 +38,7 @@ try {
     $objMdCorPlpRN = new MdCorPlpRN();
     $objMdCorPlpDTO = $objMdCorPlpRN->consultar($objMdCorPlpDTO);
 
-    //preparando a imagem do código de barra
+    //preparando a imagem do cÃ³digo de barra
     $nomeArquivo = InfraCodigoBarras::gerar($objMdCorPlpDTO->getDblCodigoPlp(), DIR_SEI_TEMP, InfraCodigoBarras::$TIPO_CODE128, InfraCodigoBarras::$COR_PRETO, 2, 50, 0, (13 * strlen($objMdCorPlpDTO->getDblCodigoPlp()) + 30) * 2, 50, InfraCodigoBarras::$FORMATO_PNG);
     $strArquivoCodigoBarras = DIR_SEI_TEMP . '/' . $nomeArquivo;
     $fp = fopen($strArquivoCodigoBarras, "r");
@@ -46,7 +46,7 @@ try {
     fclose($fp);
     unlink($strArquivoCodigoBarras);
 
-    //recuperando a expedição solicitada
+    //recuperando a expediÃ§Ã£o solicitada
     $objMdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
     $objMdCorExpedicaoSolicitadaDTO->retTodos(true);
     $objMdCorExpedicaoSolicitadaDTO->setNumIdMdCorPlp($_GET['id_md_cor_plp']);
@@ -59,7 +59,7 @@ try {
     $arrObjMdCorExpedicaoSolicitadaDTO = $objMdCorExpedicaoSolicitadaRN->listar($objMdCorExpedicaoSolicitadaDTO);
 
     if (count($arrObjMdCorExpedicaoSolicitadaDTO) == 0) {
-        throw new InfraException('Não possui Expedição Solicitada!');
+        throw new InfraException('NÃ£o possui ExpediÃ§Ã£o Solicitada!');
     }
 
     $objMdCorExpedicaoSolicitadaDTO = current($arrObjMdCorExpedicaoSolicitadaDTO);
@@ -67,7 +67,7 @@ try {
 
     $strTelefoneContato = '';
 
-    //retornando o orgão do contrato
+    //retornando o orgÃ£o do contrato
     if ($objMdCorExpedicaoSolicitadaDTO->getNumNumeroCnpj() != '') {
         $objOrgaoDTO = new OrgaoDTO();
         $objOrgaoDTO->setNumIdOrgao(SessaoSEI::getInstance()->getNumIdOrgaoUnidadeAtual());
@@ -112,7 +112,7 @@ try {
         }
     }
 
-    //montando a lista de serviço
+    //montando a lista de serviÃ§o
     $arrServico = array();
     $arrDocumentoPrincipais = array();
     foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) {
@@ -150,12 +150,12 @@ hr {display: block;margin-top: 20px;margin-bottom: 20px;margin-left: auto;margin
 
 body {margin:0;padding:0;overflow-y:hidden;font: 9pt Georgia, "Times New Roman", serif;color: #000;}
 td {padding: 0.5cm;}
-#tableServico tr td,#tableServico tr th{padding: 0;}
+.tableServico tr td,.tableServico tr th{padding: 0;}
 @page {margin: 0cm;}
 }
 img.logo-correio{position: relative;left: 10px;top: -10px; float:left}
 h2.titulo-correio{position: relative;right: 10px;top: 0;font-weight: bold;display: inline;float: right;}
-#tableServico tr td,#tableServico tr th{padding: 0;}
+.tableServico tr td,.tableServico tr th{padding: 0;}
 <?
 PaginaSEI::getInstance()->fecharStyle();
 PaginaSEI::getInstance()->montarJavaScript();
@@ -169,11 +169,11 @@ PaginaSEI::getInstance()->abrirAreaDados('100%', 'style="overflow-y: hidden;"');
 ?>
 <div>
     <img class="logo-correio" src="modulos/correios/imagens/svg/logo_correios.svg?<?= Icone::VERSAO ?>"  />
-    <h2 class="titulo-correio">EMPRESA BRASILEIRA DE CORREIOS E TELÉGRAFOS</h2>
+    <h2 class="titulo-correio">EMPRESA BRASILEIRA DE CORREIOS E TELÃ‰GRAFOS</h2>
 </div>
 <table width="100%" style="border: 1px solid black; padding: 5px;border-collapse: collapse;">
     <tr >
-        <td style="text-align: center;font-weight: bold;border: 1px solid black;padding: 5px;" colspan="2">PRÉ - LISTA DE POSTAGEM - PLP - SIGEP WEB</td>
+        <td style="text-align: center;font-weight: bold;border: 1px solid black;padding: 5px;" colspan="2">PRÃ‰ - LISTA DE POSTAGEM - PLP - SIGEP WEB</td>
     </tr>
     <tr>
         <td style="border-bottom: 1px solid black;padding: 5px;width: 80%;">
@@ -183,17 +183,17 @@ PaginaSEI::getInstance()->abrirAreaDados('100%', 'style="overflow-y: hidden;"');
             <p><b>Telefone de Contato:</b> <?= $strTelefoneContato ?></p>
         </td>
         <td style="text-align:center;border-bottom: 1px solid black;padding: 5px;width: 20%;">
-            <p><b>Nº PLP: <?= $objMdCorPlpDTO->getDblCodigoPlp() ?></b></p>
+            <p><b>NÂº PLP: <?= $objMdCorPlpDTO->getDblCodigoPlp() ?></b></p>
             <img src="data:image/png;base64,<?= base64_encode($imgCodigoBarras) ?>" />
         </td>
     </tr>
     <tr>
         <td style="width: 80%;">
-            <table width="100%" id="tableServico">
+            <table width="100%" class="tableServico">
                 <tr>
-                    <th style="padding: 0;margin: 0">Cód. Serviço</th>
+                    <th style="padding: 0;margin: 0">CÃ³d. ServiÃ§o</th>
                     <th style="padding: 0;margin: 0">Quantidade</th>
-                    <th style="padding: 0;margin: 0">Serviço</th>
+                    <th style="padding: 0;margin: 0">ServiÃ§o</th>
                 </tr>
                 <? foreach ($arrServico as $servico): ?>
                     <tr>
@@ -209,18 +209,18 @@ PaginaSEI::getInstance()->abrirAreaDados('100%', 'style="overflow-y: hidden;"');
             <p>Data de entrega: ___/___/_____</p><br>
             <p>____________________________</p>
             <p>Assinatura/Matricula dos Correios</p>
-            <p>1ª via - Correios</p>
+            <p>1Âª via - Correios</p>
         </td>
     </tr>
 </table>
 <hr />
 <div>
     <img src="modulos/correios/imagens/svg/logo_correios.svg?<?= Icone::VERSAO ?>" class="logo-correio" />
-    <h2 class="titulo-correio">EMPRESA BRASILEIRA DE CORREIOS E TELÉGRAFOS</h2>
+    <h2 class="titulo-correio">EMPRESA BRASILEIRA DE CORREIOS E TELÃ‰GRAFOS</h2>
 </div>
 <table width="100%" style="border: 1px solid black; padding: 5px;border-collapse: collapse;">
     <tr >
-        <td style="text-align: center;font-weight: bold;border: 1px solid black;padding: 5px;" colspan="2">PRÉ - LISTA DE POSTAGEM - PLP - SIGEP WEB</td>
+        <td style="text-align: center;font-weight: bold;border: 1px solid black;padding: 5px;" colspan="2">PRÃ‰ - LISTA DE POSTAGEM - PLP - SIGEP WEB</td>
     </tr>
     <tr>
         <td style="border-bottom: 1px solid black;padding: 5px;width: 80%;">
@@ -230,17 +230,17 @@ PaginaSEI::getInstance()->abrirAreaDados('100%', 'style="overflow-y: hidden;"');
             <p><b>Telefone de Contato:</b> <?= $strTelefoneContato ?></p>
         </td>
         <td style="text-align:center;border-bottom: 1px solid black;padding: 5px;width: 20%;">
-            <p><b>Nº PLP:  <?= $objMdCorPlpDTO->getDblCodigoPlp() ?></b></p>
+            <p><b>NÂº PLP:  <?= $objMdCorPlpDTO->getDblCodigoPlp() ?></b></p>
             <img src="data:image/png;base64,<?= base64_encode($imgCodigoBarras) ?>" />
         </td>
     </tr>
     <tr>
         <td>
-            <table width="100%" id="tableServico">
+            <table width="100%" class="tableServico">
                 <tr>
-                    <th>Cód. Serviço</th>
+                    <th>CÃ³d. ServiÃ§o</th>
                     <th>Quantidade</th>
-                    <th>Serviço</th>
+                    <th>ServiÃ§o</th>
                 </tr>
 <? foreach ($arrServico as $servico): ?>
                     <tr>
@@ -256,7 +256,7 @@ PaginaSEI::getInstance()->abrirAreaDados('100%', 'style="overflow-y: hidden;"');
             <p>Data de entrega: ___/___/_____</p><br>
             <p>____________________________</p>
             <p>Assinatura/Matricula dos Correios</p>
-            <p>2ª via - Cliente</p>
+            <p>2Âª via - Cliente</p>
         </td>
     </tr>
 </table>

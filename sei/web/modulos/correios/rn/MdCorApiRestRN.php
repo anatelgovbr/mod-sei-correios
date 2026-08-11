@@ -1,9 +1,9 @@
 <?php
 
 /**
- * RN respons·lvel por consultar o andamento dos objetos nos correios
+ * RN respons√°lvel por consultar o andamento dos objetos nos correios
  *
- * @author AndrÈ Luiz <andre.luiz@castgroup.com.br>
+ * @author Andr√© Luiz <andre.luiz@castgroup.com.br>
  * @since  12/06/2017
  *
  * Atualizado por: Gustavo Camelo - 14/12/2023
@@ -27,13 +27,13 @@ class MdCorApiRestRN
 
     public function gerarToken($objMdCorIntegToken){
 
-        if ( empty( $objMdCorIntegToken ) ) return ['erro' => 'Objeto de IntegraÁ„o Token inexistente ou inv·lido.'];
+        if ( empty( $objMdCorIntegToken ) ) return ['erro' => 'Objeto de Integra√ß√£o Token inexistente ou inv√°lido.'];
 
         $nr_postagem = isset( $_POST['txtNumeroCartaoPostagem'] )
                         ? $_POST['txtNumeroCartaoPostagem']
                         : ( new MdCorContratoRN() )->getNumeroPostagemContratoAtivo($objMdCorIntegToken->getNumIdMdCorContrato()); //COM O ID DO CONTRATO PEGAR O NUMERO CORRETO (ARRUMAR AQUI)
 
-        if ( $nr_postagem === false ) return ['suc' => false ,'msg' => 'N˙mero de postagem inexistente ou inv·lido.'];
+        if ( $nr_postagem === false ) return ['suc' => false ,'msg' => 'N√∫mero de postagem inexistente ou inv√°lido.'];
 
         $arrParams = [
             'urlOperacao'    => $objMdCorIntegToken->getStrUrlOperacao(),
@@ -147,18 +147,18 @@ class MdCorApiRestRN
     }
 
     /*
-     * MÈtodo respons·vel pela execuÁ„o da requisiÁ„o API Correios
+     * M√©todo respons√°vel pela execu√ß√£o da requisi√ß√£o API Correios
      *
      * */
     private function executaRequisicaoAPI( $arrParams = null ){
         try {
             if (is_null($arrParams))
-                throw new InfraException('N„o foi informado nenhum dado de par‚metro para execuÁ„o da RequisiÁ„o na API');
+                throw new InfraException('N√£o foi informado nenhum dado de par√¢metro para execu√ß√£o da Requisi√ß√£o na API');
 
             $urlServico = isset($arrParams['urlOperacao']) ? $arrParams['urlOperacao'] : $this->_endpoint;
 
             if (empty($urlServico))
-                throw new InfraException('URL da operaÁ„o n„o informada.');
+                throw new InfraException('URL da opera√ß√£o n√£o informada.');
 
             // parametros montados na URL do servico
             if (key_exists('codigoRef', $arrParams)) {
@@ -252,7 +252,7 @@ class MdCorApiRestRN
     }
 
     private function trataRetornoCurl( $info , $ret , $arrOpcoes = [] ){
-        $strCodInfo = isset($info['http_code']) ? "CÛdigo: {$info['http_code']} - " : "";
+        $strCodInfo = isset($info['http_code']) ? "C√≥digo: {$info['http_code']} - " : "";
         $arrRet  = ['suc' => false , 'msg' => $strCodInfo , 'dados' => null , 'code' => $info['http_code'] ?? ''];
 
         if ( ($arrRet['code'] == 200 || $arrRet['code'] == 201) && ( isset( $arrOpcoes['retornaString'] ) && $arrOpcoes['retornaString'] === true ) ) {
@@ -277,7 +277,7 @@ class MdCorApiRestRN
             break;
 
             case 401:
-                $arrRet['msg'] = 'Acesso n„o autorizado. Verifique as credenciais informadas.';
+                $arrRet['msg'] = 'Acesso n√£o autorizado. Verifique as credenciais informadas.';
             break;
 
             case 400:
@@ -286,15 +286,16 @@ class MdCorApiRestRN
             case 405:
             case 500:
                 if ( empty( $rs ) ) {
-                    if ( empty($ret) ) $arrRet['msg'] .= 'Erro n„o identificado';
+                    if ( empty($ret) ) $arrRet['msg'] .= 'Erro n√£o identificado';
                     else $arrRet['msg'] .= utf8_decode( $ret );
                 } else {
                     if ( isset($rs['msgs']) && !empty($rs['msgs']) ) {
-                        $arrRet['msg'] .= utf8_decode( $rs['msgs'][0] );
+                        $arrMsgsRetorno = is_array( $rs['msgs'] ) ? $rs['msgs'] : [ $rs['msgs'] ];
+                        $arrRet['msg'] .= utf8_decode( implode( "\n", $arrMsgsRetorno ) );
                     } else if( isset( $rs['detail'] ) && !empty( $rs['detail'] ) ) {
                         $arrRet['msg'] .= utf8_decode( $rs['detail'] );
                     } else {
-                        $arrRet['msg'] .= "Erro n„o Identificado";
+                        $arrRet['msg'] .= "Erro n√£o Identificado";
                     }
                 }
 
@@ -304,7 +305,7 @@ class MdCorApiRestRN
             default:
                 if ( isset( $rs['mensagem'] ) ) : $arrRet['msg'] = utf8_decode( $rs['mensagem'] );
                 elseif ( isset( $rs['msg'] ) )  : $arrRet['msg'] = utf8_decode( $rs['msg'] );
-                else                            : $arrRet['msg'] = 'Sem CÛdigo de Retorno - Falha n„o Identificada';
+                else                            : $arrRet['msg'] = 'Sem C√≥digo de Retorno - Falha n√£o Identificada';
                 endif;
             break;
         }
@@ -316,10 +317,10 @@ class MdCorApiRestRN
 
         switch ( json_last_error() ) {
             case JSON_ERROR_DEPTH:
-                $msg_erro = "Profundidade m·xima da pilha foi excedida.";
+                $msg_erro = "Profundidade m√°xima da pilha foi excedida.";
                 break;
             case JSON_ERROR_STATE_MISMATCH:
-                $msg_erro = "Inv·lido ou mal formado JSON.";
+                $msg_erro = "Inv√°lido ou mal formado JSON.";
                 break;
             case JSON_ERROR_CTRL_CHAR:
                 $msg_erro = "Caractere de controle inesperado encontrado.";
@@ -343,9 +344,9 @@ class MdCorApiRestRN
     }
 
     public function getOrientacao($msg) {
-        // validar se na $msg tem o codigo PZN-008 e concatenar pulando 2 linhas uma observaÁ„o
+        // validar se na $msg tem o codigo PZN-008 e concatenar pulando 2 linhas uma observa√ß√£o
         if (strpos($msg, 'PZN-008') !== false) {
-            $msg .= "\n\nOrientaÁ„o: N„o foi possÌvel concluir a GeraÁ„o da PrÈ-Postagem, pois o CEP indicado para o Destinat·rio na SolicitaÁ„o de ExpediÁ„o se trata de um Ponto de Coleta (Locker). Necess·rio devolver a SolicitaÁ„o de ExpediÁ„o ‡ Unidade Solicitante para que a mesma desmarque a opÁ„o 'Necessita de Aviso de Recebimento (AR)', altere o ServiÁo Postal para algum que n„o seja com AR ou altere o EndereÁo do Destinat·rio.";
+            $msg .= "\n\nOrienta√ß√£o: N√£o foi poss√≠vel concluir a Gera√ß√£o da Pr√©-Postagem, pois o CEP indicado para o Destinat√°rio na Solicita√ß√£o de Expedi√ß√£o se trata de um Ponto de Coleta (Locker). Necess√°rio devolver a Solicita√ß√£o de Expedi√ß√£o √† Unidade Solicitante para que a mesma desmarque a op√ß√£o 'Necessita de Aviso de Recebimento (AR)', altere o Servi√ßo Postal para algum que n√£o seja com AR ou altere o Endere√ßo do Destinat√°rio.";
         }
 
         return $msg;

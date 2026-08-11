@@ -1,11 +1,11 @@
 <?
 
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ * TRIBUNAL REGIONAL FEDERAL DA 4Âª REGIÃƒO
  *
  * 07/06/2017 - criado por marcelo.cast
  *
- * Versão do Gerador de Código: 1.40.1
+ * VersÃ£o do Gerador de CÃ³digo: 1.40.1
  */
 require_once dirname(__FILE__) . '/../../../SEI.php';
 
@@ -28,10 +28,10 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
     private function validarStrSinNecessitaAr(MdCorExpedicaoSolicitadaDTO $objMdCorExpedicaoSolicitadaDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getStrSinNecessitaAr())) {
-            $objInfraException->adicionarValidacao('Necessita AR não informado.');
+            $objInfraException->adicionarValidacao('Necessita AR nÃ£o informado.');
         } else {
             if (!InfraUtil::isBolSinalizadorValido($objMdCorExpedicaoSolicitadaDTO->getStrSinNecessitaAr())) {
-                $objInfraException->adicionarValidacao('Necessita AR inválido.');
+                $objInfraException->adicionarValidacao('Necessita AR invÃ¡lido.');
             }
         }
     }
@@ -39,28 +39,28 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
     private function validarDblIdDocumentoPrincipal(MdCorExpedicaoSolicitadaDTO $objMdCorExpedicaoSolicitadaDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getDblIdDocumentoPrincipal())) {
-            $objInfraException->adicionarValidacao('Documento Principal não informado.');
+            $objInfraException->adicionarValidacao('Documento Principal nÃ£o informado.');
         }
     }
 
     private function validarNumIdMdCorServicoPostal(MdCorExpedicaoSolicitadaDTO $objMdCorExpedicaoSolicitadaDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getNumIdMdCorServicoPostal())) {
-            $objInfraException->adicionarValidacao('Serviço postal não informado.');
+            $objInfraException->adicionarValidacao('ServiÃ§o postal nÃ£o informado.');
         }
     }
 
     private function validarNumIdUnidade(MdCorExpedicaoSolicitadaDTO $objMdCorExpedicaoSolicitadaDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getNumIdUnidade())) {
-            $objInfraException->adicionarValidacao('Unidade não informada.');
+            $objInfraException->adicionarValidacao('Unidade nÃ£o informada.');
         }
     }
 
     private function validarDthDataSolicitacao(MdCorExpedicaoSolicitadaDTO $objMdCorExpedicaoSolicitadaDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getDthDataSolicitacao())) {
-            $objInfraException->adicionarValidacao('Data de Solicitação não informada.');
+            $objInfraException->adicionarValidacao('Data de SolicitaÃ§Ã£o nÃ£o informada.');
         }
     }
 
@@ -74,13 +74,13 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
     private function validarNumIdUsuarioSolicitante(MdCorExpedicaoSolicitadaDTO $objMdCorExpedicaoSolicitadaDTO, InfraException $objInfraException)
     {
         if (InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getNumIdUsuarioSolicitante())) {
-            $objInfraException->adicionarValidacao('Usuário Solicitante não informado.');
+            $objInfraException->adicionarValidacao('UsuÃ¡rio Solicitante nÃ£o informado.');
         }
     }
 
     private function validarTamanhoEnderecoDest($arrObjContatoDTO , $objInfraException)
     {
-        $msgValid = "O campo 'Endereço' do destinatário extrapolou os 50 caracteres aceitos pelos Correios, o que pode implicar em insucesso na entrega do objeto postal. Dessa forma, revise o campo 'Endereço' do destinatário para que tenha até 50 caracteres antes de fazer uma nova solicitação de expedição";
+        $msgValid = "O campo 'EndereÃ§o' do destinatÃ¡rio extrapolou os 50 caracteres aceitos pelos Correios, o que pode implicar em insucesso na entrega do objeto postal. Dessa forma, revise o campo 'EndereÃ§o' do destinatÃ¡rio para que tenha atÃ© 50 caracteres antes de fazer uma nova solicitaÃ§Ã£o de expediÃ§Ã£o";
         if ( $arrObjContatoDTO->getStrSinEnderecoAssociado() == 'S' ) {
             if ( strlen( $arrObjContatoDTO->getStrEnderecoContatoAssociado() ) > 50 ) $objInfraException->adicionarValidacao($msgValid);
         } else {
@@ -103,7 +103,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             $objMdCorExpedicaoSolicitadaDTO->setStrCodigoRastreamento(trim($objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento()));
 
             if (strlen($objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento()) > 45) {
-                $objInfraException->adicionarValidacao('Código de Rastreamento possui tamanho superior a 45 caracteres.');
+                $objInfraException->adicionarValidacao('CÃ³digo de Rastreamento possui tamanho superior a 45 caracteres.');
             }
         }
     }
@@ -113,13 +113,13 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
         try {
 
-            //Valida Permissao - Log apenas na operaçao "pai de todas"
+            //Valida Permissao - Log apenas na operaÃ§ao "pai de todas"
             SessaoSEI::getInstance()->validarAuditarPermissao('md_cor_expedicao_solicitada_cadastrar');
 
             //Regras de Negocio
             $objInfraException = new InfraException();
 
-            //campos minimos obrigatorios para o cadastro de expedição
+            //campos minimos obrigatorios para o cadastro de expediÃ§Ã£o
             $this->validarStrSinNecessitaAr($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
             $this->validarDblIdDocumentoPrincipal($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
             $this->validarNumIdMdCorServicoPostal($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
@@ -127,7 +127,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             $this->validarDthDataSolicitacao($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
             $this->validarNumIdUsuarioSolicitante($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
 
-            // Validação do endereço do destinatario
+            // ValidaÃ§Ã£o do endereÃ§o do destinatario
             // Dados do Contato
             $objContatoDTO = new ContatoDTO();
             $objContatoDTO->retTodos(true);
@@ -139,11 +139,21 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             if (!is_null($arrObjContatoDTO)) {
                 $this->validarTamanhoEnderecoDest($arrObjContatoDTO,$objInfraException);
             }
-            // fim Validação do endereço do destinatario
+            // fim ValidaÃ§Ã£o do endereÃ§o do destinatario
 
             //@todo validar conteudos dos arrays de protocolo anexo e formatos
 
             $objInfraException->lancarValidacoes();
+
+            // Os filtros do mÃ³dulo comparam estes sinalizadores com 'N' e descartariam linhas
+            // com NULL, o que faria a solicitaÃ§Ã£o sumir das regras de AR pendente.
+            if (!$objMdCorExpedicaoSolicitadaDTO->isSetStrSinRecebido() || InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getStrSinRecebido())) {
+                $objMdCorExpedicaoSolicitadaDTO->setStrSinRecebido('N');
+            }
+
+            if (!$objMdCorExpedicaoSolicitadaDTO->isSetStrSinDevolvido() || InfraString::isBolVazia($objMdCorExpedicaoSolicitadaDTO->getStrSinDevolvido())) {
+                $objMdCorExpedicaoSolicitadaDTO->setStrSinDevolvido('N');
+            }
 
             $objMdCorExpedicaoSolicitadaBD = new MdCorExpedicaoSolicitadaBD($this->getObjInfraIBanco());
             $ret = $objMdCorExpedicaoSolicitadaBD->cadastrar($objMdCorExpedicaoSolicitadaDTO);
@@ -219,7 +229,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
 
                 foreach ($arrFormatos as $idFormato) {
-                    //salvar informaçoes da grid de formatos
+                    //salvar informaÃ§oes da grid de formatos
                     $itemDTO = new MdCorExpedicaoFormatoDTO();
 
                     $id_protocolo = $idFormato[0];
@@ -253,13 +263,13 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
         try {
 
-            //Valida Permissao - Log apenas na operaçao "pai de todas"
+            //Valida Permissao - Log apenas na operaÃ§ao "pai de todas"
             SessaoSEI::getInstance()->validarAuditarPermissao('md_cor_expedicao_solicitada_cadastrar');
 
             //Regras de Negocio
             $objInfraException = new InfraException();
 
-            //campos minimos obrigatorios para o cadastro de expedição
+            //campos minimos obrigatorios para o cadastro de expediÃ§Ã£o
             $this->validarStrSinNecessitaAr($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
             $this->validarDblIdDocumentoPrincipal($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
             $this->validarNumIdMdCorServicoPostal($objMdCorExpedicaoSolicitadaDTO, $objInfraException);
@@ -350,7 +360,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
                 foreach ($arrFormatos as $idFormato) {
 
-                    //salvar informaçoes da grid de formatos
+                    //salvar informaÃ§oes da grid de formatos
                     $itemDTO = new MdCorExpedicaoFormatoDTO();
 
                     $id_protocolo = $idFormato[0];
@@ -373,7 +383,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
                 }
             }
 
-            return $ret;
+            return $objMdCorExpedicaoSolicitadaDTO;
         } catch (Exception $e) {
             throw new InfraException('Erro cadastrando .', $e);
         }
@@ -384,7 +394,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
         $objAtributoAndamentoAPI = new AtributoAndamentoAPI();
         $objAtributoAndamentoAPI->setNome($nome);
         $objAtributoAndamentoAPI->setValor($valor);
-        $objAtributoAndamentoAPI->setIdOrigem($idOrigem); //ID do prédio, pode ser null
+        $objAtributoAndamentoAPI->setIdOrigem($idOrigem); //ID do prÃ©dio, pode ser null
 
         return $objAtributoAndamentoAPI;
     }
@@ -656,7 +666,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['idDocPrincipal'] = $objItemDto->isSetDblIdDocumentoPrincipal() ? $objItemDto->getDblIdDocumentoPrincipal() :null;
             $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['processo']=$objItemDto->getStrProtocoloFormatado();
             $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['destinatario'] = $strDestinatario;
-            //Retirando o documento principal, para que não seja identificado como anexo
+            //Retirando o documento principal, para que nÃ£o seja identificado como anexo
             $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['qtdAnexo'] = $arrAnexo[$id] - 1;
 
             /* Verifica se existe alguma solicitacao em Midia para cada expedicao */
@@ -667,7 +677,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 	          $qtd = ( new MdCorExpedicaoFormatoRN() )->contar( $objMdCorExpedicaoFormatoDTO );
 
 	          if ( $qtd > 0 ) $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['formatoMidia'] = 'Sim';
-	          else $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['formatoMidia'] = 'Não';
+	          else $arrSolExpedicao[$objItemDto->getStrDescricaoServicoPostal()][$contadorFor]['formatoMidia'] = 'NÃ£o';
 
             $contadorFor++;
 
@@ -706,7 +716,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
             $id = $objDTO->getNumIdMdCorExpedicaoSolicitada();
             $strUrlDocumento = SessaoSEI::getInstance()->assinarLink('controlador.php?acao=procedimento_trabalhar&id_documento=' . $objDTO->getDblIdDocumentoPrincipal());
             $docFormatado = $objDTO->getStrNomeSerie() . ' ' . $objDTO->getStrNumeroDocumento() . ' <a class="protocoloNormal" style="font-size: 1.0em !important; font-size:1em" href="'.$strUrlDocumento.'" target="_blank">(' . $objDTO->getStrProtocoloFormatadoDocumento() . ')</a>';
-            $anexos = isset($arrAnexo[$id]) && ($arrAnexo[$id] > 0) ? 'Sim' : 'Não';
+            $anexos = isset($arrAnexo[$id]) && ($arrAnexo[$id] > 0) ? 'Sim' : 'NÃ£o';
             $ultimAnd = isset($arrStatus[$id]) ? $arrStatus[$id] : '';
             $dtSol = !is_null($objDTO->getDthDataSolicitacao()) && $objDTO->getDthDataSolicitacao() != '' ? explode(' ', $objDTO->getDthDataSolicitacao()) : '';
             $dtExp = !is_null($objDTO->getDthDataExpedicao()) && $objDTO->getDthDataExpedicao() != '' ? explode(' ', $objDTO->getDthDataExpedicao()) : '';
@@ -786,7 +796,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
     public function listarExpedicaoSolicitadaExpedidaConectado($idProcedimento = null)
     {
-        //Busca todas as expedições solicitadas que ja foram expedidas
+        //Busca todas as expediÃ§Ãµes solicitadas que ja foram expedidas
         $objMdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
 
         $objMdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
@@ -802,7 +812,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
         if (!is_null($idProcedimento)) {
             $objMdCorExpedicaoSolicitadaDTO->setNumIdProcedimento($idProcedimento);
         }
-        //Condição para pegar apenas as expedidas
+        //CondiÃ§Ã£o para pegar apenas as expedidas
         $objMdCorExpedicaoSolicitadaDTO->adicionarCriterio(array('CodigoRastreamento', 'DataExpedicao'), array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE), array('null', 'null'), InfraDTO::$OPER_LOGICO_AND);
 
         $arrObjMdCorExpedicaoSolicitadaDTO = $this->listar($objMdCorExpedicaoSolicitadaDTO);
@@ -832,10 +842,10 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
         $dtExpedicao = $y . '-' . $m . '-' . $d;
 
-        // Calcula a diferença em segundos entre as datas
+        // Calcula a diferenÃ§a em segundos entre as datas
         $diferenca = strtotime(date('Y-m-d')) - strtotime($dtExpedicao);
 
-        //Calcula a diferença em dias
+        //Calcula a diferenÃ§a em dias
         $dias = floor($diferenca / (60 * 60 * 24));
         return $dias;
     }
@@ -1055,7 +1065,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
             if (count($arrObjMdCorExpedicaoSolicitadaDTO) > 0 && empty($objMdCorObjetoDTO)) {
                 $objInfraException = new InfraException();
-                $objInfraException->adicionarValidacao('Selecione o formato de expedição dos objetos.');
+                $objInfraException->adicionarValidacao('Selecione o formato de expediÃ§Ã£o dos objetos.');
                 $objInfraException->lancarValidacoes();
             }
         }
@@ -1078,7 +1088,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
         if ($qtdTipoEmbalagem == 0) {
             echo "<script>";
-            echo "alert('Os tipos de embalagens para o Contrato selecionado não foram cadastradas, antes é necessário que verifique com o Gestor do Módulo dos Correios para cadastrar os Tipos de Embalagens em Administração > Correios > Contratos e Serviços Postais > Tipos de Embalagem.');";
+            echo "alert('Os tipos de embalagens para o Contrato selecionado nÃ£o foram cadastradas, antes Ã© necessÃ¡rio que verifique com o Gestor do MÃ³dulo dos Correios para cadastrar os Tipos de Embalagens em AdministraÃ§Ã£o > Correios > Contratos e ServiÃ§os Postais > Tipos de Embalagem.');";
             echo "window.close();";
             echo "</script>";
         }
@@ -1312,8 +1322,8 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
                 }
             }
             /**
-             * Exclusão da variável de Sessão criada para transportar o Id do Documento Principal da Solicitação de Expedição
-             * Por que a Função Alterar Contato do Core do SEI não permite que essa variável seja passada.
+             * ExclusÃ£o da variÃ¡vel de SessÃ£o criada para transportar o Id do Documento Principal da SolicitaÃ§Ã£o de ExpediÃ§Ã£o
+             * Por que a FunÃ§Ã£o Alterar Contato do Core do SEI nÃ£o permite que essa variÃ¡vel seja passada.
              */
             unset($_SESSION['idDocumentoPrincipal']);
         }
@@ -1435,68 +1445,190 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
 
     }
 
-    public function validarExistenciaObjetoAguardandoRetornoAR($objProcedimentoAPI) {
-        $idProcedimento = $objProcedimentoAPI[0]->getIdProcedimento();
+    /**
+     * Identifica, entre os processos informados, quais possuem solicitaÃ§Ã£o de expediÃ§Ã£o com
+     * AR ainda pendente de retorno, em qualquer etapa: aguardando expediÃ§Ã£o, em procedimento
+     * de postagem ou jÃ¡ postado aguardando o retorno do AR.
+     *
+     * @param array $arrObjProcedimentoAPI lista de ProcedimentoAPI avaliada na operaÃ§Ã£o
+     * @return array protocolos formatados dos processos bloqueados (vazio quando nenhum bloqueia)
+     */
+    public function validarExistenciaObjetoAguardandoRetornoAR($arrObjProcedimentoAPI) {
+        if (!is_array($arrObjProcedimentoAPI)) {
+            $arrObjProcedimentoAPI = [$arrObjProcedimentoAPI];
+        }
+
+        $arrIdProcedimento = [];
+        foreach ($arrObjProcedimentoAPI as $objProcedimentoAPI) {
+            $idProcedimento = $objProcedimentoAPI->getIdProcedimento();
+            if (!is_null($idProcedimento)) {
+                $arrIdProcedimento[] = $idProcedimento;
+            }
+        }
+
+        if (empty($arrIdProcedimento)) {
+            return [];
+        }
 
         $mdCorExpedicaoSolicitadaDTO = new MdCorExpedicaoSolicitadaDTO();
         $mdCorExpedicaoSolicitadaDTO->retNumIdMdCorExpedicaoSolicitada();
         $mdCorExpedicaoSolicitadaDTO->retStrCodigoRastreamento();
-        $mdCorExpedicaoSolicitadaDTO->retDthDataExpedicao();
-        $mdCorExpedicaoSolicitadaDTO->retNumIdDocumentoAr();
         $mdCorExpedicaoSolicitadaDTO->retDblIdDocumentoPrincipal();
         $mdCorExpedicaoSolicitadaDTO->retNumIdProcedimento();
-        $mdCorExpedicaoSolicitadaDTO->retNumIdMdCorParamArInfrigencia();
-        $mdCorExpedicaoSolicitadaDTO->retNumIdMdCorPlp();
-        $mdCorExpedicaoSolicitadaDTO->retStrSinDevolvido();
-        $mdCorExpedicaoSolicitadaDTO->retStrStaPlp();
-        $mdCorExpedicaoSolicitadaDTO->setStrStaPlp(MdCorPlpRN::$STA_GERADA, INFRADTO::$OPER_DIFERENTE);
+        $mdCorExpedicaoSolicitadaDTO->retStrProtocoloFormatado();
         $mdCorExpedicaoSolicitadaDTO->setStrSinNecessitaAr('S');
         $mdCorExpedicaoSolicitadaDTO->setStrSinRecebido('N');
         $mdCorExpedicaoSolicitadaDTO->setStrSinDevolvido('N');
-        $mdCorExpedicaoSolicitadaDTO->setNumIdProcedimento($idProcedimento);
-        $mdCorExpedicaoSolicitadaDTO->setOrdNumIdMdCorRetornoArDoc(InfraDTO::$TIPO_ORDENACAO_DESC);
+        $mdCorExpedicaoSolicitadaDTO->setNumIdProcedimento($arrIdProcedimento, InfraDTO::$OPER_IN);
         $arrMdCorExpedicaoSolicitadaDTO = $this->listar($mdCorExpedicaoSolicitadaDTO);
+
+        // A infrigÃªncia Ã© lida por cÃ³digo de rastreamento, e nÃ£o pelo relacionamento do DTO:
+        // aquele relacionamento amarra apenas pelo documento e aproveitaria o retorno de AR
+        // de outra expediÃ§Ã£o do mesmo documento.
+        $arrInfrigencia = $this->_obterInfrigenciaRetornoArPorRastreamento(
+            InfraArray::converterArrInfraDTO($arrMdCorExpedicaoSolicitadaDTO, 'CodigoRastreamento')
+        );
+
+        $arrStaRastreio = $this->_obterStaRastreioPorSolicitacao(
+            InfraArray::converterArrInfraDTO($arrMdCorExpedicaoSolicitadaDTO, 'IdMdCorExpedicaoSolicitada')
+        );
+
+        $arrProtocoloBloqueado = [];
 
         if (!empty($arrMdCorExpedicaoSolicitadaDTO)) {
             foreach ($arrMdCorExpedicaoSolicitadaDTO as $mdCorExpedicaoSolicitadaDTO) {
-                // --- CASO 1: OBJETO AINDA NÃO FOI PARA O CORREIO ---
-        
-                // Se não tem PLP, está "Aguardando Expedição" -> PODE BLOQUEAR
-                if (is_null($mdCorExpedicaoSolicitadaDTO->getNumIdMdCorPlp())) {
+                $idProcedimento = $mdCorExpedicaoSolicitadaDTO->getNumIdProcedimento();
+
+                // Processo jÃ¡ bloqueado por outro objeto: nÃ£o precisa reavaliar
+                if (isset($arrProtocoloBloqueado[$idProcedimento])) {
                     continue;
                 }
 
-                // Se tem PLP mas NÃO TEM Data de Expedição, está "Em procedimento de postagem" -> PODE BLOQUEAR
-                // Conforme seu var_dump: DataExpedicao é NULL
-                if (is_null($mdCorExpedicaoSolicitadaDTO->getDthDataExpedicao())) {
+                // A pendÃªncia comeÃ§a na solicitaÃ§Ã£o: objeto aguardando expediÃ§Ã£o ou em
+                // procedimento de postagem tambÃ©m bloqueia, porque o AR ainda vai retornar.
+
+                // Se o retorno de AR DESTA expediÃ§Ã£o registrou infrigÃªncia -> nÃ£o bloqueia
+                $strCodigoRastreamento = $mdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento();
+                if (!InfraString::isBolVazia($strCodigoRastreamento) && !is_null($arrInfrigencia[$strCodigoRastreamento] ?? null)) {
                     continue;
                 }
 
-                // --- CASO 2: OBJETO JÁ ESTÁ NA RUA, MAS FOI DEVOLVIDO OU ENTREGUE ---
+                // Rastreamento do objeto, obtido em consulta Ãºnica antes do laÃ§o.
+                // 'I' = Insucesso/Extraviado: o AR nÃ£o vai retornar -> nÃ£o bloqueia
+                // 'S' = Entregue NÃƒO libera: a entrega do objeto nÃ£o garante o retorno do AR digitalizado
+                $idMdCorExpedicaoSolicitada = $mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada();
 
-                // Se foi devolvido por infrigência -> PODE BLOQUEAR
-                if (!is_null($mdCorExpedicaoSolicitadaDTO->getNumIdMdCorParamArInfrigencia())) {
+                if (($arrStaRastreio[$idMdCorExpedicaoSolicitada] ?? '') == 'I') {
                     continue;
                 }
 
-                // Verificar o Rastreamento para ver se já foi entregue ou extraviado
-                $objExpedAndamentoRN = new MdCorExpedicaoAndamentoRN();
-                $arrAndamentos = $objExpedAndamentoRN->getDadosAndamentosParaRastreio($mdCorExpedicaoSolicitadaDTO->getNumIdMdCorExpedicaoSolicitada());
-                
-                if (!empty($arrAndamentos)) {
-                    $statusRastreio = $arrAndamentos[0]->getStrStaRastreioModulo();
-                    // 'S' = Entregue, 'I' = Insucesso/Extraviado -> PODE BLOQUEAR
-                    if ($statusRastreio == 'S' || $statusRastreio == 'I') {
-                        continue;
-                    }
-                }
-
-                // Se passar por todos os "continues" acima, significa que o ícone atual 
-                // deste objeto é obrigatoriamente "AR enviado aguardando retorno".
-                return true;
+                // Se passar por todos os "continues" acima, a solicitaÃ§Ã£o tem AR pendente de
+                // retorno: aguardando expediÃ§Ã£o, em postagem ou jÃ¡ postada aguardando o AR.
+                $strProtocolo = $mdCorExpedicaoSolicitadaDTO->getStrProtocoloFormatado();
+                $arrProtocoloBloqueado[$idProcedimento] = InfraString::isBolVazia($strProtocolo) ? $idProcedimento : $strProtocolo;
             }
         }
-        return false;
+
+        return array_values($arrProtocoloBloqueado);
+    }
+
+    /**
+     * ObtÃ©m a situaÃ§Ã£o de rastreio do Ãºltimo andamento de cada solicitaÃ§Ã£o em consulta Ãºnica,
+     * evitando uma consulta por solicitaÃ§Ã£o dentro do laÃ§o de validaÃ§Ã£o.
+     *
+     * A situaÃ§Ã£o vem de md_cor_lista_status e Ã© resolvida uma vez por par (status, tipo)
+     * distinto. Usa consultar, e nÃ£o listar, porque o recurso de listagem dessa tabela Ã©
+     * exclusivo do perfil Administrador.
+     *
+     * @param array $arrIdMdCorExpedicaoSolicitada solicitaÃ§Ãµes avaliadas
+     * @return array mapa id da solicitaÃ§Ã£o => situaÃ§Ã£o de rastreio do mÃ³dulo
+     */
+    private function _obterStaRastreioPorSolicitacao($arrIdMdCorExpedicaoSolicitada)
+    {
+        $arrId = [];
+        foreach ((array) $arrIdMdCorExpedicaoSolicitada as $idSolicitacao) {
+            if (!InfraString::isBolVazia($idSolicitacao)) {
+                $arrId[$idSolicitacao] = $idSolicitacao;
+            }
+        }
+
+        if (empty($arrId)) {
+            return [];
+        }
+
+        $objMdCorExpedicaoAndamentoDTO = new MdCorExpedicaoAndamentoDTO();
+        $objMdCorExpedicaoAndamentoDTO->retNumIdMdCorExpedicaoSolicitada();
+        $objMdCorExpedicaoAndamentoDTO->retNumStatus();
+        $objMdCorExpedicaoAndamentoDTO->retStrTipo();
+        $objMdCorExpedicaoAndamentoDTO->retDthDataHora();
+        $objMdCorExpedicaoAndamentoDTO->setNumIdMdCorExpedicaoSolicitada(array_values($arrId), InfraDTO::$OPER_IN);
+        $objMdCorExpedicaoAndamentoDTO->setOrdDthDataHora(InfraDTO::$TIPO_ORDENACAO_DESC);
+
+        $arrObjMdCorExpedicaoAndamentoDTO = (new MdCorExpedicaoAndamentoRN())->listar($objMdCorExpedicaoAndamentoDTO);
+
+        // ordenaÃ§Ã£o decrescente: o primeiro andamento de cada solicitaÃ§Ã£o Ã© o mais recente
+        $arrUltimoAndamento = [];
+        foreach ($arrObjMdCorExpedicaoAndamentoDTO as $objAndamentoDTO) {
+            $idSolicitacao = $objAndamentoDTO->getNumIdMdCorExpedicaoSolicitada();
+
+            if (!isset($arrUltimoAndamento[$idSolicitacao])) {
+                $arrUltimoAndamento[$idSolicitacao] = $objAndamentoDTO;
+            }
+        }
+
+        $objMdCorListaStatusRN = new MdCorListaStatusRN();
+        $arrStaRastreioPorChave = [];
+        $arrStaRastreio = [];
+
+        foreach ($arrUltimoAndamento as $idSolicitacao => $objAndamentoDTO) {
+            $strChave = $objAndamentoDTO->getNumStatus() . '|' . $objAndamentoDTO->getStrTipo();
+
+            if (!array_key_exists($strChave, $arrStaRastreioPorChave)) {
+                $arrStaRastreioPorChave[$strChave] = $objMdCorListaStatusRN->getStaRastreioModuloAndamento($objAndamentoDTO);
+            }
+
+            $arrStaRastreio[$idSolicitacao] = $arrStaRastreioPorChave[$strChave];
+        }
+
+        return $arrStaRastreio;
+    }
+
+    /**
+     * Indexa a infrigÃªncia registrada no retorno de AR pelo cÃ³digo de rastreamento do objeto,
+     * garantindo que o retorno de uma expediÃ§Ã£o nÃ£o seja atribuÃ­do a outra expediÃ§Ã£o do
+     * mesmo documento.
+     *
+     * @param array $arrCodigoRastreamento cÃ³digos de rastreamento das solicitaÃ§Ãµes avaliadas
+     * @return array mapa cÃ³digo de rastreamento => id da infrigÃªncia (ou null)
+     */
+    private function _obterInfrigenciaRetornoArPorRastreamento($arrCodigoRastreamento)
+    {
+        $arrCodigo = [];
+        foreach ((array) $arrCodigoRastreamento as $strCodigo) {
+            if (!InfraString::isBolVazia($strCodigo)) {
+                $arrCodigo[$strCodigo] = $strCodigo;
+            }
+        }
+
+        if (empty($arrCodigo)) {
+            return [];
+        }
+
+        $objMdCorRetornoArDocDTO = new MdCorRetornoArDocDTO();
+        $objMdCorRetornoArDocDTO->retStrCodigoRastreamento();
+        $objMdCorRetornoArDocDTO->retNumIdMdCorParamArInfrigencia();
+        $objMdCorRetornoArDocDTO->setStrCodigoRastreamento(array_values($arrCodigo), InfraDTO::$OPER_IN);
+        $objMdCorRetornoArDocDTO->setOrdNumIdMdCorRetornoArDoc(InfraDTO::$TIPO_ORDENACAO_ASC);
+
+        $arrObjMdCorRetornoArDocDTO = (new MdCorRetornoArDocRN())->listar($objMdCorRetornoArDocDTO);
+
+        $arrInfrigencia = [];
+        foreach ($arrObjMdCorRetornoArDocDTO as $objRetornoArDocDTO) {
+            // ordenaÃ§Ã£o ascendente: o retorno mais recente sobrescreve os anteriores
+            $arrInfrigencia[$objRetornoArDocDTO->getStrCodigoRastreamento()] = $objRetornoArDocDTO->getNumIdMdCorParamArInfrigencia();
+        }
+
+        return $arrInfrigencia;
     }
 
 }

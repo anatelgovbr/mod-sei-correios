@@ -1,12 +1,12 @@
 <?
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4™ REGI√O
+ * TRIBUNAL REGIONAL FEDERAL DA 4¬™ REGI√ÉO
  *
- * 22/12/2016 - criado por Wilton J˙nior
+ * 22/12/2016 - criado por Wilton J√∫nior
  *
- * Vers„o do Gerador de CÛdigo: 1.39.0
+ * Vers√£o do Gerador de C√≥digo: 1.39.0
  *
- * Vers„o no SVN: $Id$
+ * Vers√£o no SVN: $Id$
  */
 
 try {
@@ -98,13 +98,13 @@ try {
             $objMdCorContratoRN = new MdCorContratoRN();
             $objMdCorContratoDTO = $objMdCorContratoRN->consultar($objMdCorContratoDTO);
             if ($objMdCorContratoDTO === null) {
-                throw new InfraException("Registro n„o encontrado.");
+                throw new InfraException("Registro n√£o encontrado.");
             }
 
             break;
 
         default:
-            throw new InfraException("AÁ„o '" . $_GET['acao'] . "' n„o reconhecida.");
+            throw new InfraException("A√ß√£o '" . $_GET['acao'] . "' n√£o reconhecida.");
     }
 
     if ($_GET['acao'] == 'md_cor_contrato_alterar' || $_GET['acao'] == 'md_cor_contrato_consultar') {
@@ -127,7 +127,7 @@ try {
 
             $slCodigoDiretoria = $objMdCorContratoDTO->getNumIdMdCorDiretoria();
             if ($objMdCorContratoDTO == null) {
-                throw new InfraException("Registro n„o encontrado.");
+                throw new InfraException("Registro n√£o encontrado.");
             }
 
 
@@ -180,15 +180,15 @@ PaginaSEI::getInstance()->abrirAreaDados();
             
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <fieldset id="fieldsetContratoOrgao" class="infraFieldset form-control" style="height: 100%">
-                    <legend class="infraLegend">&nbsp;Dados do Contrato no ”rg„o&nbsp;</legend>
+                    <legend class="infraLegend">&nbsp;Dados do Contrato no √ìrg√£o&nbsp;</legend>
                     <div class="row">
                         <div class="col-sm-7 col-md-7 col-lg-6">
                             <label id="lblNumeroContrato" for="txtNumeroContrato" accesskey="o"
-                                   class="infraLabelObrigatorio">N˙mer<span class="infraTeclaAtalho">o</span> do
+                                   class="infraLabelObrigatorio">N√∫mer<span class="infraTeclaAtalho">o</span> do
                                 Contrato:
-                                <img id="imgAjuda"
+                                <img
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('Informar o N˙mero de identificaÁ„o do Contrato no ”rg„o.', 'Ajuda');"
+                                     onmouseover="return infraTooltipMostrar('Informar o N√∫mero de identifica√ß√£o do Contrato no √ìrg√£o.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
                                      alt="Ajuda" class="infraImg"/>
                             </label>
@@ -202,11 +202,11 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     <div class="row">
                         <div class="col-sm-7 col-md-7 col-lg-6">
                             <label id="lblNumeroProcessoContratacao" for="txtNumeroProcessoContratacao" accesskey="t"
-                                   class="infraLabelOpcional">N˙mero do Processo de Con<span class="infraTeclaAtalho">t</span>rataÁ„o:
-                                <img id="imgAjuda"
+                                   class="infraLabelOpcional">N√∫mero do Processo de Con<span class="infraTeclaAtalho">t</span>rata√ß√£o:
+                                <img
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
                                      name="ajuda"
-                                     onmouseover="return infraTooltipMostrar('Informar o N˙mero do Processo no SEI por meio do qual os Correios foi Contratado.', 'Ajuda');"
+                                     onmouseover="return infraTooltipMostrar('Informar o N√∫mero do Processo no SEI por meio do qual os Correios foi Contratado.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
                                      alt="Ajuda" class="infraImg"/>
                             </label>
@@ -239,7 +239,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
             </div>
         </div>
 
-        <!-- Padr„o de largura para as div abaixo -->
+        <!-- Padr√£o de largura para as div abaixo -->
         <?php $cls_def = "col-sm-7 col-md-7 col-lg-6" ?>
 
         <div class="row linha">
@@ -250,11 +250,11 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     <div class="row">
                         <div class="<?= $cls_def ?> mb-1">
                             <label id="lblNumeroContratoCorreio" for="txtNumeroContratoCorreio" accesskey="n"
-                                   class="infraLabelObrigatorio"><span class="infraTeclaAtalho">N</span>˙mero do
+                                   class="infraLabelObrigatorio"><span class="infraTeclaAtalho">N</span>√∫mero do
                                 Contrato:
-                                <img id="imgAjuda"
+                                <img
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('CÛdigo interno dos Correios de identificaÁ„o do Contrato, utilizado na integraÁ„o com o Web Service do SIGEP WEB. \n \n Se for informado n˙mero incorreto n„o vai validar o EndereÁo WSDL do Web Service do SIGEP WEB.', 'Ajuda');"
+                                     onmouseover="return infraTooltipMostrar('C√≥digo interno dos Correios de identifica√ß√£o do Contrato, utilizado na integra√ß√£o com o Web Service do SIGEP WEB. \n \n Se for informado n√∫mero incorreto n√£o vai validar o Endere√ßo WSDL do Web Service do SIGEP WEB.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
                                      alt="Ajuda" class="infraImg"/>
                             </label>
@@ -268,11 +268,11 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     <div class="row">
                         <div class="<?= $cls_def ?>">
                             <label id="lblNumeroCartaoPostagem" for="txtNumeroCartaoPostagem" accesskey="p"
-                                   class="infraLabelObrigatorio">Cart„o
+                                   class="infraLabelObrigatorio">Cart√£o
                                 de <span class="infraTeclaAtalho">P</span>ostagem:
-                                <img id="imgAjuda"
+                                <img
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('Informar o Cart„o de Postagem correspondente ao Contrato do ”rg„o.', 'Ajuda');"
+                                     onmouseover="return infraTooltipMostrar('Informar o Cart√£o de Postagem correspondente ao Contrato do √ìrg√£o.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
                                      alt="Ajuda" class="infraImg"/>
                             </label>
@@ -285,10 +285,10 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     </div>
                     <div class="row">
                         <div class="<?= $cls_def ?>">
-                            <label id="lblCNPJ" for="txtCNPJ" class="infraLabelObrigatorio">CNPJ do ”rg„o:
-                                <img id="imgAjuda"
+                            <label id="lblCNPJ" for="txtCNPJ" class="infraLabelObrigatorio">CNPJ do √ìrg√£o:
+                                <img
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('Informar o CNPJ do ”rg„o correspondente ao Contrato.', 'Ajuda');"
+                                     onmouseover="return infraTooltipMostrar('Informar o CNPJ do √ìrg√£o correspondente ao Contrato.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
                                      alt="Ajuda" class="infraImg"/>
                             </label>
@@ -300,10 +300,10 @@ PaginaSEI::getInstance()->abrirAreaDados();
                     </div>
                     <div class="row">
                         <div class="<?= $cls_def ?>">
-                            <label id="lblCodigoDiretoria" for="slCodigoDiretoria" class="infraLabelOpcional">CÛdigo da Diretoria:
-                                <img id="imgAjuda"
+                            <label id="lblCodigoDiretoria" for="slCodigoDiretoria" class="infraLabelOpcional">C√≥digo da Diretoria:
+                                <img
                                      src="<?= PaginaSEI::getInstance()->getDiretorioSvgGlobal() ?>/ajuda.svg"
-                                     onmouseover="return infraTooltipMostrar('Diretoria Regional dos Correios correspondente ao Contrato do ”rg„o.', 'Ajuda');"
+                                     onmouseover="return infraTooltipMostrar('Diretoria Regional dos Correios correspondente ao Contrato do √ìrg√£o.', 'Ajuda');"
                                      onmouseout="return infraTooltipOcultar();"
                                      alt="Ajuda" class="infraImg"/>
                             </label>
@@ -344,13 +344,13 @@ PaginaSEI::getInstance()->abrirAreaDados();
                         <div class="row">
                             <div class="col-12">
                                 <div class="alert alert-warning" role="alert">
-                                    <strong>AtenÁ„o!</strong> ApÛs a inclus„o deste Contrato, È necess·rio seguir os seguintes passos:
+                                    <strong>Aten√ß√£o!</strong> Ap√≥s a inclus√£o deste Contrato, √© necess√°rio seguir os seguintes passos:
                                     <br>
                                     <?php 
                                     if($numTokens == 0) {
                                     ?>
                                         <br>
-                                        - Inclus„o do Token no Mapeamento da IntegraÁ„o em AdministraÁ„o > Correios > Mapeamento das IntegraÁıes > Correios::Gerar Token
+                                        - Inclus√£o do Token no Mapeamento da Integra√ß√£o em Administra√ß√£o > Correios > Mapeamento das Integra√ß√µes > Correios::Gerar Token
                                     <?php 
                                     }
                                     ?>
@@ -358,7 +358,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                     if($numServicosPostais == 0) {
                                     ?>
                                         <br>
-                                        - Configurar ServiÁos Postais em AdministraÁ„o > Correios > Bot„o de ServiÁos Postais no Contrato inserido
+                                        - Configurar Servi√ßos Postais em Administra√ß√£o > Correios > Bot√£o de Servi√ßos Postais no Contrato inserido
                                     <?php 
                                     }
                                     ?>
@@ -366,7 +366,7 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                     if($qtdMapeamentos == 0) {
                                     ?>
                                         <br>
-                                        - Configurar Mapeamento das Unidades Solicitantes com os ServiÁos Postais em AdministraÁ„o > Correios > Mapeamento Unidades e ServiÁos Postais
+                                        - Configurar Mapeamento das Unidades Solicitantes com os Servi√ßos Postais em Administra√ß√£o > Correios > Mapeamento Unidades e Servi√ßos Postais
                                     <?php 
                                     }
                                     ?>

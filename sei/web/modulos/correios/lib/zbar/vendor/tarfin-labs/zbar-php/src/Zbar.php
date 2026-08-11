@@ -59,7 +59,7 @@ class Zbar
         $this->process->run();
 
         if (! $this->process->isSuccessful()) {
-            // Em vez de throw, criamos um retorno padrão '0'
+            // Em vez de throw, criamos um retorno padrÃ£o '0'
             $this->output = new \stdClass();
             $this->output->data = '0';
             return $this->output;
@@ -113,6 +113,12 @@ class Zbar
         $encodedOutput = json_encode($xml);
         $decodedOutput = json_decode($encodedOutput);
 
-        return $decodedOutput->source->index->symbol;
+        $symbol = $decodedOutput->source->index->symbol;
+
+        if (is_array($symbol)) {
+            return $symbol[0];
+        }
+
+        return $symbol;
     }
 }

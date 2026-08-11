@@ -1,12 +1,12 @@
 <?
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ * TRIBUNAL REGIONAL FEDERAL DA 4Âª REGIÃƒO
  *
- * 22/12/2016 - criado por Wilton Júnior
+ * 22/12/2016 - criado por Wilton JÃºnior
  *
- * Versão do Gerador de Código: 1.39.0
+ * VersÃ£o do Gerador de CÃ³digo: 1.39.0
  *
- * Versão no SVN: $Id$
+ * VersÃ£o no SVN: $Id$
  */
 
 try {
@@ -46,7 +46,7 @@ try {
             require_once('md_cor_retorno_ar_lista_tabela.php');
             break;
         default:
-            throw new InfraException("Ação '" . $_GET['acao'] . "' não reconhecida.");
+            throw new InfraException("AÃ§Ã£o '" . $_GET['acao'] . "' nÃ£o reconhecida.");
     }
 
 
@@ -99,27 +99,27 @@ PaginaSEI::getInstance()->montarMensagens();
             </div>
             <div class="col-12 col-sm-8 col-md-8 col-lg-6 col-xl-5">
                 <div class="form-group">
-                    <label id="lblPeriodoProcessamento" for="txtPeriodoProcessamentoInicio" accesskey="o" class="infraLabelOpcional">Período do Processamento:</label><br/>
+                    <label id="lblPeriodoProcessamento" for="txtPeriodoProcessamentoInicio" accesskey="o" class="infraLabelOpcional">PerÃ­odo do Processamento:</label><br/>
                     <div class="input-group input-group-sm mb-3 pt-0">
 
-                        <span class="input-group-text group input-group-sm" id="basic-addon1">De</span>
+                        <span class="input-group-text group input-group-sm">De</span>
 
                         <input type="text" name="txtPeriodoProcessamentoInicio" id="txtPeriodoProcessamentoInicio" class="infraText form-control" 
                                onkeypress="return infraMascara(this, event,'##/##/####')" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" />
 
                         <img src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/calendario.svg"
                             id="imgCalDthPeriodoInicio" class="infraImg"
-                            title="Selecionar Data de Início do Período" alt="Selecionar Data de Início do Período"
+                            title="Selecionar Data de InÃ­cio do PerÃ­odo" alt="Selecionar Data de InÃ­cio do PerÃ­odo"
                             onclick="infraCalendario('txtPeriodoProcessamentoInicio',this,false,'');">
 
-                        <span class="input-group-text" id="basic-addon1">Até</span>
+                        <span class="input-group-text">AtÃ©</span>
 
                         <input type="text" onkeypress="return infraMascara(this, event,'##/##/####')" id="txtPeriodoProcessamentoFim"
                             name="txtPeriodoProcessamentoFim" class="infraText form-control" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>" />
 
                         <img src="<?php echo PaginaSEI::getInstance()->getDiretorioSvgGlobal(); ?>/calendario.svg"
                             id="imgCalDthPeriodoFim" class="infraImg mt-1"
-                            title="Selecionar Data de Fim do Período" alt="Selecionar Data de Fim do Período"
+                            title="Selecionar Data de Fim do PerÃ­odo" alt="Selecionar Data de Fim do PerÃ­odo"
                             onclick="infraCalendario('txtPeriodoProcessamentoFim',this,false,'');">
 
                     </div>

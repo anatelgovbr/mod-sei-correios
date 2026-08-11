@@ -1,12 +1,12 @@
 <?
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4™ REGI√O
+ * TRIBUNAL REGIONAL FEDERAL DA 4¬™ REGI√ÉO
  *
- * 22/12/2016 - criado por Wilton J˙nior
+ * 22/12/2016 - criado por Wilton J√∫nior
  *
- * Vers„o do Gerador de CÛdigo: 1.39.0
+ * Vers√£o do Gerador de C√≥digo: 1.39.0
  *
- * Vers„o no SVN: $Id$
+ * Vers√£o no SVN: $Id$
  */
 
 try {
@@ -35,7 +35,7 @@ try {
 
     switch ($_GET['acao']) {
         case 'md_cor_servicos_postais_contrato_alterar':
-            $strTitulo = 'Alterar ServiÁos Postais do Contrato';
+            $strTitulo = 'Alterar Servi√ßos Postais do Contrato';
             $arrComandos[] = '<button type="submit" accesskey="S" name="sbmAlterarMdCorServicosPostaisContrato" value="Salvar" class="infraButton"><span class="infraTeclaAtalho">S</span>alvar</button>';
             $strDesabilitar = 'disabled="disabled"';
 
@@ -50,7 +50,7 @@ try {
             $objMdCorContratoDTO->setNumIdMdCorContrato($idMdCorContrato);
 
             if ($numTokens == 0) {
-                header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?msg=Antes de adicionar ServiÁos Postais neste Contrato, È necess·rio incluir os dados de AutenticaÁ„o para Obter Token Di·rio no Mapeamento da IntegraÁ„o em AdministraÁ„o > Correios > Mapeamento das IntegraÁıes > Correios::Gerar Token&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . '&id_me_cor_contrato=' . $_GET['id_md_cor_contrato'] . PaginaSEI::getInstance()->montarAncora($objMdCorContratoDTO->getNumIdMdCorContrato())));
+                header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?msg=Antes de adicionar Servi√ßos Postais neste Contrato, √© necess√°rio incluir os dados de Autentica√ß√£o para Obter Token Di√°rio no Mapeamento da Integra√ß√£o em Administra√ß√£o > Correios > Mapeamento das Integra√ß√µes > Correios::Gerar Token&acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . '&id_me_cor_contrato=' . $_GET['id_md_cor_contrato'] . PaginaSEI::getInstance()->montarAncora($objMdCorContratoDTO->getNumIdMdCorContrato())));
                 die;
             }
 
@@ -61,7 +61,7 @@ try {
                 try {
                     $objMdCorContratoRN = new MdCorContratoRN();
                     $objMdCorContratoRN->alterarServicosPostais($_POST);
-                    PaginaSEI::getInstance()->adicionarMensagem('ServiÁos postais do contrato "' . $objMdCorContratoDTO->getNumIdMdCorContrato() . '" alterados com sucesso.');
+                    PaginaSEI::getInstance()->adicionarMensagem('Servi√ßos postais do contrato "' . $objMdCorContratoDTO->getNumIdMdCorContrato() . '" alterados com sucesso.');
                     header('Location: ' . SessaoSEI::getInstance()->assinarLink('controlador.php?acao=' . PaginaSEI::getInstance()->getAcaoRetorno() . '&acao_origem=' . $_GET['acao'] . '&id_me_cor_contrato=' . $_GET['id_md_cor_contrato'] . PaginaSEI::getInstance()->montarAncora($objMdCorContratoDTO->getNumIdMdCorContrato())));
                     die;
                 } catch (Exception $e) {
@@ -72,7 +72,7 @@ try {
             break;
 
         default:
-            throw new InfraException("AÁ„o '" . $_GET['acao'] . "' n„o reconhecida.");
+            throw new InfraException("A√ß√£o '" . $_GET['acao'] . "' n√£o reconhecida.");
     }
 
     $idMdCorContrato = $_GET['id_md_cor_contrato'] ? $_GET['id_md_cor_contrato'] : $_POST['hdnIdMdCorContrato'];
@@ -92,7 +92,7 @@ try {
         $strTitulo .= ' ' . $objMdCorContratoDTO->getStrNumeroContrato();
 
         if ($objMdCorContratoDTO == null) {
-            throw new InfraException("Registro n„o encontrado.");
+            throw new InfraException("Registro n√£o encontrado.");
         }
 
         $objMdCorServicoPostalRN = new MdCorServicoPostalRN();
@@ -138,7 +138,7 @@ try {
             $strRd .= '               class="infraRadioInput" ' . $checkedNao . $readonly . $disabledSinAr . '>';
             $strRd .= '            <label class="infraRadioLabel" for="arN[' . $i . ']"></label>';
             $strRd .= '    </div>';
-            $strRd .= '    <label id="lblArN[' . $i . ']" for="arN[' . $i . ']" class="infraLabelRadio" tabindex="507">N„o</label>';
+            $strRd .= '    <label id="lblArN[' . $i . ']" for="arN[' . $i . ']" class="infraLabelRadio" tabindex="507">N√£o</label>';
             $strRd .= '</div>';
 
             $strChk = '<div id="divRdoAr" class="infraDivCheckbox">';
@@ -166,9 +166,9 @@ try {
             );
 
             if ($_GET['acao'] == 'md_cor_contrato_consultar') {
-                $itensTabelaContratoServicos[5] = ($objMdCorServicoPostalDTO->getStrExpedicaoAvisoRecebimento() == 'S') ? 'Sim' : 'N„o';
-                $itensTabelaContratoServicos[6] = ($cobrar == 'S') ? 'Sim' : 'N„o';
-                $itensTabelaContratoServicos[7] = ($anexarMidia == 'S') ? 'Sim' : 'N„o';
+                $itensTabelaContratoServicos[5] = ($objMdCorServicoPostalDTO->getStrExpedicaoAvisoRecebimento() == 'S') ? 'Sim' : 'N√£o';
+                $itensTabelaContratoServicos[6] = ($cobrar == 'S') ? 'Sim' : 'N√£o';
+                $itensTabelaContratoServicos[7] = ($anexarMidia == 'S') ? 'Sim' : 'N√£o';
                 $itensTabelaContratoServicos[8] = $objMdCorServicoPostalDTO->getStrDescricao();
             }
 
@@ -207,18 +207,18 @@ PaginaSEI::getInstance()->abrirAreaDados();
         <input type="hidden" id="txtCNPJ" name="txtCNPJ" value="<?= $strNumeroCNPJ; ?>"/>
         <input type="hidden" id="txtNumeroContratoCorreio" name="txtNumeroContratoCorreio" value="<?= $strNumeroContratoCorreio; ?>"/>
 
-        <!-- Padr„o de largura para as div abaixo -->
+        <!-- Padr√£o de largura para as div abaixo -->
         <?php $cls_def = "col-sm-7 col-md-7 col-lg-6" ?>
 
         <div class="row linha">
             <div class="col-12">
                 <fieldset id="fieldsetContratoCorreios" class="infraFieldset form-control" style="height: 100%">
-                    <legend class="infraLegend">&nbsp;ServiÁos Postais&nbsp;</legend>
+                    <legend class="infraLegend">&nbsp;Servi√ßos Postais&nbsp;</legend>
 
                         <div class="row">
                             <div class="col-sm-11 col-md-11 col-lg-10 col-xl-8 mt-2 mb-2">
                                 <button id="validar-url" onclick="buscarServicosPostais()" class="infraButton btn-outline-info"
-                                        type="button">Buscar ServiÁos Postais
+                                        type="button">Buscar Servi√ßos Postais
                                 </button>
                             </div>
 
@@ -235,19 +235,19 @@ PaginaSEI::getInstance()->abrirAreaDados();
                                     value=""/>
                                 <input type="hidden" name="hdnListaContratoServicosReativadas[]" id="hdnListaContratoServicosReativadas"
                                         value=""/>
-                                <table id="tbContratoServicos" class="infraTable w-100" align="left" summary="Lista de ServiÁos Postais">
+                                <table id="tbContratoServicos" class="infraTable w-100" align="left" summary="Lista de Servi√ßos Postais">
                                     <thead>
                                         <tr>
                                             <th class="infraTh" style="display: none;">Codigo Servico</th>
                                             <th class="infraTh" style="display: none;">AR Hidden</th>
                                             <th class="infraTh" style="display: none;">Descricao Hidden</th>
-                                            <th class="infraTh" width="18%" id="tdDescricaoServicoPostal">ServiÁo Postal</th>
-                                            <th class="infraTh" width="12%" align="center" id="tdCheckExpedidoAR">Tipo</th>
-                                            <th class="infraTh" width="16%" align="center" id="tdCheckExpedidoAR">Expedido com AR</th>
-                                            <th class="infraTh" width="10%" align="center" id="tdCheckCobrar">ServiÁo ‡ Cobrar</th>
-                                            <th class="infraTh" width="10%" align="center" id="tdCheckAnexarMidia">Permite Anexar MÌdia</th>
-                                            <th class="infraTh" width="22%" id="tdTxtDescricao">DescriÁ„o Amig·vel</th>                                    
-                                            <th class="infraTh" width="7%" align="center">AÁıes</th>                                    
+                                            <th class="infraTh" width="18%" id="tdDescricaoServicoPostal">Servi√ßo Postal</th>
+                                            <th class="infraTh" width="12%" align="center">Tipo</th>
+                                            <th class="infraTh" width="16%" align="center">Expedido com AR</th>
+                                            <th class="infraTh" width="10%" align="center" id="tdCheckCobrar">Servi√ßo √† Cobrar</th>
+                                            <th class="infraTh" width="10%" align="center" id="tdCheckAnexarMidia">Permite Anexar M√≠dia</th>
+                                            <th class="infraTh" width="22%" id="tdTxtDescricao">Descri√ß√£o Amig√°vel</th>                                    
+                                            <th class="infraTh" width="7%" align="center">A√ß√µes</th>                                    
                                         </tr>
                                     </thead>
                                     <tbody>

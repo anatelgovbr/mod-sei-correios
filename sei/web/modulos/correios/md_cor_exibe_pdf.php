@@ -30,12 +30,12 @@ try {
 
       $arquivo = DIR_SEI_TEMP.'/'.$_GET['nome_arquivo'];
       header("Content-type: application/pdf");
-      header("Content-Disposition", "inline; filename=\"$strNomeDownload\"");
+      header("Content-Disposition: inline; filename=\"$strNomeDownload\"");
       @readfile($arquivo);
       break;
 
     default:
-      throw new InfraException("AÁ„o '".$_GET['acao']."' n„o reconhecida.");
+      throw new InfraException("A√ß√£o '".$_GET['acao']."' n√£o reconhecida.");
   }
 
 }catch(Exception $e){

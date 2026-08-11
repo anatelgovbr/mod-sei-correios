@@ -288,11 +288,25 @@ class MdCorRetornoArDocRN extends InfraRN {
                     $documentoDTO->setStrProtocoloDocumentoFormatado($nuSei);
                     $objDocumentoDTO = $documentoRN->consultarRN0005($documentoDTO);
 
-                    if (!in_array($objDocumentoDTO->getStrStaEstadoProcedimento(), $arrStatusEstado)) {
+                    // Processo anexado nunca aceita o AR de volta e a solicitação ficaria pendente
+                    // indefinidamente. Nesse caso o retorno é arquivado no processo principal e o
+                    // estado passa a ser tratado como normal daqui para frente.
+                    $staEstadoProcedimento = $objDocumentoDTO->getStrStaEstadoProcedimento();
+                    $idProcedimentoDestinoAr = null;
+
+                    if ($staEstadoProcedimento == ProtocoloRN::$TE_PROCEDIMENTO_ANEXADO) {
+                        $idProcedimentoDestinoAr = $this->_obterProcedimentoPrincipalAnexado($idDocumentoPrincipal);
+
+                        if (!is_null($idProcedimentoDestinoAr)) {
+                            $staEstadoProcedimento = ProtocoloRN::$TE_NORMAL;
+                        }
+                    }
+
+                    if (!in_array($staEstadoProcedimento, $arrStatusEstado)) {
 
                         $idDocumentoAr = null;
                         if (empty($dados['hdnArquivoAlteracao']) && !is_null($idDocumentoPrincipal)) {
-                            $idDocumentoAr = $this->_adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO, $paramsPadraoNivelAcesso);
+                            $idDocumentoAr = $this->_adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO, $paramsPadraoNivelAcesso, $idProcedimentoDestinoAr);
                         }
                     }
 
@@ -381,15 +395,15 @@ class MdCorRetornoArDocRN extends InfraRN {
                 $objMdCorRetornoArDocDTO->setNumIdStatusProcess($stProcessamento);
                 $objMdCorRetornoArDocDTO->setNumIdDocumentoPrincipal($idDocumentoPrincipal);
                 if ($idDocumentoPrincipal) {
-                    if ($objDocumentoDTO->getStrStaEstadoProcedimento() == ProtocoloRN::$TE_PROCEDIMENTO_ANEXADO) {
+                    if ($staEstadoProcedimento == ProtocoloRN::$TE_PROCEDIMENTO_ANEXADO) {
                         $objMdCorRetornoArDocDTO->setNumIdStatusProcess(MdCorRetornoArRN::$STA_RETORNO_AR_NAO_PROCESSADO);
                         $objMdCorRetornoArDocDTO->setNumIdSubStatusProcess(MdCorRetornoArRN::$SUBSTA_RETORNO_AR_PROC_ANEXADO);
                         $objMdCorRetornoArDocDTO->setNumIdMdCorParamArInfrigencia(NULL);
-                    } elseif ($objDocumentoDTO->getStrStaEstadoProcedimento() == ProtocoloRN::$TE_PROCEDIMENTO_SOBRESTADO) {
+                    } elseif ($staEstadoProcedimento == ProtocoloRN::$TE_PROCEDIMENTO_SOBRESTADO) {
                         $objMdCorRetornoArDocDTO->setNumIdStatusProcess(MdCorRetornoArRN::$STA_RETORNO_AR_NAO_PROCESSADO);
                         $objMdCorRetornoArDocDTO->setNumIdSubStatusProcess(MdCorRetornoArRN::$SUBSTA_RETORNO_AR_PROC_SOBRESTADO);
                         $objMdCorRetornoArDocDTO->setNumIdMdCorParamArInfrigencia(NULL);
-                    } elseif ($objDocumentoDTO->getStrStaEstadoProcedimento() == ProtocoloRN::$TE_PROCEDIMENTO_BLOQUEADO) {
+                    } elseif ($staEstadoProcedimento == ProtocoloRN::$TE_PROCEDIMENTO_BLOQUEADO) {
                         $objMdCorRetornoArDocDTO->setNumIdStatusProcess(MdCorRetornoArRN::$STA_RETORNO_AR_NAO_PROCESSADO);
                         $objMdCorRetornoArDocDTO->setNumIdSubStatusProcess(MdCorRetornoArRN::$SUBSTA_RETORNO_AR_PROC_BLOQUEADO);
                         $objMdCorRetornoArDocDTO->setNumIdMdCorParamArInfrigencia(NULL);
@@ -411,15 +425,19 @@ class MdCorRetornoArDocRN extends InfraRN {
 
 
                 if ($idDocumentoPrincipal) {
-                    if (!in_array($objDocumentoDTO->getStrStaEstadoProcedimento(), $arrStatusEstado)) {
+                    if (!in_array($staEstadoProcedimento, $arrStatusEstado)) {
                         $andamentoDocumentoRN = new DocumentoRN();
                         $andamentoDocumentoDTO = new DocumentoDTO();
                         $andamentoDocumentoDTO->setDblIdDocumento($idDocumentoPrincipal);
                         $andamentoDocumentoDTO->retDblIdProcedimento();
                         $andamentoDocumentoDTO->retStrProtocoloDocumentoFormatado();
                         $objAndamentoDocumentoDTO = $andamentoDocumentoRN->consultarRN0005($andamentoDocumentoDTO);
+
+                        // Processo anexado: andamento e reatribuição vão para o processo principal
+                        $idProcedimentoAndamento = $idProcedimentoDestinoAr ?? $objAndamentoDocumentoDTO->getDblIdProcedimento();
+
                         $objEntradaLancarAndamentoAPI = new EntradaLancarAndamentoAPI();
-                        $objEntradaLancarAndamentoAPI->setIdProcedimento($objAndamentoDocumentoDTO->getDblIdProcedimento());
+                        $objEntradaLancarAndamentoAPI->setIdProcedimento($idProcedimentoAndamento);
                         $objEntradaLancarAndamentoAPI->setIdTarefaModulo('MD_COR_RETORNO_AR');
 
 
@@ -438,8 +456,14 @@ class MdCorRetornoArDocRN extends InfraRN {
 
                         $objSeiRN = new SeiRN();
                         if ($dados['hdnArquivoAlteracao'] == '') {
-                            $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);
-                            $idProcedimento = $objAndamentoDocumentoDTO->getDblIdProcedimento();
+                            $idProcedimento = $idProcedimentoAndamento;
+                            try {
+                                $objSeiRN->lancarAndamento($objEntradaLancarAndamentoAPI);
+                            } catch (Exception $eAndamento) {
+                                $objInfraExceptionAnd = new InfraException();
+                                $objInfraExceptionAnd->adicionarValidacao('Nao foi possivel lancar o andamento do retorno de AR do objeto ' . $nuSei . '. Verifique a situacao do processo e processe novamente.');
+                                $objInfraExceptionAnd->lancarValidacoes();
+                            }
                             
                             $objAtividadeRN = new AtividadeRN();
                             $objAtividadeDTO = new AtividadeDTO();
@@ -472,9 +496,9 @@ class MdCorRetornoArDocRN extends InfraRN {
                     $parametros = array();
                     $parametros[] = $idDocumentoPrincipal;
                     $parametros[] = $codigoRastreamento;
-                    if (in_array($objDocumentoDTO->getStrStaEstadoProcedimento(), $arrStatusEstado)) {
+                    if (in_array($staEstadoProcedimento, $arrStatusEstado)) {
 
-                        switch ($objDocumentoDTO->getStrStaEstadoProcedimento()) {
+                        switch ($staEstadoProcedimento) {
                             case ProtocoloRN::$TE_PROCEDIMENTO_SOBRESTADO : $motivo = 'Sobrestado'; break;
                             case ProtocoloRN::$TE_PROCEDIMENTO_BLOQUEADO : $motivo = 'Bloqueado'; break;
                             case ProtocoloRN::$TE_PROCEDIMENTO_ANEXADO : $motivo = 'Anexado'; break;
@@ -482,7 +506,7 @@ class MdCorRetornoArDocRN extends InfraRN {
 
                         $dados['msgErro'][] = "Objeto: $nuSei - Processo: {$objDocumentoDTO->getStrProtocoloProcedimentoFormatado()} - Motivo: Procedimento em estado {$motivo}";
                     }
-                    $parametros[] = in_array($objDocumentoDTO->getStrStaEstadoProcedimento(), $arrStatusEstado);
+                    $parametros[] = in_array($staEstadoProcedimento, $arrStatusEstado);
                     
                     $this->salvarRecebidoExpedicao($parametros);
                     SessaoSEI::getInstance()->setBolHabilitada(true);
@@ -506,12 +530,17 @@ class MdCorRetornoArDocRN extends InfraRN {
             }
             //Auditoria
             return $dados;
+        } catch (InfraException $e) {
+            if ($e->contemValidacoes()) {
+                throw $e;
+            }
+            throw new InfraException('Erro cadastrando .', $e);
         } catch (Exception $e) {
             throw new InfraException('Erro cadastrando .', $e);
         }
     }
 
-    private function _adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO, $paramsPadraoNivelAcesso) {
+    private function _adicionarPdfProcedimento($dados, $chave, $arrMdCorParametroArDTO, $paramsPadraoNivelAcesso, $idProcedimentoDestino = null) {
 
         
         $idDocumentoPrincipal = $dados['idDocumentoPrincipal'][$chave];
@@ -533,7 +562,8 @@ class MdCorRetornoArDocRN extends InfraRN {
         $nomeArvore = str_replace('@tipo_doc_principal_expedido@', $objRetDocumentoDTO->getStrNomeSerie(), $nomeArvore);
         $nomeArvore = substr(str_replace('@numero@', $nuSei, $nomeArvore), 0, 50);
 
-        $idProcedimento = $objRetDocumentoDTO->getDblIdProcedimento();
+        // Quando o processo do documento está anexado, o AR é arquivado no processo principal
+        $idProcedimento = $idProcedimentoDestino ?? $objRetDocumentoDTO->getDblIdProcedimento();
         $idSerie = $arrMdCorParametroArDTO->getNumIdSerie();
         $idTipoConferencia = $arrMdCorParametroArDTO->getNumIdTipoConferencia();
 
@@ -585,12 +615,65 @@ class MdCorRetornoArDocRN extends InfraRN {
 
 
         $objDocumentoAPI->setNomeArquivo($noArquivo);
-        $objDocumentoAPI->setConteudo(base64_encode(file_get_contents(DIR_SEI_TEMP . '/' . $noDiretorio . '/' . $noArquivo)));
+
+        $strCaminhoPdfAr = DIR_SEI_TEMP . '/' . $noDiretorio . '/' . $noArquivo;
+        if (!is_file($strCaminhoPdfAr)) {
+            $objInfraExceptionArq = new InfraException();
+            $objInfraExceptionArq->adicionarValidacao('Arquivo PDF do objeto ' . $nuSei . ' nao encontrado para processamento. Refaca o upload do arquivo ZIP e processe novamente.');
+            $objInfraExceptionArq->lancarValidacoes();
+        }
+
+        $objDocumentoAPI->setConteudo(base64_encode(file_get_contents($strCaminhoPdfAr)));
 
         $objSaidaDocumentoAPI = $objSeiRN->incluirDocumento($objDocumentoAPI);
 
 
         return $objSaidaDocumentoAPI->getIdDocumento();
+    }
+
+    /**
+     * Retorna o processo principal ao qual o processo do documento está anexado, quando esse
+     * principal está apto a receber o retorno de AR.
+     *
+     * Processo anexado não aceita novos documentos, então o AR seria recusado e a solicitação
+     * ficaria pendente indefinidamente. O core impede anexação em cadeia (um processo anexado
+     * não pode receber anexos), por isso basta subir um nível.
+     *
+     * @param float $idDocumentoPrincipal documento expedido
+     * @return float|null id do processo principal, ou null quando não houver destino válido
+     */
+    private function _obterProcedimentoPrincipalAnexado($idDocumentoPrincipal) {
+
+        $objDocumentoDTO = new DocumentoDTO();
+        $objDocumentoDTO->retDblIdProcedimento();
+        $objDocumentoDTO->setDblIdDocumento($idDocumentoPrincipal);
+        $objDocumentoDTO = (new DocumentoRN())->consultarRN0005($objDocumentoDTO);
+
+        if (is_null($objDocumentoDTO)) {
+            return null;
+        }
+
+        $objRelProtocoloProtocoloDTO = new RelProtocoloProtocoloDTO();
+        $objRelProtocoloProtocoloDTO->retDblIdProtocolo1();
+        $objRelProtocoloProtocoloDTO->retStrStaEstadoProtocolo1();
+        $objRelProtocoloProtocoloDTO->setDblIdProtocolo2($objDocumentoDTO->getDblIdProcedimento());
+        $objRelProtocoloProtocoloDTO->setStrStaAssociacao(RelProtocoloProtocoloRN::$TA_PROCEDIMENTO_ANEXADO);
+        $objRelProtocoloProtocoloDTO->setNumMaxRegistrosRetorno(1);
+
+        $arrObjRelProtocoloProtocoloDTO = (new RelProtocoloProtocoloRN())->listarRN0187($objRelProtocoloProtocoloDTO);
+
+        if (empty($arrObjRelProtocoloProtocoloDTO)) {
+            return null;
+        }
+
+        $objRelProtocoloProtocoloDTO = $arrObjRelProtocoloProtocoloDTO[0];
+
+        // o principal também precisa estar apto a receber documento
+        if ($objRelProtocoloProtocoloDTO->getStrStaEstadoProtocolo1() != ProtocoloRN::$TE_NORMAL) {
+            return null;
+        }
+
+        return $objRelProtocoloProtocoloDTO->getDblIdProtocolo1();
     }
 
     protected function salvarRecebidoExpedicaoControlado($parametros) {
