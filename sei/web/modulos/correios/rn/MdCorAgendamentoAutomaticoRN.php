@@ -1,10 +1,10 @@
 <?
 /**
- * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
+ * TRIBUNAL REGIONAL FEDERAL DA 4Âª REGIÃƒO
  *
  * 09/06/2017 - criado por jaqueline.mendes
  *
- * Versão do Gerador de Código: 1.40.0
+ * VersÃ£o do Gerador de CÃ³digo: 1.40.0
  */
 
 require_once dirname(__FILE__) . '/../../../SEI.php';
@@ -22,7 +22,7 @@ class MdCorAgendamentoAutomaticoRN extends InfraRN
         return BancoSEI::getInstance();
     }
 
-    /* Método responsável por atualizar o andamento dos objs no correios */
+    /* MÃ©todo responsÃ¡vel por atualizar o andamento dos objs no correios */
     protected function atualizarAndamentoObjetosConectado()
     {
 
@@ -81,7 +81,7 @@ class MdCorAgendamentoAutomaticoRN extends InfraRN
         InfraDebug::getInstance()->limpar();
 
         $numSeg = InfraUtil::verificarTempoProcessamento();
-        InfraDebug::getInstance()->gravar('FINALIZANDO FLUXO DE ARS NÃO RETORNADOS');
+        InfraDebug::getInstance()->gravar('FINALIZANDO FLUXO DE ARS NÃƒO RETORNADOS');
 
 
         $objMdCorParametroArRN = new MdCorParametroArRN();
@@ -129,7 +129,7 @@ class MdCorAgendamentoAutomaticoRN extends InfraRN
         $numSeg = InfraUtil::verificarTempoProcessamento($numSeg);
         InfraDebug::getInstance()->gravar('TEMPO TOTAL DE EXECUCAO: ' . $numSeg . ' s');
         if ($retornoArrFalhas) {
-            InfraDebug::getInstance()->gravar('ALGUNS DOCUMENTOS NÃO TIVERAM SEU FLUXO DE AR FINALIZADO DEVIDO A UM ERRO NO PARÂMETRO DE INFRIGÊNCIA CONTRATUAL. DOCUMENTOS COM FALHA:');
+            InfraDebug::getInstance()->gravar('ALGUNS DOCUMENTOS NÃƒO TIVERAM SEU FLUXO DE AR FINALIZADO DEVIDO A UM ERRO NO PARÃ‚METRO DE INFRIGÃŠNCIA CONTRATUAL. DOCUMENTOS COM FALHA:');
             foreach ($retornoArrFalhas as $falha) {
                 InfraDebug::getInstance()->gravar($falha);
             }
@@ -312,46 +312,63 @@ class MdCorAgendamentoAutomaticoRN extends InfraRN
         $objMdCorListaStatusDTO = new MdCorListaStatusDTO();
         $objMdCorListaStatusDTO->retTodos(true);
         $objMdCorListaStatusRN = new MdCorListaStatusRN();
-        $pdf = new InfraPDF();
+        $pdf = new InfraEtiquetasPDF([
+            'name' => 'relatorio-correios',
+            'paper-size' => 'A4',
+            'metric' => 'mm',
+            'marginLeft' => 0,
+            'marginTop' => 0,
+            'NX' => 1,
+            'NY' => 1,
+            'SpaceX' => 0,
+            'SpaceY' => 0,
+            'width' => 210,
+            'height' => 297,
+            'font-size' => 12,
+            'orientacao' => 'V',
+            'style' => '',
+        ], 'mm');
+        $pdf->SetMargins(10, 10);
+        $pdf->SetAutoPageBreak(true, 20);
         $pdf->AddPage();
         $pdf->SetTitle($nomeArquivo);
         $pdf->SetFont('Times','',12);
         $this->inserirImagemTopoPdf($pdf, $modeloDocumento);
-        $pdf->write(5, 'A ' . $unidade_exp . ' informa que a correspondência associada ao documento principal SEI ' . $mdCorExpedicaoSolicitadaDTO->getDblIdDocumentoPrincipal() . ', código de rastreamento ' . $mdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento() . ' ');
+        $pdf->write(5, 'A ' . $unidade_exp . ' informa que a correspondÃªncia associada ao documento principal SEI ' . $mdCorExpedicaoSolicitadaDTO->getDblIdDocumentoPrincipal() . ', cÃ³digo de rastreamento ' . $mdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento() . ' ');
         $pdf->SetFont('Times', 'U', 12);
         if ($modeloDocumento == 1) {
-            $pdf->write(5, 'foi entregue ao destinatário,');
+            $pdf->write(5, 'foi entregue ao destinatÃ¡rio,');
         } else {
-            $pdf->write(5, 'não foi entregue ao destinatário,');
+            $pdf->write(5, 'nÃ£o foi entregue ao destinatÃ¡rio,');
         }
         $pdf->SetFont('Times', '', 12);
-        $pdf->write(5, ' conforme informações do rastreamento eletrônico dos Correios apresentadas mais abaixo. ');
+        $pdf->write(5, ' conforme informaÃ§Ãµes do rastreamento eletrÃ´nico dos Correios apresentadas mais abaixo. ');
         $pdf->SetFont('Times', 'U', 12);
-        $pdf->write(5, 'Ademais, até o presente momento, a correspondência também não foi devolvida pelos Correios à Anatel.');
+        $pdf->write(5, 'Ademais, atÃ© o presente momento, a correspondÃªncia tambÃ©m nÃ£o foi devolvida pelos Correios Ã  Anatel.');
         $pdf->Ln(10);
         $pdf->SetFont('Times', '', 12);
-        $pdf->write(5, 'Em que pese várias tratativas e reclamações junto aos Correios e considerando o tempo passado desde a expedição da correspondência, ');
+        $pdf->write(5, 'Em que pese vÃ¡rias tratativas e reclamaÃ§Ãµes junto aos Correios e considerando o tempo passado desde a expediÃ§Ã£o da correspondÃªncia, ');
         $pdf->SetFont('Times', 'U', 12);
         if ($modeloDocumento == 1) {
-            $pdf->write(5, 'não temos perspectiva de que o AR em particular seja retornado.');
+            $pdf->write(5, 'nÃ£o temos perspectiva de que o AR em particular seja retornado.');
         } else {
-            $pdf->write(5, 'não temos perspectiva de que a correspondência seja devolvida');
+            $pdf->write(5, 'nÃ£o temos perspectiva de que a correspondÃªncia seja devolvida');
         }
         $pdf->Ln(10);
         $pdf->SetFont('Times', 'B', 11);
-        $pdf->write(5, 'DESTA FORMA, A ÁREA DEVE AVALIAR SE AS INFORMAÇÕES DE RASTREAMENTO ELETRÔNICO DO OBJETO SÃO SUFICIENTE PARA O PROCEDIMENTO ESPECÍFICO NO PROCESSO OU SE É O CASO DE SOLICITAR A EMISSÃO DE UMA NOVA CORRESPONDÊNCIA, CASO O RETORNO DO AR SEJA IMPRESCINDÍVEL PARA O PROCESSO.');
+        $pdf->write(5, 'DESTA FORMA, A ÃREA DEVE AVALIAR SE AS INFORMAÃ‡Ã•ES DE RASTREAMENTO ELETRÃ”NICO DO OBJETO SÃƒO SUFICIENTE PARA O PROCEDIMENTO ESPECÃFICO NO PROCESSO OU SE Ã‰ O CASO DE SOLICITAR A EMISSÃƒO DE UMA NOVA CORRESPONDÃŠNCIA, CASO O RETORNO DO AR SEJA IMPRESCINDÃVEL PARA O PROCESSO.');
         $pdf->Ln(10);
         $this->incluiDetalhamentoRastreamento($pdf, $objRetDocumentoDTO, $mdCorExpedicaoSolicitadaDTO, $dadosDestinatario, $retornoStatusRastreamento, $arrObjMdCorExpAndamentoDTO, $objMdCorListaStatusDTO, $objMdCorListaStatusRN, $modeloDocumento);
         $pdf->SetFont('Times', 'B', 11);
-        $pdf->write(5, 'Observação:');
+        $pdf->write(5, 'ObservaÃ§Ã£o:');
         $pdf->SetFont('Times', '', 12);
         if ($modeloDocumento == 1) {
-            $pdf->write(5, ' Na hipótese de o Aviso de Recebimento em questão ser retornado pelos Correios após a emissão deste alerta, ');
+            $pdf->write(5, ' Na hipÃ³tese de o Aviso de Recebimento em questÃ£o ser retornado pelos Correios apÃ³s a emissÃ£o deste alerta, ');
         } else {
-            $pdf->write(5, ' Na hipótese de o objeto em questão ser devolvido pelos Correios após a emissão deste alerta, ');
+            $pdf->write(5, ' Na hipÃ³tese de o objeto em questÃ£o ser devolvido pelos Correios apÃ³s a emissÃ£o deste alerta, ');
         }
         $pdf->SetFont('Times', 'U', 12);
-        $pdf->write(5, 'será então incluído como documento externo no processo.');
+        $pdf->write(5, 'serÃ¡ entÃ£o incluÃ­do como documento externo no processo.');
         return $pdf->Output(DIR_SEI_TEMP . '/'.$nomeArquivo.'/'.$nomeArquivo.'.pdf', 'F');
     }
     private function incluiDetalhamentoRastreamento($pdf, $objRetDocumentoDTO, $mdCorExpedicaoSolicitadaDTO, $dadosDestinatario, $retornoStatusRastreamento, $arrObjMdCorExpAndamentoDTO, $objMdCorListaStatusDTO, $objMdCorListaStatusRN, $modeloDocumento) {
@@ -361,9 +378,9 @@ class MdCorAgendamentoAutomaticoRN extends InfraRN
         $pdf->SetFont('Times','',10);
         $pdf->write(5, 'Documento Principal: '.$objRetDocumentoDTO->getStrNomeSerie().' '.$objRetDocumentoDTO->getStrNumero().' ('.$mdCorExpedicaoSolicitadaDTO->getStrProtocoloFormatadoDocumento().')');
         $pdf->Ln();
-        $pdf->write(5, 'Código de Rastreamento: '.$mdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento());
+        $pdf->write(5, 'CÃ³digo de Rastreamento: '.$mdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento());
         $pdf->Ln();
-        $pdf->write(5, 'Serviço Postal: '.$mdCorExpedicaoSolicitadaDTO->getStrDescricaoServicoPostal());
+        $pdf->write(5, 'ServiÃ§o Postal: '.$mdCorExpedicaoSolicitadaDTO->getStrDescricaoServicoPostal());
         $pdf->SetFont('Times','B',10);
         $pdf->write(5, ' (Com Aviso de Recebimento)');
         $pdf->SetFont('Times','',10);
@@ -373,7 +390,7 @@ class MdCorAgendamentoAutomaticoRN extends InfraRN
         } else {
             $pdf->Rect(10, 95, 190, 25);
         }
-        $pdf->Cell(0,5,'Destinatário',0);
+        $pdf->Cell(0,5,'DestinatÃ¡rio',0);
         $pdf->Ln();
         if($dadosDestinatario["tratamento_destinatario"] != "") {
             $pdf->Cell(0,5,$dadosDestinatario["tratamento_destinatario"],0);
@@ -404,7 +421,7 @@ class MdCorAgendamentoAutomaticoRN extends InfraRN
         }
         $pdf->SetFont('Times','',9);
         if($arrObjMdCorExpAndamentoDTO) {
-            $pdf->Cell(0,5,'Data da Última Atualização: '.$arrObjMdCorExpAndamentoDTO[0]->getDthDataUltimaAtualizacao(),0, 0, 'C');
+            $pdf->Cell(0,5,'Data da Ãšltima AtualizaÃ§Ã£o: '.$arrObjMdCorExpAndamentoDTO[0]->getDthDataUltimaAtualizacao(),0, 0, 'C');
             $pdf->Ln(5);
             $quantidadeEventos = 0;
             foreach ($arrObjMdCorExpAndamentoDTO as $objDTO) {
