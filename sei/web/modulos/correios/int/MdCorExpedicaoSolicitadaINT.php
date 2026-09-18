@@ -310,11 +310,15 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                     return $str_msg_validacao;
                 } else {
                     $str_msg_validacao = "O Destinatário deste documento está com cadastro de Contato desativado. \n\nAcesse o botão de ação \"Consultar/Alterar Documento\" sobre o documento para trocar o Contato indicado como Destinatário por um contato ativo.";
-                    return "<item></item><flag>false</flag><mensagem>" . $str_msg_validacao . "</mensagem></item>";
+                    return "<item><flag>false</flag><mensagem>" . $str_msg_validacao . "</mensagem></item>";
                 }
             }
 
-            self::validarDestinatarioIntimacaoEletronica($contatoDTO, $bolEntrada);
+            $strRetornoIntimacao = self::validarDestinatarioIntimacaoEletronica($contatoDTO, $bolEntrada);
+
+            if (!empty($strRetornoIntimacao)) {
+                return $strRetornoIntimacao;
+            }
 
             if ($contatoDTO->getStrSinEnderecoAssociado() == 'S') {
                 $contatoAssociadoDTO = new ContatoDTO();
@@ -424,7 +428,7 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                     return $str_msg_validacao_Tipo_contato;
                 } else {
                     $str_msg_validacao_Tipo_contato = "O Tipo de Contato do Destinatário ou da Pessoa Jurídica Associada não permite Expedição pelos Correios. Por exemplo, está utilizando o Tipo de Contato Temporário ou Usuário Externo. \n\nRevise o Contato para classificá-lo em Tipo de Contato adequado ou realize a expedição por meio de Intimação Eletrônica.";
-                    return "<item></item><flag>false</flag><mensagem>" . $str_msg_validacao_Tipo_contato . "</mensagem></item>";
+                    return "<item><flag>false</flag><mensagem>" . $str_msg_validacao_Tipo_contato . "</mensagem></item>";
                 }
             }
 
@@ -601,60 +605,29 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
         if (!is_null($versaoInfraParametro) && $versaoInfraParametro >= 300 ) {
 
             if($bolEntrada){
-                $msgErro = 'O Destinatário indicado pode receber Intimação Eletrônica, sendo vedada a expedição pelos Correios. \nNa tela anterior, acesse o botão \"Gerar Intimação Eletrônica\" para expedir o documento por Intimação Eletrônica.';
+                $msgErro = 'O Destinatário indicado pode receber Intimação Eletrônica, sendo vedada a expedição pelos Correios. \nNa tela anterior, acesse o botão "Gerar Intimação Eletrônica" para expedir o documento por Intimação Eletrônica.';
             }else {
                 $msgErro = "O Destinatário indicado pode receber Intimação Eletrônica, sendo vedada a expedição pelos Correios. \nNa tela anterior, acesse o botão \"Gerar Intimação Eletrônica\" para expedir o documento por Intimação Eletrônica.";
             }
-            $usuarioDTO = new UsuarioDTO();
-            $usuarioDTO->retStrStaTipo();
-            $usuarioDTO->retStrSinAtivo();
-            $usuarioDTO->setNumIdContato($contatoDTO->getNumIdContato());
+            
+            if ($contatoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_FISICA) {
 
-            $UsuarioRN = new UsuarioRN();
-            $usuarioDTO = $UsuarioRN->consultarRN0489($usuarioDTO);
+                $usuarioDTO = new UsuarioDTO();
+                $usuarioDTO->setStrSinAtivo('S');
+                $usuarioDTO->setStrStaTipo( UsuarioRN::$TU_EXTERNO );
+                $usuarioDTO->setNumIdContato($contatoDTO->getNumIdContato());
+                $numUsuariosExternos = ( new UsuarioRN() )->contarRN0492($usuarioDTO);
 
-            if (is_null($usuarioDTO)) {
-
-                $objContatoRN = new ContatoRN();
-
-                if (!is_null($contatoDTO->getDblCpf())) {
-
-                    $objContatoDTO = new ContatoDTO();
-                    $objContatoDTO->setDblCpf($contatoDTO->getDblCpf());
-                    $objContatoDTO->retNumIdContato();
-                    $objContatoDTO = $objContatoRN->listarRN0325($objContatoDTO);
-
-                    $arrIdContato = InfraArray::converterArrInfraDTO($objContatoDTO, 'IdContato');
-
-                    $usuarioDTO = new UsuarioDTO();
-                    $usuarioDTO->retNumIdContato();
-                    $usuarioDTO->setNumIdContato($arrIdContato, InfraDTO::$OPER_IN);
-                    $usuarioDTO->setStrStaTipo( UsuarioRN::$TU_EXTERNO );
-                    $usuarioDTO->setStrSinAtivo('S');
-
-                    $objUsuarioRN = new UsuarioRN();
-                    $listaContato = $objUsuarioRN->listarRN0490($usuarioDTO);
-
-                    if (count($listaContato) > 0) {
-                        if($bolEntrada){
-                            throw new Exception( str_replace('\n','<br>', $msgErro) );
-                        } else {
-                            return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
-                        }
+                if ($numUsuariosExternos > 0) {
+                    if($bolEntrada){
+                        throw new Exception( str_replace('\n','<br>', $msgErro) );
                     } else {
-
-                        $arrIdContato = [$contatoDTO->getNumIdContatoAssociado()];
-                        $arrObjMdPetVinculoDTO = self::validarPetVinculoUsuarioExterno($arrIdContato);
-
-                        if (count($arrObjMdPetVinculoDTO) > 0) {
-                            if($bolEntrada){
-                                throw new Exception( str_replace('\n','<br>', $msgErro) );
-                            } else {
-                                return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
-                            }
-                        }
+                        return "<item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                     }
-                }else{
+                }
+
+                if (!is_null($contatoDTO->getNumIdContatoAssociado())) {
+
                     $arrIdContato = [$contatoDTO->getNumIdContatoAssociado()];
                     $arrObjMdPetVinculoDTO = self::validarPetVinculoUsuarioExterno($arrIdContato);
 
@@ -662,48 +635,33 @@ class MdCorExpedicaoSolicitadaINT extends InfraINT {
                         if($bolEntrada){
                             throw new Exception( str_replace('\n','<br>', $msgErro) );
                         } else {
-                            return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
+                            return "<item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                         }
                     }
+
                 }
 
-                if ($contatoDTO->getStrStaNatureza() == 'J' && !is_null($contatoDTO->getStrCnpj()) && !empty($contatoDTO->getStrCnpj())) {
+            } else if ($contatoDTO->getStrStaNatureza() == ContatoRN::$TN_PESSOA_JURIDICA) {
 
-                    $arrIdContato = [$contatoDTO->getNumIdContato()];
-                    $arrObjMdPetVinculoDTO = self::validarPetVinculoUsuarioExterno($arrIdContato);
+                $arrIdContato = [$contatoDTO->getNumIdContato()];
 
-                    if (count($arrObjMdPetVinculoDTO) > 0) {
-                        if($bolEntrada){
-                            throw new Exception( str_replace('\n','<br>', $msgErro) );
-                        } else {
-                            return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
-                        }
-                    } else {
-                        $objContatoDTO = new ContatoDTO();
-                        $objContatoDTO->setStrCnpj($contatoDTO->getStrCnpj());
-                        $objContatoDTO->retNumIdContato();
-                        $objContatoDTO = $objContatoRN->listarRN0325($objContatoDTO);
+                // Com CNPJ a busca cobre todos os contatos da mesma empresa, e o próprio já entra nela.
+                if (!is_null($contatoDTO->getStrCnpj()) && !empty($contatoDTO->getStrCnpj())) {
+                    $objContatoDTO = new ContatoDTO();
+                    $objContatoDTO->setStrCnpj($contatoDTO->getStrCnpj());
+                    $objContatoDTO->retNumIdContato();
+                    $objContatoDTO = ( new ContatoRN() )->listarRN0325($objContatoDTO);
 
-                        $arrIdContato = InfraArray::converterArrInfraDTO($objContatoDTO, 'IdContato');
-
-                        $arrObjMdPetVinculoDTO = self::validarPetVinculoUsuarioExterno($arrIdContato);
-
-                        if (count($arrObjMdPetVinculoDTO) > 0) {
-                            if($bolEntrada){
-                                throw new Exception( str_replace('\n','<br>', $msgErro) );
-                            } else {
-                                return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
-                            }
-                        }
-                    }
+                    $arrIdContato = InfraArray::converterArrInfraDTO($objContatoDTO, 'IdContato');
                 }
 
-            } else {
-                if ($usuarioDTO->getStrStaTipo() == UsuarioRN::$TU_EXTERNO && $usuarioDTO->getStrSinAtivo() == 'S') {
-                    if ( $bolEntrada ){
+                $arrObjMdPetVinculoDTO = self::validarPetVinculoUsuarioExterno($arrIdContato);
+
+                if (count($arrObjMdPetVinculoDTO) > 0) {
+                    if($bolEntrada){
                         throw new Exception( str_replace('\n','<br>', $msgErro) );
                     } else {
-                        return "<item></item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
+                        return "<item><flag>false</flag><mensagem>" . $msgErro . "</mensagem></item>";
                     }
                 }
             }
