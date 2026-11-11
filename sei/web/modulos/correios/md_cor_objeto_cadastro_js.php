@@ -1,9 +1,9 @@
 <script type="text/javascript">
 
 function inicializar(){
-  if ('<?=$_GET['acao']?>'=='md_cor_objeto_cadastrar'){
+  if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>'=='md_cor_objeto_cadastrar'){
     document.getElementById('selMdCorTipoObjeto').focus();
-  } else if ('<?=$_GET['acao']?>'=='md_cor_objeto_consultar'){
+  } else if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>'=='md_cor_objeto_consultar'){
     infraDesabilitarCamposAreaDados();
   }else{
     document.getElementById('btnCancelar').focus();
@@ -19,13 +19,13 @@ function validarCadastro() {
   }
 
   if(document.getElementById('optTipoRotuloImpressaoCompleto').checked == false && document.getElementById('optTipoRotuloImpressaoResumido').checked == false ){
-    alert('Selecione o tipo de rÛtulo utilizado para impress„o');
+    alert('Selecione o tipo de r√≥tulo utilizado para impress√£o');
     document.getElementById('optTipoRotuloImpressaoResumido').focus();
     return false;
   }
 
   if(document.getElementById('optSinObjetoPadraoSim').checked == false && document.getElementById('optSinObjetoPadraoNao').checked == false ){
-    alert('Selecione o objeto padr„o para expediÁ„o');
+    alert('Selecione o objeto padr√£o para expedi√ß√£o');
     document.getElementById('optSinObjetoPadraoNao').focus();
     return false;
   }

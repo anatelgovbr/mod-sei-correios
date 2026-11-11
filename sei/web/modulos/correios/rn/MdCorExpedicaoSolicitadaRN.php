@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * TRIBUNAL REGIONAL FEDERAL DA 4ª REGIÃO
@@ -1446,8 +1446,8 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
     }
 
     /**
-     * Identifica, entre os processos informados, quais possuem solicitação de expedição com
-     * AR ainda pendente de retorno, em qualquer etapa: aguardando expedição, em procedimento
+     * Identifica, entre os processos informados, quais possuem solicitação de expedição feita pela
+     * unidade atual com AR ainda pendente de retorno, em qualquer etapa: aguardando expedição, em procedimento
      * de postagem ou já postado aguardando o retorno do AR.
      *
      * @param array $arrObjProcedimentoAPI lista de ProcedimentoAPI avaliada na operação
@@ -1480,6 +1480,7 @@ class MdCorExpedicaoSolicitadaRN extends InfraRN
         $mdCorExpedicaoSolicitadaDTO->setStrSinRecebido('N');
         $mdCorExpedicaoSolicitadaDTO->setStrSinDevolvido('N');
         $mdCorExpedicaoSolicitadaDTO->setNumIdProcedimento($arrIdProcedimento, InfraDTO::$OPER_IN);
+        $mdCorExpedicaoSolicitadaDTO->setNumIdUnidade(SessaoSEI::getInstance()->getNumIdUnidadeAtual());
         $arrMdCorExpedicaoSolicitadaDTO = $this->listar($mdCorExpedicaoSolicitadaDTO);
 
         // A infrigência é lida por código de rastreamento, e não pelo relacionamento do DTO:

@@ -1,6 +1,6 @@
 <script type="text/javascript">
     
-    var acao = '<?= $_GET['acao'] ?>';
+    var acao = '<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>';
 
     <? require_once('md_cor_contrato_cadastro_inicializacao.php');?>
 
@@ -13,9 +13,9 @@
     }
 
     function inicializar() {
-        if ('<?=$_GET['acao']?>' == 'md_cor_contrato_cadastrar') {
+        if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>' == 'md_cor_contrato_cadastrar') {
             document.getElementById('txtNumeroContrato').focus();
-        } else if ('<?=$_GET['acao']?>' == 'md_cor_contrato_consultar') {
+        } else if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>' == 'md_cor_contrato_consultar') {
             infraDesabilitarCamposAreaDados();
         } else {
             document.getElementById('btnCancelar').focus();
@@ -23,8 +23,8 @@
     }
 
     /**
-     * Funções responsáveis pela validação do processo
-     * @author: Wilton Júnior <wilton.junior@castgroup.com.br>
+     * FunÃ§Ãµes responsÃ¡veis pela validaÃ§Ã£o do processo
+     * @author: Wilton JÃºnior <wilton.junior@castgroup.com.br>
      * @since: 29/12/2016
      */
     function validarNumeroProcesso() {
@@ -35,7 +35,7 @@
 
         var numeroProcessoPreenchido = document.getElementById('txtNumeroProcessoContratacao').value != '';
         if (!numeroProcessoPreenchido) {
-            exibirAlert('Informe o Número.','txtNumeroProcessoContratacao');
+            exibirAlert('Informe o NÃºmero.','txtNumeroProcessoContratacao');
             return false;
         }
 
@@ -76,7 +76,7 @@
 
     function validarCadastro() {
         if (infraTrim(document.getElementById('txtNumeroContrato').value) == '') {
-            exibirAlert('Informe o Número do Contrato no Órgão.','txtNumeroContrato');
+            exibirAlert('Informe o NÃºmero do Contrato no Ã“rgÃ£o.','txtNumeroContrato');
             return false;
         }
 
@@ -85,22 +85,22 @@
             ||
             document.getElementById('txtNumeroProcessoContratacao').value == ''
         ){
-            exibirAlert('Número do Processo de Contratação não foi validado.','txtNumeroProcessoContratacao');
+            exibirAlert('NÃºmero do Processo de ContrataÃ§Ã£o nÃ£o foi validado.','txtNumeroProcessoContratacao');
             return false;
         }
 
         if (infraTrim(document.getElementById('txtNumeroContratoCorreio').value) == '') {
-            exibirAlert('Informe o Número do Contrato nos Correios.','txtNumeroContratoCorreio');
+            exibirAlert('Informe o NÃºmero do Contrato nos Correios.','txtNumeroContratoCorreio');
             return false;
         }
 
         if (infraTrim(document.getElementById('txtNumeroCartaoPostagem').value) == '') {
-            exibirAlert('Informe o Cartão de Postagem dos Correios correspondente ao Contrato.','txtNumeroCartaoPostagem');
+            exibirAlert('Informe o CartÃ£o de Postagem dos Correios correspondente ao Contrato.','txtNumeroCartaoPostagem');
             return false;
         }
 
         if (infraTrim(document.getElementById('txtCNPJ').value) == '') {
-            exibirAlert('Informe o CNPJ do Orgão do Contrato.','txtCNPJ');
+            exibirAlert('Informe o CNPJ do OrgÃ£o do Contrato.','txtCNPJ');
             return false;
         }
 

@@ -15,7 +15,7 @@ class CorreiosIntegracao extends SeiIntegracao
 
     public function getVersao()
     {
-        return '2.7.4';
+        return '2.7.5';
     }
 
     public function getInstituicao()
@@ -512,7 +512,7 @@ class CorreiosIntegracao extends SeiIntegracao
         if (!empty($arrProtocoloBloqueado)) {
             $objInfraException = new InfraException();
             foreach ($arrProtocoloBloqueado as $strProtocolo) {
-                $objInfraException->adicionarValidacao($this->getNome() . ': Não é permitido Bloquear o processo ' . $strProtocolo . ', pois o mesmo possui Solicitação de Expedição pelos Correios em andamento.');
+                $objInfraException->adicionarValidacao($this->getNome() . ': Não é permitido Bloquear o processo ' . $strProtocolo . ', pois o mesmo possui Solicitação de Expedição pelos Correios em andamento nesta unidade.');
             }
             $objInfraException->lancarValidacoes();
         }
@@ -525,7 +525,7 @@ class CorreiosIntegracao extends SeiIntegracao
         if (!empty($arrProtocoloBloqueado)) {
             $objInfraException = new InfraException();
             foreach ($arrProtocoloBloqueado as $strProtocolo) {
-                $objInfraException->adicionarValidacao($this->getNome() . ': Não é permitido Concluir o processo ' . $strProtocolo . ', pois o mesmo possui Solicitação de Expedição pelos Correios em andamento.');
+                $objInfraException->adicionarValidacao($this->getNome() . ': Não é permitido Concluir o processo ' . $strProtocolo . ', pois o mesmo possui Solicitação de Expedição pelos Correios em andamento nesta unidade.');
             }
             $objInfraException->lancarValidacoes();
         }

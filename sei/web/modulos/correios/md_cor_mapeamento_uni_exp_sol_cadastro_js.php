@@ -4,7 +4,7 @@
 
     function inicializar() {
         iniciarAutoCompletarUnidadeSolicitante();
-        if ('<?= $_GET['acao'] ?>' == 'md_cor_mapeamento_uni_exp_sol_consultar') {
+        if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>' == 'md_cor_mapeamento_uni_exp_sol_consultar') {
             infraDesabilitarCamposAreaDados();
         }
 
@@ -74,7 +74,7 @@
             }
         }
         if (encontrou) {
-            alert('A Unidade Expedidora n„o pode ser Unidade Solicitante dela prÛpria.');
+            alert('A Unidade Expedidora n√£o pode ser Unidade Solicitante dela pr√≥pria.');
             document.getElementById('txtUnidadeSolicitante').focus();
             document.getElementById('selUnidadeExpedidora').disabled = true;
             return false;
