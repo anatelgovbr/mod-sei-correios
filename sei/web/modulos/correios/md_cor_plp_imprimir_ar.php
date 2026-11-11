@@ -17,16 +17,16 @@ SessaoSEI::getInstance()->validarPermissao($_GET['acao']);
 
 switch ($_GET['acao']) {
     case 'md_cor_plp_imprimir_ar':
-        $strTitulo    = 'Impress„o de AR';
+        $strTitulo    = 'Impress√£o de AR';
         $validado     = true;
         $msgErro      = '';
-        $msgFinalErro = 'Erro na impress„o do Aviso de Recebimento: <br>';
+        $msgFinalErro = 'Erro na impress√£o do Aviso de Recebimento: <br>';
         break;
     default:
-        throw new InfraException("AÁ„o '" . $_GET['acao'] . "' n„o reconhecida.");
+        throw new InfraException("A√ß√£o '" . $_GET['acao'] . "' n√£o reconhecida.");
 }
 
-//recuperando a expediÁ„o solicitada
+//recuperando a expedi√ß√£o solicitada
 $objExpSolicDTO = new MdCorExpedicaoSolicitadaDTO();
 
 
@@ -52,8 +52,8 @@ $objMdCorExpedicaoSolicitadaRN = new MdCorExpedicaoSolicitadaRN();
 $arrObjMdCorExpedicaoSolicitadaDTO = $objMdCorExpedicaoSolicitadaRN->listar($objExpSolicDTO);
 
 if ( count($arrObjMdCorExpedicaoSolicitadaDTO) == 0 ) {
-    //throw new InfraException('Nenhuma solicitaÁ„o de expediÁ„o possui AR!');
-    $msgErro .= "Nenhuma solicitaÁ„o de expediÁ„o possui AR.<br>";
+    //throw new InfraException('Nenhuma solicita√ß√£o de expedi√ß√£o possui AR!');
+    $msgErro .= "Nenhuma solicita√ß√£o de expedi√ß√£o possui AR.<br>";
 }
 
 $objMdCorAdmIntegracaoRN = new MdCorAdmIntegracaoRN();
@@ -63,7 +63,7 @@ foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) 
     $objMdCorIntegAR = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$AVISO_RECEB, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
 
     if ( is_null( $objMdCorIntegAR ) )
-        $msgErro .= "Mapeamento de IntegraÁ„o ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB ." n„o existe ou est· inativo.<br>";
+        $msgErro .= "Mapeamento de Integra√ß√£o ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB ." n√£o existe ou est√° inativo.<br>";
 
     $arrParametroRest = [
         'endpoint' => $objMdCorIntegAR->getStrUrlOperacao(),
@@ -73,7 +73,7 @@ foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) 
 
     $ret = $objMdCorAdmIntegracaoRN->verificaTokenExpirado($arrParametroRest, $objMdCorIntegAR, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
 
-    if ( is_array( $ret ) )	$msgErro .= "Falha na IntegraÁ„o: ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB . ".<br>";
+    if ( is_array( $ret ) )	$msgErro .= "Falha na Integra√ß√£o: ". MdCorAdmIntegracaoRN::$STR_AVISO_RECEB . ".<br>";
 
     $statusCanceladoPlp = (new MdCorAdmIntegracaoRN())->validaStatusCanceladoPlp($objMdCorExpedicaoSolicitadaDTO->getStrIdPrePostagem(), $arrParametroRest);
     // Valida se o status retornou cancelado
@@ -82,7 +82,7 @@ foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) 
 
         $objMdCorIntegCancelarPPN = $objMdCorAdmIntegracaoRN->buscaIntegracaoPorFuncionalidade(MdCorAdmIntegracaoRN::$CANCELAR_PRE_POSTAGEM, $objMdCorExpedicaoSolicitadaDTO->getDblIdMdCorContrato());
         if ( empty($objMdCorIntegCancelarPPN) || ( is_array( $objMdCorIntegCancelarPPN ) && isset($objMdCorIntegCancelarPPN['suc'] ) && $objMdCorIntegCancelarPPN['suc'] === false ) )
-            $msgErro .= 'Mapeamento de IntegraÁ„o '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' n„o existe ou est· inativo.';
+            $msgErro .= 'Mapeamento de Integra√ß√£o '. MdCorAdmIntegracaoRN::$STR_CANCELAR_PRE_POSTAGEM .' n√£o existe ou est√° inativo.';
             
         $arrParametroRest = [
             'endpoint' => $objMdCorIntegCancelarPPN->getStrUrlOperacao(),
@@ -101,7 +101,7 @@ foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) 
         $rs = $objMdCorApiCancelarPPN->cancelarPPN([$objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento()]);
 
         //if ( is_array($rs) ){
-        //    $msgErroCompl = "OperaÁ„o: {$objMdCorApiCancelarPPN->getEndPoint()}.#Retorno: {$rs['msg']}";
+        //    $msgErroCompl = "Opera√ß√£o: {$objMdCorApiCancelarPPN->getEndPoint()}.#Retorno: {$rs['msg']}";
         //    $msgErro .=  $msgErroCompl ;
         //}
 
@@ -113,8 +113,8 @@ foreach ($arrObjMdCorExpedicaoSolicitadaDTO as $objMdCorExpedicaoSolicitadaDTO) 
         $objMdCorExpedicaoSolicitadaDTO->setStrIdPrePostagem(null);
         ( new MdCorExpedicaoSolicitadaRN() )->alterar($objMdCorExpedicaoSolicitadaDTO);
         
-        $msgErro .= "Os Correios impediu seguir com a Impress„o dos Documentos pois identificou que a situaÁ„o da PrÈ Postagem do objeto cujo o cÛdigo de rastreio È " . $objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento() . " È Cancelado.<br>
-        Com isso, a PrÈ Postagem do Objeto foi Cancelada no SEI MÛdulo Correios, sendo necess·rio iniciar novamente o fluxo de ExpediÁ„o utilizando a funcionalidade Gerar PrÈ Postagem." ;
+        $msgErro .= "Os Correios impediu seguir com a Impress√£o dos Documentos pois identificou que a situa√ß√£o da Pr√© Postagem do objeto cujo o c√≥digo de rastreio √© " . $objMdCorExpedicaoSolicitadaDTO->getStrCodigoRastreamento() . " √© Cancelado.<br>
+        Com isso, a Pr√© Postagem do Objeto foi Cancelada no SEI M√≥dulo Correios, sendo necess√°rio iniciar novamente o fluxo de Expedi√ß√£o utilizando a funcionalidade Gerar Pr√© Postagem." ;
         $pular_aviso_recebimento = true;
     }
 }

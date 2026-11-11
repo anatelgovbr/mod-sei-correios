@@ -20,7 +20,7 @@
 
                 for (var i = 0; i < options.length; i++) {
                     if (options[i].value == id) {
-                        self.setTimeout('alert(\'Extens„o j· consta na lista.\')', 100);
+                        self.setTimeout('alert(\'Extens√£o j√° consta na lista.\')', 100);
                         break;
                     }
                 }
@@ -43,9 +43,9 @@
         //objAutoCompletarPrincipal.selecionar('id', '<?//=PaginaSEI::getInstance()->formatarParametrosJavascript('descricao')?>');
         objAutoCompletarPrincipal.selecionar('<?=$strIdUnidade?>', '<?=PaginaSEI::getInstance()->formatarParametrosJavaScript($strDescricaoUnidade)?>');
 
-        if ('<?=$_GET['acao']?>' == 'md_cor_extensao_midia_cadastrar') {
+        if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>' == 'md_cor_extensao_midia_cadastrar') {
             //document.getElementById('txtNomeExtensao').focus();
-        } else if ('<?=$_GET['acao']?>' == 'md_cor_extensao_midia_consultar') {
+        } else if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>' == 'md_cor_extensao_midia_consultar') {
             infraDesabilitarCamposAreaDados();
         } else {
             document.getElementById('btnCancelar').focus();
@@ -55,7 +55,7 @@
 
     function validarCadastro() {
         if (infraTrim(document.getElementById('hdnPrincipal').value) == '') {
-            exibirAlert('Informe a Extens„o.');
+            exibirAlert('Informe a Extens√£o.');
             return false;
         }
         return true;

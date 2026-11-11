@@ -1,7 +1,7 @@
 <script type="text/javascript">
 
 function inicializar(){
-  if ('<?=$_GET['acao']?>'=='md_cor_objeto_selecionar'){
+  if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>'=='md_cor_objeto_selecionar'){
     infraReceberSelecao();
     document.getElementById('btnFecharSelecao').focus();
   }else{
@@ -11,7 +11,7 @@ function inicializar(){
 }
 
 function acaoDesativar(id,desc){
-  if (confirm("Confirma DesativaÁ„o da Embalagem \""+desc+"\"?")){
+  if (confirm("Confirma Desativa√ß√£o da Embalagem \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmMdCorObjetoLista').action='<?=$strLinkDesativar?>';
     document.getElementById('frmMdCorObjetoLista').submit();
@@ -23,7 +23,7 @@ function acaoDesativacaoMultipla(){
     alert('Nenhuma Embalagem Selecionada.');
     return;
   }
-  if (confirm("Confirma DesativaÁ„o das Embalagens Selecionadas?")){
+  if (confirm("Confirma Desativa√ß√£o das Embalagens Selecionadas?")){
     document.getElementById('hdnInfraItemId').value='';
     document.getElementById('frmMdCorObjetoLista').action='<?=$strLinkDesativar?>';
     document.getElementById('frmMdCorObjetoLista').submit();
@@ -31,7 +31,7 @@ function acaoDesativacaoMultipla(){
 }
 
 function acaoReativar(id,desc){
-  if (confirm("Confirma reativaÁ„o da Embalagem \""+desc+"\"?")){
+  if (confirm("Confirma reativa√ß√£o da Embalagem \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmMdCorObjetoLista').action='<?=$strLinkReativar?>';
     document.getElementById('frmMdCorObjetoLista').submit();
@@ -43,7 +43,7 @@ function acaoReativacaoMultipla(){
     alert('Nenhuma Embalagem Selecionada.');
     return;
   }
-  if (confirm("Confirma ReativaÁ„o das Embalagens Selecionadas?")){
+  if (confirm("Confirma Reativa√ß√£o das Embalagens Selecionadas?")){
     document.getElementById('hdnInfraItemId').value='';
     document.getElementById('frmMdCorObjetoLista').action='<?=$strLinkReativar?>';
     document.getElementById('frmMdCorObjetoLista').submit();
@@ -51,7 +51,7 @@ function acaoReativacaoMultipla(){
 }
 
 function acaoExcluir(id,desc){
-  if (confirm("Confirma Exclus„o da Embalagem \""+desc+"\"?")){
+  if (confirm("Confirma Exclus√£o da Embalagem \""+desc+"\"?")){
     document.getElementById('hdnInfraItemId').value=id;
     document.getElementById('frmMdCorObjetoLista').action='<?=$strLinkExcluir?>';
     document.getElementById('frmMdCorObjetoLista').submit();
@@ -63,7 +63,7 @@ function acaoExclusaoMultipla(){
     alert('Nenhuma Embalagem Selecionada.');
     return;
   }
-  if (confirm("Confirma Exclus„o das Embalagens Selecionadas?")){
+  if (confirm("Confirma Exclus√£o das Embalagens Selecionadas?")){
     document.getElementById('hdnInfraItemId').value='';
     document.getElementById('frmMdCorObjetoLista').action='<?=$strLinkExcluir?>';
     document.getElementById('frmMdCorObjetoLista').submit();

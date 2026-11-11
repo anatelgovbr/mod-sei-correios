@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function inicializar() {
-        if ('<?=$_GET['acao']?>' == 'md_cor_map_unid_servico_selecionar') {
+        if ('<?= PaginaSEI::getInstance()->formatarParametrosJavaScript($_GET['acao']) ?>' == 'md_cor_map_unid_servico_selecionar') {
             infraReceberSelecao();
             document.getElementById('btnFecharSelecao').focus();
         } else {
@@ -22,7 +22,7 @@
 
     <? if ($bolAcaoDesativar){ ?>
     function acaoDesativar(id, desc) {
-        if (confirm("Confirma desativaÁ„o do Mapeamentos de Unidades Solicitantes e ServiÁos Postais \"" + desc + "\"?")) {
+        if (confirm("Confirma desativa√ß√£o do Mapeamentos de Unidades Solicitantes e Servi√ßos Postais \"" + desc + "\"?")) {
             document.getElementById('hdnInfraItemId').value = id;
             document.getElementById('frmMdCorMapUnidServicoLista').action = '<?=$strLinkDesativar?>';
             document.getElementById('frmMdCorMapUnidServicoLista').submit();
@@ -34,7 +34,7 @@
             alert('Nenhuma  selecionada.');
             return;
         }
-        if (confirm("Confirma desativaÁ„o dos Mapeamentos de Unidades Solicitantes e ServiÁos Postais selecionados?")) {
+        if (confirm("Confirma desativa√ß√£o dos Mapeamentos de Unidades Solicitantes e Servi√ßos Postais selecionados?")) {
             document.getElementById('hdnInfraItemId').value = '';
             document.getElementById('frmMdCorMapUnidServicoLista').action = '<?=$strLinkDesativar?>';
             document.getElementById('frmMdCorMapUnidServicoLista').submit();
@@ -44,7 +44,7 @@
 
     <? if ($bolAcaoReativar){ ?>
     function acaoReativar(id, desc) {
-        if (confirm("Confirma reativaÁ„o do Mapeamento de Unidades Solicitantes e ServiÁos Postais \"" + desc + "\"?")) {
+        if (confirm("Confirma reativa√ß√£o do Mapeamento de Unidades Solicitantes e Servi√ßos Postais \"" + desc + "\"?")) {
             document.getElementById('hdnInfraItemId').value = id;
             document.getElementById('frmMdCorMapUnidServicoLista').action = '<?=$strLinkReativar?>';
             document.getElementById('frmMdCorMapUnidServicoLista').submit();
@@ -53,10 +53,10 @@
 
     function acaoReativacaoMultipla() {
         if (document.getElementById('hdnInfraItensSelecionados').value == '') {
-            alert('Nenhum Mapeamento de Unidades Solicitantes e ServiÁos Postais selecionado.');
+            alert('Nenhum Mapeamento de Unidades Solicitantes e Servi√ßos Postais selecionado.');
             return;
         }
-        if (confirm("Confirma reativaÁ„o dos Mapeamentos de Unidades Solicitantes e ServiÁos Postais selecionados?")) {
+        if (confirm("Confirma reativa√ß√£o dos Mapeamentos de Unidades Solicitantes e Servi√ßos Postais selecionados?")) {
             document.getElementById('hdnInfraItemId').value = '';
             document.getElementById('frmMdCorMapUnidServicoLista').action = '<?=$strLinkReativar?>';
             document.getElementById('frmMdCorMapUnidServicoLista').submit();
@@ -66,7 +66,7 @@
 
     <? if ($bolAcaoExcluir){ ?>
     function acaoExcluir(id, desc) {
-        if (confirm("Confirma exclus„o de  \"" + desc + "\"?")) {
+        if (confirm("Confirma exclus√£o de  \"" + desc + "\"?")) {
             document.getElementById('hdnInfraItemId').value = id;
             document.getElementById('frmMdCorMapUnidServicoLista').action = '<?=$strLinkExcluir?>';
             document.getElementById('frmMdCorMapUnidServicoLista').submit();
@@ -78,7 +78,7 @@
             alert('Nenhuma  selecionada.');
             return;
         }
-        if (confirm("Confirma exclus„o das selecionadas?")) {
+        if (confirm("Confirma exclus√£o das selecionadas?")) {
             document.getElementById('hdnInfraItemId').value = '';
             document.getElementById('frmMdCorMapUnidServicoLista').action = '<?=$strLinkExcluir?>';
             document.getElementById('frmMdCorMapUnidServicoLista').submit();
